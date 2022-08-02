@@ -1,0 +1,143 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@mipmap/bg_all"
+    android:orientation="vertical"
+    android:paddingTop="@dimen/dp_30"
+    tools:context=".fragment.MineFragment">
+
+    <TextView
+        android:id="@+id/tv_likePlayFragment_title"
+        android:layout_width="wrap_content"
+        android:layout_height="@dimen/dp_48"
+        android:layout_gravity="center_horizontal"
+        android:gravity="center"
+        android:text="我的"
+        android:textColor="#0A0422"
+        android:textSize="@dimen/sp_18"
+        android:textStyle="bold" />
+
+    <LinearLayout
+        android:id="@+id/ll_mineFragment_account"
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/dp_54"
+        android:gravity="center_vertical"
+        android:padding="@dimen/dp_10">
+
+        <ImageView
+            android:layout_width="@dimen/dp_24"
+            android:layout_height="@dimen/dp_24"
+            android:src="@mipmap/icon_account" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="@dimen/dp_10"
+            android:text="账号安全"
+            android:textColor="#0A0422"
+            android:textSize="@dimen/sp_16"/>
+
+        <TextView
+            android:id="@+id/tv_mineFragment_phone"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:gravity="end"
+            android:text="未登录"
+            android:textColor="#67656F"
+            android:textSize="@dimen/sp_12" />
+
+        <ImageView
+            android:layout_width="@dimen/dp_10"
+            android:layout_height="@dimen/dp_10"
+            android:layout_marginStart="@dimen/dp_5"
+            android:src="@mipmap/icon_next" />
+
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/dp_54"
+        android:gravity="center_vertical"
+        android:padding="@dimen/dp_10">
+
+        <ImageView
+            android:layout_width="@dimen/dp_24"
+            android:layout_height="@dimen/dp_24"
+            android:src="@mipmap/icon_version" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="@dimen/dp_10"
+            android:text="版本信息"
+            android:textColor="#0A0422"
+            android:textSize="@dimen/sp_16"/>
+
+        <TextView
+            android:id="@+id/tv_mineFragment_version"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:gravity="end"
+            android:text="V3.0.0"
+            android:textColor="#67656F"
+            android:textSize="@dimen/sp_12" />
+
+    </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/ll_mineFragment_clearCache"
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/dp_54"
+        android:gravity="center_vertical"
+        android:padding="@dimen/dp_10">
+
+        <ImageView
+            android:layout_width="@dimen/dp_24"
+            android:layout_height="@dimen/dp_24"
+            android:src="@mipmap/icon_cache" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="@dimen/dp_10"
+            android:text="清除缓存"
+            android:textColor="#0A0422"
+            android:textSize="@dimen/sp_16"/>
+
+        <TextView
+            android:id="@+id/tv_mineFragment_cache"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:gravity="end"
+            android:text="200.65MB"
+            android:textColor="#67656F"
+            android:textSize="@dimen/sp_12" />
+
+    </LinearLayout>
+
+    <View
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:layout_weight="1" />
+
+    <TextView
+        android:id="@+id/tv_mineFragment_exit"
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/dp_42"
+        android:layout_marginStart="@dimen/dp_32"
+        android:layout_marginTop="@dimen/dp_50"
+        android:layout_marginEnd="@dimen/dp_32"
+        android:layout_marginBottom="@dimen/dp_90"
+        android:background="@drawable/bg_btn_exit"
+        android:gravity="center"
+        android:text="退出登录"
+        android:textColor="#5F60FF"
+        android:textSize="@dimen/sp_14"
+        android:textStyle="bold" />
+
+</LinearLayout>

@@ -1,0 +1,17 @@
+﻿lang=zh_CN
+ProjName=Tejie
+ChannelCode=CCCCTJXY
+dispatch=https://tj.down.zifanweb.com
+DebugMode=0
+LocalMode=0
+Accountlogin=1
+slogon=bameng
+Weixinlogin=0
+LogPriority=0
+PlatformID=Android
+#PlatformID=iPhone
+#PlatformID=Google
+sdk_bugly=0
+sdk_wx=1
+sdk_umeng=1
+isHaoFuDuoDuo=1

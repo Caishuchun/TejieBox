@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="white">#FFFFFFFF</color>
+
+    <color name="color_transparent">#00000000</color>
+    <color name="green_2EC8AC">#2EC8AC</color>
+    <color name="green_63C5AD">#63C5AD</color>
+    <color name="black_000000">#000000</color>
+    <color name="black_04000000">#0D000000</color>
+    <color name="black_1A241F">#1A241F</color>
+    <color name="black_494A49">#494A49</color>
+    <color name="black_601A241F">#991A241F</color>
+    <color name="black_878787">#878787</color>
+    <color name="white_FFFFFF">#FFFFFF</color>
+    <color name="white_40FFFFFF">#40FFFFFF</color>
+    <color name="white_60FFFFFF">#99FFFFFF</color>
+    <color name="white_80FFFFFF">#CCFFFFFF</color>
+    <color name="gray_F7F7F7">#F7F7F7</color>
+    <color name="gray_102A2C36">#1A2A2C36</color>
+    <color name="red_F03D3D">#F03D3D</color>
+    <color name="red_FB6767">#FB6767</color>
+    <color name="orange_FFC273">#FFC273</color>
+    <color name="orange_FF774E">#FF774E</color>
+    <color name="orange_FFA855">#FFA855</color>
+
+
+    <!--透明度-->
+    <!--100% —FF-->
+    <!--95% — F2-->
+    <!--90% — E6-->
+    <!--85% — D9-->
+    <!--80% — CC-->
+    <!--75% — BF-->
+    <!--70% — B3-->
+    <!--65% — A6-->
+    <!--60% — 99-->
+    <!--55% — 8C-->
+    <!--50% — 80-->
+    <!--45% — 73-->
+    <!--40% — 66-->
+    <!--35% — 59-->
+    <!--30% — 4D-->
+    <!--25% — 40-->
+    <!--20% — 33-->
+    <!--15% — 26-->
+    <!--10% — 1A-->
+    <!--5% — 0D-->
+    <!--0% — 00-->
+</resources>

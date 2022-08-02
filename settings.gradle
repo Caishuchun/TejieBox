@@ -1,0 +1,4 @@
+include ':app'
+include ':unityLibrary'
+include 'unityLibrary:unity-android-resources'
+rootProject.name = "TejieBox"

@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <!-- Base application theme. -->
+    <style name="AppTheme" parent="Theme.AppCompat.Light.NoActionBar">
+        <!-- Customize your theme here. -->
+        <item name="colorPrimary">@color/white</item>
+        <item name="colorPrimaryDark">@color/gray_F7F7F7</item>
+        <item name="colorAccent">#5F60FF</item>
+    </style>
+
+    <!--界面主题样式-->
+    <style name="NormalTheme" parent="AppTheme">
+        <item name="windowNoTitle">true</item>
+        <item name="android:windowTranslucentStatus">true</item>
+    </style>
+
+    <!--界面主题样式-->
+    <style name="SplashTheme" parent="NormalTheme">
+        <item name="android:windowBackground">@drawable/splash</item>
+    </style>
+
+    <!-- 等待对话框样式 -->
+    <style name="new_circle_progress" parent="@android:style/Theme.Dialog">
+        <item name="android:windowFrame">@null</item>
+        <!-- 边框 -->
+        <item name="android:windowIsFloating">true</item>
+        <!-- 是否浮现在activity之上 -->
+        <item name="android:windowIsTranslucent">true</item>
+        <!-- 半透明 -->
+        <item name="android:windowBackground">@android:color/transparent</item>
+        <!-- 背景遮罩层 -->
+        <item name="android:backgroundDimEnabled">true</item>
+        <!-- 模糊 -->
+        <item name="android:windowNoTitle">true</item>
+        <item name="android:background">@null</item>
+    </style>
+
+    <!-- 等待对话框样式 -->
+    <style name="BeautifulDialog" parent="new_circle_progress">
+        <item name="android:backgroundDimEnabled">false</item>
+    </style>
+
+    <!--加载进度条-->
+    <style name="LoadingView">
+        <item name="minWidth">@dimen/dp_48</item>
+        <item name="maxWidth">@dimen/dp_48</item>
+        <item name="minHeight">@dimen/dp_48</item>
+        <item name="maxHeight">@dimen/dp_48</item>
+        <item name="indicatorName">BallPulseIndicator</item>
+    </style>
+
+    <!--自定义权限申请-->
+    <style name="PermissionStyle" parent="PermissionDefaultNormalStyle">
+        <item name="PermissionTitleColor">@color/black_1A241F</item>
+        <item name="PermissionMsgColor">@color/black_494A49</item>
+        <item name="PermissionItemTextColor">@color/black_1A241F</item>
+        <item name="PermissionButtonTextColor">@color/white_FFFFFF</item>
+        <item name="PermissionButtonBackground">@drawable/bg_btn</item>
+    </style>
+</resources>

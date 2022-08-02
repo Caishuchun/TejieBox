@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="@dimen/dp_70"
+    android:layout_height="wrap_content">
+
+    <LinearLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:gravity="center"
+        android:orientation="vertical">
+
+        <com.fortune.tejiebox.widget.RoundImageView
+            android:id="@+id/iv_item_likePlayFragment_icon"
+            android:layout_width="@dimen/dp_50"
+            android:layout_height="@dimen/dp_50"
+            android:layout_margin="@dimen/dp_10"
+            android:scaleType="centerCrop"
+            android:src="@mipmap/game_icon"
+            app:radius="@dimen/dp_10"
+            app:type="round" />
+
+        <TextView
+            android:id="@+id/tv_item_likePlayFragment_name"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:ellipsize="end"
+            android:gravity="center"
+            android:maxLines="1"
+            android:singleLine="true"
+            android:textColor="#0A0422"
+            android:textSize="@dimen/sp_10"
+            android:textStyle="bold" />
+    </LinearLayout>
+
+    <ImageView
+        android:id="@+id/iv_item_likePlayFragment_delete"
+        android:layout_width="@dimen/dp_20"
+        android:layout_height="@dimen/dp_20"
+        android:layout_alignParentEnd="true"
+        android:src="@mipmap/delete_game"
+        android:visibility="gone" />
+
+</RelativeLayout>

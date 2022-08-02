@@ -1,0 +1,144 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical">
+
+        <FrameLayout
+            android:id="@+id/fl_main"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent" />
+
+        <com.fortune.tejiebox.widget.BottomTab
+            android:id="@+id/tab_main"
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/dp_45"
+            android:layout_alignParentBottom="true" />
+
+    </RelativeLayout>
+
+    <LinearLayout
+        android:id="@+id/ll_shade_root"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="#BB000000"
+        android:orientation="vertical"
+        android:paddingTop="@dimen/dp_28"
+        android:visibility="gone">
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_weight="1">
+
+            <ImageView
+                android:layout_width="@dimen/dp_40"
+                android:layout_height="@dimen/dp_40"
+                android:layout_alignParentEnd="true"
+                android:layout_marginEnd="@dimen/dp_15"
+                android:padding="@dimen/dp_11"
+                android:src="@mipmap/search_white_new" />
+
+            <ImageView
+                android:layout_width="@dimen/dp_100"
+                android:layout_height="@dimen/dp_100"
+                android:layout_marginStart="@dimen/dp_240"
+                android:layout_marginTop="@dimen/dp_15"
+                android:src="@drawable/shade_draw_top" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="@dimen/dp_120"
+                android:layout_marginTop="@dimen/dp_90"
+                android:gravity="center"
+                android:text="此处输入游戏ID/游戏名/\n视频ID搜索或抢礼包"
+                android:textColor="@color/green_2EC8AC"
+                android:textSize="@dimen/sp_20"
+                android:textStyle="bold" />
+        </RelativeLayout>
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_weight="1">
+
+            <TextView
+                android:id="@+id/tv_know"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_centerInParent="true"
+                android:background="@drawable/bg_login_enter_line"
+                android:gravity="center"
+                android:paddingStart="@dimen/dp_15"
+                android:paddingTop="@dimen/dp_5"
+                android:paddingEnd="@dimen/dp_15"
+                android:paddingBottom="@dimen/dp_5"
+                android:text="我知道啦"
+                android:textColor="@color/green_2EC8AC"
+                android:textSize="@dimen/sp_16"
+                android:textStyle="bold" />
+
+        </RelativeLayout>
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_weight="1">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentBottom="true"
+                android:layout_marginStart="@dimen/dp_170"
+                android:layout_marginBottom="@dimen/dp_100"
+                android:gravity="center"
+                android:text="点击查看玩过的游戏"
+                android:textColor="@color/green_2EC8AC"
+                android:textSize="@dimen/sp_20"
+                android:textStyle="bold" />
+
+            <ImageView
+                android:layout_width="@dimen/dp_100"
+                android:layout_height="@dimen/dp_100"
+                android:layout_alignParentBottom="true"
+                android:layout_marginStart="@dimen/dp_240"
+                android:layout_marginBottom="@dimen/dp_20"
+                android:src="@drawable/shade_draw_bottom" />
+
+            <LinearLayout
+                android:layout_width="@dimen/dp_72"
+                android:layout_height="@dimen/dp_45"
+                android:layout_alignParentEnd="true"
+                android:layout_alignParentBottom="true"
+                android:gravity="center"
+                android:orientation="vertical">
+
+                <RelativeLayout
+                    android:layout_width="@dimen/dp_20"
+                    android:layout_height="@dimen/dp_20"
+                    android:layout_marginBottom="@dimen/dp_2">
+
+                    <ImageView
+                        android:layout_width="@dimen/dp_20"
+                        android:layout_height="@dimen/dp_20"
+                        android:src="@mipmap/playing_focus" />
+
+                </RelativeLayout>
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="在玩"
+                    android:textColor="@color/white_FFFFFF"
+                    android:textSize="@dimen/sp_10"
+                    android:textStyle="bold" />
+            </LinearLayout>
+
+        </RelativeLayout>
+    </LinearLayout>
+</RelativeLayout>
