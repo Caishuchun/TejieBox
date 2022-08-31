@@ -17,7 +17,7 @@
 
     <!--界面主题样式-->
     <style name="SplashTheme" parent="NormalTheme">
-        <item name="android:windowBackground">@drawable/splash</item>
+        <item name="android:windowBackground">@drawable/bg_splash</item>
     </style>
 
     <!-- 等待对话框样式 -->
@@ -39,6 +39,22 @@
     <!-- 等待对话框样式 -->
     <style name="BeautifulDialog" parent="new_circle_progress">
         <item name="android:backgroundDimEnabled">false</item>
+    </style>
+
+    <!--DialogActivity专属样式-->
+    <style name="ActivityTheme4Dialog" parent="NormalTheme">
+        <!--设置布局背景-->
+        <item name="android:background">@android:color/transparent</item>
+        <!--设置背景颜色-->
+        <item name="android:windowBackground">@android:color/transparent</item>
+        <!--设置主题-->
+        <item name="android:windowContentOverlay">@android:color/transparent</item>
+        <!--设置背景模糊的透明度-->
+        <item name="android:backgroundDimAmount">0.7</item>
+        <!--设置是否没有标题-->
+        <item name="android:windowNoTitle">true</item>
+        <!--设置是否半透明-->
+        <item name="android:windowIsTranslucent">true</item>
     </style>
 
     <!--加载进度条-->

@@ -127,6 +127,10 @@ class ChangePhone2Activity : BaseActivity() {
     private fun toSplash() {
         SPUtils.putValue(SPArgument.LOGIN_TOKEN, null)
         SPUtils.putValue(SPArgument.PHONE_NUMBER,null)
+        SPUtils.putValue(SPArgument.USER_ID, null)
+        SPUtils.putValue(SPArgument.IS_HAVE_ID, 0)
+        SPUtils.putValue(SPArgument.ID_NAME, null)
+        SPUtils.putValue(SPArgument.ID_NUM, null)
         ActivityManager.toSplashActivity(this)
     }
 

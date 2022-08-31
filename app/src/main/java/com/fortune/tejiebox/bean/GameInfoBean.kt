@@ -6,8 +6,8 @@ data class GameInfoBean(
     val msg: String?
 ) {
     data class Data(
-        val cdkey: String,
-        val desc: String,
+        val cdkey: String?,
+        val desc: String?,
         val game_channelId: String,
         val game_desc: String,
         val game_icon: String,

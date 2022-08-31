@@ -2,7 +2,10 @@ package com.fortune.tejiebox.activity
 
 import android.annotation.SuppressLint
 import android.app.*
+import android.content.BroadcastReceiver
+import android.content.Context
 import android.content.Intent
+import android.content.IntentFilter
 import android.net.Uri
 import android.os.*
 import android.provider.Settings
@@ -22,6 +25,7 @@ import com.fortune.tejiebox.http.RetrofitUtils
 import com.fortune.tejiebox.listener.OnBottomBarItemSelectListener
 import com.fortune.tejiebox.myapp.MyApp
 import com.fortune.tejiebox.utils.*
+import com.fortune.tejiebox.utils.ActivityManager
 import com.jakewharton.rxbinding2.view.RxView
 import com.umeng.analytics.MobclickAgent
 import io.reactivex.Observable
@@ -34,15 +38,16 @@ import org.greenrobot.eventbus.EventBus
 import org.greenrobot.eventbus.Subscribe
 import org.greenrobot.eventbus.ThreadMode
 import java.io.File
+import java.text.SimpleDateFormat
 import java.util.*
 import java.util.concurrent.TimeUnit
 import kotlin.system.exitProcess
 
 class MainActivity : BaseActivity() {
 
-    private var mainFragment: MainFragment? = null
-    private var playingFragment: LikePlayFragment? = null
-    private var likeFragment: LikePlayFragment? = null
+    private var mainFragment: GameFragment? = null
+    private var playingFragment: GameFragment? = null
+    private var likeFragment: GameFragment? = null
     private var mineFragment: MineFragment? = null
 
     private var canQuit = false
@@ -50,6 +55,10 @@ class MainActivity : BaseActivity() {
     private var downloadPath = "" //下载的安装路径
     private var isDownloadApp = false //是否在下载app
     private var updateGameTimeInfoObservable: Disposable? = null
+    private var canGetIntegralObservable: Disposable? = null
+
+    private var intentFilter: IntentFilter? = null
+    private var timeChangeReceiver: TimeChangeReceiver? = null
 
     companion object {
         @SuppressLint("StaticFieldLeak")
@@ -57,6 +66,50 @@ class MainActivity : BaseActivity() {
         private fun isInstance() = this::instance.isInitialized
         fun getInstance() = if (isInstance()) instance else null
         var mainPage: MainPage = MainPage.MAIN
+    }
+
+    @SuppressLint("SimpleDateFormat")
+    class TimeChangeReceiver : BroadcastReceiver() {
+        override fun onReceive(context: Context?, intent: Intent?) {
+            when (intent?.action) {
+                Intent.ACTION_TIME_TICK -> {
+                    if (MyApp.getInstance().isHaveToken()) {
+                        val currentTimeMillis = System.currentTimeMillis()
+                        val df = SimpleDateFormat("yyyy-MM-dd HH:mm:ss")
+                        val currentTime = df.format(currentTimeMillis)
+                        val hour = currentTime.split(" ")[1].split(":")[0]
+                        val minute = currentTime.split(" ")[1].split(":")[1]
+                        if ((hour == "05" || hour == "10" || hour == "15" || hour == "20") && minute == "00") {
+                            LogUtils.d("=======$hour:$minute")
+                            EventBus.getDefault().postSticky(RedPointChange(true))
+                            //好巧不巧,正好处于白嫖界面等着的话,需要通知白嫖获取新数据
+                            if (MyApp.getInstance().getCurrentActivity() == "GiftActivity") {
+                                EventBus.getDefault().post(
+                                    GiftNeedNewInfo(
+                                        isShowDailyCheckNeed = false,
+                                        isShowWhitePiaoNeed = true,
+                                        isShowInviteGiftNeed = false
+                                    )
+                                )
+                            }
+                        }
+                        //如果更巧的话,在晚上12点卡点,礼包三个界面都需要重新获取数据
+                        if (hour == "00" && minute == "00") {
+                            EventBus.getDefault().postSticky(RedPointChange(true))
+                            if (MyApp.getInstance().getCurrentActivity() == "GiftActivity") {
+                                EventBus.getDefault().post(
+                                    GiftNeedNewInfo(
+                                        isShowDailyCheckNeed = true,
+                                        isShowWhitePiaoNeed = true,
+                                        isShowInviteGiftNeed = true
+                                    )
+                                )
+                            }
+                        }
+                    }
+                }
+            }
+        }
     }
 
     enum class MainPage {
@@ -95,43 +148,64 @@ class MainActivity : BaseActivity() {
         StatusBarUtils.setTextDark(this, true)
         Aria.download(this).register()
 
-        mainFragment = MainFragment.newInstance()
+        mainFragment = GameFragment.newInstance(0)
 
         initView()
-        toDeleteGameApk()
+
+        intentFilter = IntentFilter()
+        intentFilter?.addAction(Intent.ACTION_TIME_TICK)
+        if (timeChangeReceiver == null) {
+            timeChangeReceiver = TimeChangeReceiver()
+        }
+        registerReceiver(timeChangeReceiver, intentFilter)
+
+        ll_shade_root.postDelayed({
+            if (MyApp.getInstance().isHaveToken()) {
+                toCheckCanGetIntegral()
+            }
+        }, 1000)
     }
 
     /**
-     * 删除游戏安装包
+     * 检查是否能够领取奖励
      */
-    private fun toDeleteGameApk() {
-        //没有安装目录,就是么有安装包,啥也不做
-        val downloadDir = getExternalFilesDir(Environment.DIRECTORY_DOWNLOADS) ?: return
-        if (downloadDir.isFile) {
-            //检查到安装目录变成文件,也就是么有安装包,啥也不做
-            return
-        }
-        if (downloadDir.isDirectory) {
-            //安装目录是正经的文件夹了
-            val files = downloadDir.listFiles()
-            if (files.isEmpty()) {
-                //可是它为空,也就是么有安装包,啥也不做
-                return
-            }
-            for (file in files) {
-                if (file.isFile && file.name.endsWith(".apk") && !file.name.contains(packageName)) {
-                    //文件夹下有文件,并且就是文件,最重要的是apk文件
-                    val split = file.name.split("_")
-                    val version = split[split.size - 1]
-                    val packageName = file.name.replace(version, "").replace(".apk", "")
-                    if (InstallApkUtils.isInstallApk(this, packageName)) {
-                        Thread {
-                            DeleteApkUtils.deleteApk(File("${getExternalFilesDir(Environment.DIRECTORY_DOWNLOADS).toString()}/${file.name}"))
-                        }.start()
+    private fun toCheckCanGetIntegral() {
+        val canGetIntegral = RetrofitUtils.builder().canGetIntegral()
+        canGetIntegralObservable = canGetIntegral.subscribeOn(Schedulers.io())
+            .observeOn(AndroidSchedulers.mainThread())
+            .subscribe({
+                if (it != null) {
+                    when (it.code) {
+                        1 -> {
+                            val data = it.data
+                            if (null != data) {
+                                if (data.daily_clock_in == 1 || data.limit_time == 1 || data.invite == 1) {
+                                    if (null != data.is_click && data.is_click == 0) {
+                                        startActivity(Intent(this, GiftActivity::class.java))
+                                    }
+                                    EventBus.getDefault().postSticky(RedPointChange(true))
+                                    tab_main.showRedPoint(true)
+                                } else {
+                                    EventBus.getDefault().postSticky(RedPointChange(false))
+                                    tab_main.showRedPoint(false)
+                                }
+                            }
+                        }
+                        -1 -> {
+                            ToastUtils.show(it.msg)
+                            ActivityManager.toSplashActivity(this)
+                        }
+                        else -> {
+                            ToastUtils.show(it.msg)
+                        }
                     }
+                } else {
+                    ToastUtils.show(getString(R.string.network_fail_to_responseDate))
                 }
-            }
-        }
+            }, {
+                LogUtils.d("fail=>${it.message.toString()}")
+                ToastUtils.show(HttpExceptionUtils.getExceptionMsg(this, it))
+            })
     }
 
     /**
@@ -149,11 +223,11 @@ class MainActivity : BaseActivity() {
 
     override fun onAttachFragment(fragment: Fragment) {
         super.onAttachFragment(fragment)
-        if (mainFragment == null && fragment is MainFragment) {
+        if (mainFragment == null && fragment is GameFragment && mainPage == MainPage.MAIN) {
             mainFragment = fragment
-        } else if (playingFragment == null && fragment is LikePlayFragment && mainPage == MainPage.PLAYING) {
+        } else if (playingFragment == null && fragment is GameFragment && mainPage == MainPage.PLAYING) {
             playingFragment = fragment
-        } else if (likeFragment == null && fragment is LikePlayFragment && mainPage == MainPage.LIKE) {
+        } else if (likeFragment == null && fragment is GameFragment && mainPage == MainPage.LIKE) {
             likeFragment = fragment
         } else if (mineFragment == null && fragment is MineFragment) {
             mineFragment = fragment
@@ -176,6 +250,7 @@ class MainActivity : BaseActivity() {
                 getExternalFilesDir(Environment.DIRECTORY_DOWNLOADS).toString() + "/" + versionName
             SPUtils.putValue(SPArgument.APP_DOWNLOAD_PATH, downloadPath)
             if (newVersion > currentVersion) {
+                 SPUtils.putValue(SPArgument.IS_NEED_UPDATE_DIALOG, true)
                 //需要更新的话,直接更新
                 if (isApkDownload(File(downloadPath))) {
                     installAPK(File(downloadPath))
@@ -186,7 +261,7 @@ class MainActivity : BaseActivity() {
                 if (isApkDownload(File(downloadPath))) {
                     toDeleteApk()
                 }
-                //已经更新过
+                //已经更新过,默认的当然是不显示的
                 val isNeedUpdateDialog = SPUtils.getBoolean(SPArgument.IS_NEED_UPDATE_DIALOG, false)
                 if (isNeedUpdateDialog) {
                     SPUtils.putValue(SPArgument.IS_NEED_UPDATE_DIALOG, false)
@@ -231,7 +306,7 @@ class MainActivity : BaseActivity() {
         })
 
         /**
-         * 当进入游戏后,检查剪贴板的数据,如果数据对上的话,跳转到相应的游戏详情页
+         * 当进入APP,检查剪贴板的数据,如果数据对上的话,跳转到相应的游戏详情页
          */
         window.decorView.postDelayed({
             val gameChannelId = ClipboardUtils.getClipboardContent(this)
@@ -258,7 +333,7 @@ class MainActivity : BaseActivity() {
             val gameId = split[0].toInt()
             val startTime = split[1].toLong()
             val endTime = split[2].toLong()
-            if (endTime - startTime >= 2 * 60 * 1000) {
+            if (endTime - startTime >= 1 * 60 * 1000) {
                 val updateGameTimeInfo = RetrofitUtils.builder().updateGameTimeInfo(
                     gameId,
                     startTime.toString(),
@@ -273,10 +348,15 @@ class MainActivity : BaseActivity() {
         SPUtils.putValue(SPArgument.GAME_TIME_INFO, null)
     }
 
+    /**
+     * 登录状态的监听
+     */
     @Subscribe(sticky = true, threadMode = ThreadMode.MAIN)
     fun login(loginStatusChange: LoginStatusChange) {
         LogUtils.d("loginStatusChange.isLogin:${loginStatusChange.isLogin}")
         if (loginStatusChange.isLogin) {
+            PromoteUtils.promote(this)
+            toCheckCanGetIntegral()
             when (mainPage) {
                 MainPage.MAIN -> {
                     tab_main.setCurrentItem(0)
@@ -304,6 +384,18 @@ class MainActivity : BaseActivity() {
     }
 
     /**
+     * 是否显示小红点
+     */
+    @Subscribe(sticky = true, threadMode = ThreadMode.MAIN)
+    fun isShowRedPoint(redPointChange: RedPointChange) {
+        if (redPointChange.isShow) {
+            tab_main.showRedPoint(true)
+        } else {
+            tab_main.showRedPoint(false)
+        }
+    }
+
+    /**
      * 更新fragment
      */
     private fun toChangeFragment(index: Int) {
@@ -320,7 +412,7 @@ class MainActivity : BaseActivity() {
                 mainPage = MainPage.PLAYING
                 hideAll()
                 if (null == playingFragment) {
-                    playingFragment = LikePlayFragment.newInstance(0)
+                    playingFragment = GameFragment.newInstance(1)
                     currentFragment = playingFragment
                     supportFragmentManager.beginTransaction()
                         .add(R.id.fl_main, currentFragment!!)
@@ -336,7 +428,7 @@ class MainActivity : BaseActivity() {
                 mainPage = MainPage.LIKE
                 hideAll()
                 if (null == likeFragment) {
-                    likeFragment = LikePlayFragment.newInstance(1)
+                    likeFragment = GameFragment.newInstance(2)
                     currentFragment = likeFragment
                     supportFragmentManager.beginTransaction()
                         .add(R.id.fl_main, currentFragment!!)
@@ -386,6 +478,7 @@ class MainActivity : BaseActivity() {
         isDownloadApp = false
         Aria.download(this).stopAllTask()
         Aria.download(this).resumeAllTask()
+        unregisterReceiver(timeChangeReceiver)
 
         updateGameTimeInfoObservable?.dispose()
         updateGameTimeInfoObservable = null
@@ -393,7 +486,7 @@ class MainActivity : BaseActivity() {
     }
 
     override fun onTaskResume(task: DownloadTask?) {
-        if (!ApkDownloadDialog.isShowing()) {
+        if (!ApkDownloadDialog.isShowing() && !isFinishing) {
             ApkDownloadDialog.showDialog(this)
         }
         ApkDownloadDialog.setProgress(task?.percent ?: 0)
@@ -496,7 +589,6 @@ class MainActivity : BaseActivity() {
      * 开始安装
      */
     private fun toInstallApp(file: File) {
-        SPUtils.putValue(SPArgument.IS_NEED_UPDATE_DIALOG, true)
         val intent = Intent()
         intent.action = Intent.ACTION_VIEW
         intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK
@@ -522,6 +614,4 @@ class MainActivity : BaseActivity() {
         super.onPause()
         MobclickAgent.onPause(this)
     }
-
-
 }

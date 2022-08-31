@@ -10,6 +10,7 @@ import android.view.View
 import android.view.inputmethod.EditorInfo
 import androidx.recyclerview.widget.StaggeredGridLayoutManager
 import com.bumptech.glide.Glide
+import com.bumptech.glide.load.engine.DiskCacheStrategy
 import com.fortune.tejiebox.R
 import com.fortune.tejiebox.adapter.BaseAdapterWithPosition
 import com.fortune.tejiebox.base.BaseActivity
@@ -57,6 +58,8 @@ class SearchGameActivity : BaseActivity() {
     private var addPlayingGameObservable: Disposable? = null
     private var updateGameTimeInfoObservable: Disposable? = null
     private var isPlayingGame = false
+
+    private var getGiftCodeObservable: Disposable? = null
 
     private var isNeedSugrec = true //是不是需要建议和历史记录的请求
 
@@ -393,9 +396,19 @@ class SearchGameActivity : BaseActivity() {
     @SuppressLint("SetTextI18n", "CheckResult")
     private fun initView() {
         //取消即退出
-        RxView.clicks(tv_search_cancel)
+        RxView.clicks(iv_search_back)
             .throttleFirst(200, TimeUnit.MILLISECONDS)
             .subscribe { finish() }
+
+        //进行搜索
+        RxView.clicks(tv_search_search)
+            .throttleFirst(200, TimeUnit.MILLISECONDS)
+            .subscribe {
+                val searchStr = et_search_str.text.toString().trim()
+                if (searchStr.isNotEmpty()) {
+                    toSearch(et_search_str.text.toString().trim())
+                }
+            }
 
         //热门搜索的adapter
         hotSearchAdapter = BaseAdapterWithPosition.Builder<String>()
@@ -488,10 +501,16 @@ class SearchGameActivity : BaseActivity() {
                     if (oldStr.length > it.length) {
                         rv_search_result.visibility = View.GONE
                     }
-                    if (oldStr != it.toString() && isNeedSugrec) {
-                        toShowSugrec(it.toString())
+                    if (it.toString().trim() == "888888") {
+                        // 输入的是六个8
+                        searchSugrecList.add("免费礼包")
+                        searchSugrecAdapter.notifyDataSetChanged()
                     } else {
-                        isNeedSugrec = true
+                        if (oldStr != it.toString() && isNeedSugrec) {
+                            toShowSugrec(it.toString())
+                        } else {
+                            isNeedSugrec = true
+                        }
                     }
                 }
                 oldStr = it.toString()
@@ -499,16 +518,21 @@ class SearchGameActivity : BaseActivity() {
         //软键盘回车的监听
         et_search_str.setOnEditorActionListener { v, actionId, event ->
             if (actionId == EditorInfo.IME_ACTION_SEARCH) {
-                toSearch(et_search_str.text.toString().trim())
+                val searchStr = et_search_str.text.toString().trim()
+                if (searchStr.isNotEmpty()) {
+                    toSearch(et_search_str.text.toString().trim())
+                }
                 return@setOnEditorActionListener true
             }
             return@setOnEditorActionListener false
         }
 
+
         //清除输入的文字
         RxView.clicks(iv_search_delete)
             .throttleFirst(200, TimeUnit.MILLISECONDS)
             .subscribe {
+                tv_search_nothing.visibility = View.GONE
                 et_search_str.setText("")
                 iv_search_delete.visibility = View.GONE
                 if (ll_search_his_only2.visibility == View.VISIBLE) {
@@ -575,7 +599,9 @@ class SearchGameActivity : BaseActivity() {
             .setData(searchList)
             .addBindView { itemView, itemData, position ->
                 Glide.with(this)
-                    .load(itemData.game_icon)
+                    .load(itemData.game_cover)
+                    .skipMemoryCache(true)
+                    .diskCacheStrategy(DiskCacheStrategy.AUTOMATIC)
                     .into(itemView.iv_item_mainFragment_icon)
 
                 itemView.tv_item_mainFragment_gameName.text = itemData.game_name
@@ -633,40 +659,63 @@ class SearchGameActivity : BaseActivity() {
     }
 
     /**
+     * 获取游戏礼包
+     */
+    private fun toGetGiftCode() {
+        DialogActivity.showGiftCode(this)
+    }
+
+    /**
      * 启动游戏
      */
     private fun toStartGame(gameId: Int, gameChannelid: String) {
-        val addPlayingGame = RetrofitUtils.builder().addPlayingGame(gameId, 1)
-        addPlayingGameObservable = addPlayingGame.subscribeOn(Schedulers.io())
-            .observeOn(AndroidSchedulers.mainThread())
-            .subscribe({
-                LogUtils.d("success=>${Gson().toJson(it)}")
-                if (it != null) {
-                    when (it.code) {
-                        1 -> {
-                            EventBus.getDefault().post(PlayingDataChange(""))
-                            isPlayingGame = true
-                            SPUtils.putValue(
-                                SPArgument.GAME_TIME_INFO,
-                                "$gameId-${System.currentTimeMillis()}"
-                            )
-                            JumpUtils.jump2Game(this, gameChannelid)
+        val isHaveId = SPUtils.getInt(SPArgument.IS_HAVE_ID)
+        if (isHaveId == 1) {
+            DialogUtils.showBeautifulDialog(this)
+            val addPlayingGame = RetrofitUtils.builder().addPlayingGame(gameId, 1)
+            addPlayingGameObservable = addPlayingGame.subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe({
+                    DialogUtils.dismissLoading()
+                    LogUtils.d("success=>${Gson().toJson(it)}")
+                    if (it != null) {
+                        when (it.code) {
+                            1 -> {
+                                EventBus.getDefault().post(PlayingDataChange(""))
+                                isPlayingGame = true
+                                SPUtils.putValue(
+                                    SPArgument.GAME_TIME_INFO,
+                                    "$gameId-${System.currentTimeMillis()}"
+                                )
+                                JumpUtils.jump2Game(
+                                    this,
+                                    gameChannelid + Box2GameUtils.getPhoneAndToken()
+                                )
+                            }
+                            -1 -> {
+                                ToastUtils.show(it.msg)
+                                ActivityManager.toSplashActivity(this)
+                            }
+                            else -> {
+                                ToastUtils.show(it.msg)
+                            }
                         }
-                        -1 -> {
-                            ToastUtils.show(it.msg)
-                            ActivityManager.toSplashActivity(this)
-                        }
-                        else -> {
-                            ToastUtils.show(it.msg)
-                        }
+                    } else {
+                        ToastUtils.show(getString(R.string.network_fail_to_responseDate))
                     }
-                } else {
-                    ToastUtils.show(getString(R.string.network_fail_to_responseDate))
-                }
-            }, {
-                LogUtils.d("fail=>${it.message.toString()}")
-                ToastUtils.show(HttpExceptionUtils.getExceptionMsg(this, it))
-            })
+                }, {
+                    DialogUtils.dismissLoading()
+                    LogUtils.d("fail=>${it.message.toString()}")
+                    ToastUtils.show(HttpExceptionUtils.getExceptionMsg(this, it))
+                })
+        } else {
+            isPlayingGame = true
+            val intent = Intent(this, IdCardActivity::class.java)
+            intent.putExtra(IdCardActivity.FROM, 2)
+            intent.putExtra(IdCardActivity.GAME_ID, gameId)
+            intent.putExtra(IdCardActivity.GAME_CHANNEL, gameChannelid)
+            startActivity(intent)
+        }
     }
 
     /**
@@ -722,43 +771,50 @@ class SearchGameActivity : BaseActivity() {
         et_search_str.setSelection(str.length)
         ll_search_noInput.visibility = View.GONE
         rv_search_input.visibility = View.GONE
-        rv_search_result.visibility = View.VISIBLE
-        DialogUtils.showBeautifulDialog(this)
-        val search = RetrofitUtils.builder().search(str, 1)
-        searchObservable = search.subscribeOn(Schedulers.io())
-            .observeOn(AndroidSchedulers.mainThread())
-            .subscribe({
-                DialogUtils.dismissLoading()
-                LogUtils.d("${javaClass.simpleName}=success=>${Gson().toJson(it)}")
-                if (it != null) {
-                    when (it.code) {
-                        1 -> {
-                            if (it.data != null) {
-                                val list = it.data.list
-                                if (!list.isNullOrEmpty()) {
-                                    for (info in list) {
-                                        searchList.add(info)
+        if (str == "888888" || str == "免费礼包") {
+            toGetGiftCode()
+        } else {
+            rv_search_result.visibility = View.VISIBLE
+            DialogUtils.showBeautifulDialog(this)
+            val search = RetrofitUtils.builder().search(str, 1)
+            searchObservable = search.subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe({
+                    DialogUtils.dismissLoading()
+                    LogUtils.d("${javaClass.simpleName}=success=>${Gson().toJson(it)}")
+                    if (it != null) {
+                        when (it.code) {
+                            1 -> {
+                                if (it.data != null) {
+                                    tv_search_nothing.visibility = View.GONE
+                                    val list = it.data.list
+                                    if (!list.isNullOrEmpty()) {
+                                        for (info in list) {
+                                            searchList.add(info)
+                                        }
+                                        searchAdapter.notifyDataSetChanged()
+                                    } else {
+                                        tv_search_nothing.visibility = View.VISIBLE
                                     }
-                                    searchAdapter.notifyDataSetChanged()
                                 }
                             }
+                            -1 -> {
+                                it.msg.let { it1 -> ToastUtils.show(it1) }
+                                ActivityManager.toSplashActivity(this)
+                            }
+                            else -> {
+                                it.msg.let { it1 -> ToastUtils.show(it1) }
+                            }
                         }
-                        -1 -> {
-                            it.msg?.let { it1 -> ToastUtils.show(it1) }
-                            ActivityManager.toSplashActivity(this)
-                        }
-                        else -> {
-                            it.msg?.let { it1 -> ToastUtils.show(it1) }
-                        }
+                    } else {
+                        ToastUtils.show(getString(R.string.network_fail_to_responseDate))
                     }
-                } else {
-                    ToastUtils.show(getString(R.string.network_fail_to_responseDate))
-                }
-            }, {
-                DialogUtils.dismissLoading()
-                LogUtils.d("${javaClass.simpleName}=fail=>${it.message.toString()}")
-                ToastUtils.show(HttpExceptionUtils.getExceptionMsg(this, it))
-            })
+                }, {
+                    DialogUtils.dismissLoading()
+                    LogUtils.d("${javaClass.simpleName}=fail=>${it.message.toString()}")
+                    ToastUtils.show(HttpExceptionUtils.getExceptionMsg(this, it))
+                })
+        }
     }
 
     /**
@@ -813,6 +869,9 @@ class SearchGameActivity : BaseActivity() {
         addPlayingGameObservable = null
         updateGameTimeInfoObservable?.dispose()
         updateGameTimeInfoObservable = null
+
+        getGiftCodeObservable?.dispose()
+        getGiftCodeObservable = null
     }
 
     /**
@@ -848,7 +907,7 @@ class SearchGameActivity : BaseActivity() {
                 val gameId = split[0].toInt()
                 val startTime = split[1].toLong()
                 val endTime = System.currentTimeMillis()
-                if (endTime - startTime >= 2 * 60 * 1000) {
+                if (endTime - startTime >= 1 * 60 * 1000) {
                     val updateGameTimeInfo = RetrofitUtils.builder().updateGameTimeInfo(
                         gameId,
                         startTime.toString(),

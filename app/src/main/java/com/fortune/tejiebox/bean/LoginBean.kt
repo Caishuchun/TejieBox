@@ -9,6 +9,10 @@ class LoginBean {
         var token: String? = null
         var first_login = 0
         var phone: String? = null
+        var user_id: String? = null
+        var id_card: Int? = 0
+        var card_name: String? = null
+        var car_num: String? = null
     }
 }
 

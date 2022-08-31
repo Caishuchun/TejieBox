@@ -3,6 +3,7 @@ package com.fortune.tejiebox.http
 import com.fortune.tejiebox.base.BaseAppUpdateSetting
 import com.fortune.tejiebox.bean.*
 import com.fortune.tejiebox.constants.SPArgument
+import com.fortune.tejiebox.event.CanGetIntegralBean
 import com.fortune.tejiebox.myapp.MyApp
 import com.fortune.tejiebox.utils.LogUtils
 import com.fortune.tejiebox.utils.SPUtils
@@ -118,11 +119,10 @@ object RetrofitUtils {
         /**
          * 获取游戏列表
          */
-        @FormUrlEncoded
-        @POST(HttpUrls.GAME_LIST)
+        @GET(HttpUrls.GAME_LIST)
         fun gameList(
-            @Field("page", encoded = true) page: Int
-        ): Flowable<GameListBean>
+            @Query("page", encoded = true) page: Int
+        ): Flowable<GameListInfoBean>
 
         /**
          * 发送短信验证码_修改手机号
@@ -161,20 +161,18 @@ object RetrofitUtils {
         /**
          * 搜索建议
          */
-        @FormUrlEncoded
-        @POST(HttpUrls.SEARCH_SUGREC)
+        @GET(HttpUrls.SEARCH_SUGREC)
         fun searchSugrec(
-            @Field("wd", encoded = true) wd: String
+            @Query("wd", encoded = true) wd: String
         ): Flowable<HotSearchBean>
 
         /**
          * 搜索游戏
          */
-        @FormUrlEncoded
-        @POST(HttpUrls.SEARCH)
+        @GET(HttpUrls.SEARCH)
         fun search(
-            @Field("wd", encoded = true) wd: String,
-            @Field("page", encoded = true) page: Int
+            @Query("wd", encoded = true) wd: String,
+            @Query("page", encoded = true) page: Int
         ): Flowable<GameListBean>
 
         /**
@@ -209,13 +207,13 @@ object RetrofitUtils {
          * 获取游戏收藏列表
          */
         @GET(HttpUrls.COLLECT_LIST)
-        fun likeGame(): Flowable<LikeAndPlayingBean>
+        fun likeGame(): Flowable<GameListInfoBean2>
 
         /**
          * 在玩游戏列表
          */
         @GET(HttpUrls.PLAYING_GAME)
-        fun playingGame(): Flowable<LikeAndPlayingBean>
+        fun playingGame(): Flowable<GameListInfoBean2>
 
         /**
          * 添加在玩标记
@@ -238,5 +236,115 @@ object RetrofitUtils {
             @Field("end_time", encoded = true) end_time: String,
             @Field("type", encoded = true) type: Int = 1,
         ): Flowable<BaseBean>
+
+        /**
+         * 身份证实名认证
+         */
+        @FormUrlEncoded
+        @POST(HttpUrls.ID_CARD)
+        fun idCard(
+            @Field("name", encoded = true) name: String,
+            @Field("idCard", encoded = true) idCard: String,
+        ): Flowable<BaseBean>
+
+        /**
+         * 获取签到列表
+         */
+        @GET(HttpUrls.DAILY_CHECK_LIST)
+        fun dailyCheckList(): Flowable<DailyCheckListBean>
+
+        /**
+         * 签到
+         */
+        @FormUrlEncoded
+        @POST(HttpUrls.DAILY_CHECK)
+        fun dailyCheck(
+            @Field(
+                "nothing",
+                encoded = true
+            ) nothing: String = ""
+        ): Flowable<DailyCheckBean>
+
+        /**
+         * 限时白嫖_时段列表
+         */
+        @GET(HttpUrls.WHITE_PIAO_LIST)
+        fun whitePiaoList(): Flowable<WhitePiaoListBean>
+
+        /**
+         * 限时白嫖_领取
+         */
+        @FormUrlEncoded
+        @POST(HttpUrls.WHITE_PIAO)
+        fun whitePiao(
+            @Field("id", encoded = true) id: Int
+        ): Flowable<DailyCheckBean>
+
+        /**
+         * 获取分享链接
+         */
+        @GET(HttpUrls.GET_SHARE_URL)
+        fun getShareUrl(): Flowable<GetShareUrlBean>
+
+        /**
+         * 获取邀请列表
+         */
+        @GET(HttpUrls.GET_SHARE_LIST)
+        fun getShareList(): Flowable<GetShareListBean>
+
+        /**
+         * 领取邀请奖励
+         */
+        @FormUrlEncoded
+        @POST(HttpUrls.GET_INVITE_GIFT)
+        fun getInviteGift(
+            @Field("id", encoded = true) id: Int
+        ): Flowable<DailyCheckBean>
+
+        /**
+         * 获取当前积分
+         */
+        @GET(HttpUrls.GET_INTEGRAL)
+        fun getIntegral(): Flowable<GetIntegralBean>
+
+        /**
+         * 是否可以获取积分
+         */
+        @GET(HttpUrls.CAN_GET_INTEGRAL)
+        fun canGetIntegral(): Flowable<CanGetIntegralBean>
+
+        /**
+         * 获取游戏角色
+         */
+        @GET(HttpUrls.GET_GAME_ROLE)
+        fun getGameRole(
+            @Query("game_id", encoded = true) game_id: Int
+        ): Flowable<RoleListBean>
+
+        /**
+         * 获取游戏充值基数
+         */
+        @GET(HttpUrls.GET_GAME_RECHARGE)
+        fun getGameRecharge(
+            @Query("serverId", encoded = true) serverId: Int,
+            @Query("gameVersion", encoded = true) gameVersion: String
+        ): Flowable<RechargeListBean>
+
+        /**
+         * 积分兑换
+         */
+        @FormUrlEncoded
+        @POST(HttpUrls.GAME_RECHARGE)
+        fun gameRecharge(
+            @Field("playerId", encoded = true) playerId: Int,
+            @Field("rechargeId", encoded = true) rechargeId: Int,
+            @Field("channel", encoded = true) channel: String,
+        ): Flowable<BaseBean>
+
+        /**
+         * 获取游戏充值基数
+         */
+        @GET(HttpUrls.GET_GIFT_CODE)
+        fun getGiftCode(): Flowable<GetGiftCodeBean>
     }
 }

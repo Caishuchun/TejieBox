@@ -7,9 +7,11 @@ package com.fortune.tejiebox.constants
  */
 
 object FilesArgument {
+    // https://tjbox.lelehuyu.com/
+
     //服务协议
-    const val PROTOCOL_SERVICE = "https://www.5745.com/android/protocol/service"
+    const val PROTOCOL_SERVICE = "android/protocol/service"
 
     //隐私协议
-    const val PROTOCOL_PRIVACY = "https://www.5745.com/android/protocol/privacy"
+    const val PROTOCOL_PRIVACY = "android/protocol/privacy"
 }

@@ -9,8 +9,6 @@ public class JumpUtils {
     public static void jump2Game(Activity context, String channel) {
         Intent intent = new Intent(context, DevicesUtils.class);
         intent.putExtra("hfdd", "fromBox=true|channel=" + channel);
-        DevicesUtils devicesUtils = new DevicesUtils();
-        devicesUtils.SendAndroidDeviceInfo();
         context.startActivity(intent);
     }
 }

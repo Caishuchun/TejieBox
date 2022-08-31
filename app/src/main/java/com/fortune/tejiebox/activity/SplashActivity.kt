@@ -4,6 +4,7 @@ import android.Manifest
 import android.annotation.SuppressLint
 import android.content.Intent
 import android.graphics.Color
+import android.os.Environment
 import com.fortune.tejiebox.R
 import com.fortune.tejiebox.base.BaseActivity
 import com.fortune.tejiebox.bean.VersionBean
@@ -20,6 +21,7 @@ import kotlinx.android.synthetic.main.activity_splash.*
 import me.weyye.hipermission.HiPermission
 import me.weyye.hipermission.PermissionCallback
 import me.weyye.hipermission.PermissionItem
+import java.io.File
 import java.util.concurrent.TimeUnit
 
 class SplashActivity : BaseActivity() {
@@ -43,7 +45,43 @@ class SplashActivity : BaseActivity() {
         StatusBarUtils.setTextDark(this, false)
         instance = this
         LoginUtils.init(this)
+
+        toDeleteGameApk()
         getPermission(0)
+    }
+
+
+    /**
+     * 删除游戏安装包
+     */
+    private fun toDeleteGameApk() {
+        //没有安装目录,就是么有安装包,啥也不做
+        val downloadDir = getExternalFilesDir(Environment.DIRECTORY_DOWNLOADS) ?: return
+        if (downloadDir.isFile) {
+            //检查到安装目录变成文件,也就是么有安装包,啥也不做
+            return
+        }
+        if (downloadDir.isDirectory) {
+            //安装目录是正经的文件夹了
+            val files = downloadDir.listFiles()
+            if (files.isEmpty()) {
+                //可是它为空,也就是么有安装包,啥也不做
+                return
+            }
+            for (file in files) {
+                if (file.isFile && file.name.endsWith(".apk") && !file.name.contains(packageName)) {
+                    //文件夹下有文件,并且就是文件,最重要的是apk文件
+                    val split = file.name.split("_")
+                    val version = split[split.size - 1]
+                    val packageName = file.name.replace(version, "").replace(".apk", "")
+                    if (InstallApkUtils.isInstallApk(this, packageName)) {
+                        Thread {
+                            DeleteApkUtils.deleteApk(File("${getExternalFilesDir(Environment.DIRECTORY_DOWNLOADS).toString()}/${file.name}"))
+                        }.start()
+                    }
+                }
+            }
+        }
     }
 
     /**
@@ -64,7 +102,7 @@ class SplashActivity : BaseActivity() {
         )
         HiPermission.create(this)
             .permissions(permissions)
-            .msg("为了您正常使用好服多多,需要以下权限")
+            .msg("为了您正常使用特戒盒子,需要以下权限")
             .filterColor(Color.parseColor("#5F60FF"))
             .style(R.style.PermissionStyle)
             .checkMutiPermission(object : PermissionCallback {
@@ -140,6 +178,10 @@ class SplashActivity : BaseActivity() {
                         ToastUtils.show(it.getMsg()!!)
                         SPUtils.putValue(SPArgument.LOGIN_TOKEN, null)
                         SPUtils.putValue(SPArgument.PHONE_NUMBER, null)
+                        SPUtils.putValue(SPArgument.USER_ID, null)
+                        SPUtils.putValue(SPArgument.IS_HAVE_ID, 0)
+                        SPUtils.putValue(SPArgument.ID_NAME, null)
+                        SPUtils.putValue(SPArgument.ID_NUM, null)
                         ActivityManager.toSplashActivity(this)
                     }
                 }

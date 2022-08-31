@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/ll_item_bg"
+    android:layout_width="@dimen/dp_90"
+    android:layout_height="@dimen/dp_54"
+    android:layout_marginTop="@dimen/dp_5"
+    android:background="@drawable/bg_integral_unselect"
+    android:gravity="center"
+    android:orientation="vertical">
+
+    <TextView
+        android:id="@+id/tv_item_integral"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="1000积分"
+        android:textColor="#f14744"
+        android:textSize="@dimen/sp_14" />
+
+    <TextView
+        android:id="@+id/tv_item_recharge"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/dp_2"
+        android:text="10元充值"
+        android:textColor="#626262"
+        android:textSize="@dimen/sp_12" />
+
+</LinearLayout>

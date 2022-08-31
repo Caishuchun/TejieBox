@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_marginBottom="@dimen/dp_6"
+    android:background="@drawable/bg_gray_6"
+    android:gravity="center_vertical"
+    android:orientation="horizontal"
+    android:padding="@dimen/dp_10">
+
+    <com.fortune.tejiebox.widget.RoundImageView
+        android:id="@+id/iv_item_gift_from"
+        android:layout_width="@dimen/dp_38"
+        android:layout_height="@dimen/dp_38"
+        android:layout_centerInParent="true"
+        android:scaleType="centerCrop"
+        android:src="@mipmap/icon"
+        app:type="circle" />
+
+    <TextView
+        android:id="@+id/tv_item_gift_name"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="@dimen/dp_8"
+        android:layout_weight="1"
+        android:text="成功邀请XXX获得"
+        android:textColor="@color/black_1A241F"
+        android:textSize="@dimen/sp_12"
+        android:textStyle="bold" />
+
+    <ImageView
+        android:layout_width="@dimen/dp_16"
+        android:layout_height="@dimen/dp_16"
+        android:layout_marginStart="@dimen/dp_6"
+        android:src="@mipmap/money" />
+
+    <TextView
+        android:id="@+id/tv_item_gift_integral"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="@dimen/dp_2"
+        android:text="+50"
+        android:textColor="@color/orange_FF9C00"
+        android:textSize="@dimen/sp_14" />
+
+    <TextView
+        android:id="@+id/tv_item_gift_get"
+        android:layout_width="@dimen/dp_50"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="@dimen/dp_5"
+        android:background="@drawable/bg_invite_gift_can_get"
+        android:gravity="center"
+        android:paddingTop="@dimen/dp_4"
+        android:paddingBottom="@dimen/dp_4"
+        android:text="@string/get"
+        android:textColor="@color/white_FFFFFF"
+        android:textSize="@dimen/sp_12" />
+</LinearLayout>

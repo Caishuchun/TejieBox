@@ -3,6 +3,7 @@
   <component name="DesignSurface">
     <option name="filePathToZoomLevelMap">
       <map>
+        <entry key="..\:/project/TejieBox/app/src/main/res/drawable-v21/bg_ripple.xml" value="0.3671875" />
         <entry key="..\:/project/TejieBox/app/src/main/res/drawable/bg_barrage.xml" value="0.20885416666666667" />
         <entry key="..\:/project/TejieBox/app/src/main/res/drawable/bg_black_shape_round6.xml" value="0.20885416666666667" />
         <entry key="..\:/project/TejieBox/app/src/main/res/drawable/bg_btn.xml" value="0.3671875" />
@@ -16,9 +17,15 @@
         <entry key="..\:/project/TejieBox/app/src/main/res/drawable/bg_code_entering.xml" value="0.3671875" />
         <entry key="..\:/project/TejieBox/app/src/main/res/drawable/bg_code_unenter.xml" value="0.3671875" />
         <entry key="..\:/project/TejieBox/app/src/main/res/drawable/bg_collect_en.xml" value="0.20885416666666667" />
+        <entry key="..\:/project/TejieBox/app/src/main/res/drawable/bg_daily_checkable.xml" value="0.36153846153846153" />
+        <entry key="..\:/project/TejieBox/app/src/main/res/drawable/bg_daily_checked.xml" value="0.36153846153846153" />
+        <entry key="..\:/project/TejieBox/app/src/main/res/drawable/bg_delete.xml" value="0.3671875" />
+        <entry key="..\:/project/TejieBox/app/src/main/res/drawable/bg_delete_shade.xml" value="0.3671875" />
         <entry key="..\:/project/TejieBox/app/src/main/res/drawable/bg_detail_gameinfo.xml" value="0.3671875" />
         <entry key="..\:/project/TejieBox/app/src/main/res/drawable/bg_download_game.xml" value="0.20885416666666667" />
         <entry key="..\:/project/TejieBox/app/src/main/res/drawable/bg_download_game_blue.xml" value="0.20885416666666667" />
+        <entry key="..\:/project/TejieBox/app/src/main/res/drawable/bg_enter_selecter.xml" value="0.3671875" />
+        <entry key="..\:/project/TejieBox/app/src/main/res/drawable/bg_entering.xml" value="0.3671875" />
         <entry key="..\:/project/TejieBox/app/src/main/res/drawable/bg_focus_on.xml" value="0.20885416666666667" />
         <entry key="..\:/project/TejieBox/app/src/main/res/drawable/bg_game_detail_update.xml" value="0.20885416666666667" />
         <entry key="..\:/project/TejieBox/app/src/main/res/drawable/bg_game_download_gray.xml" value="0.20885416666666667" />
@@ -26,14 +33,34 @@
         <entry key="..\:/project/TejieBox/app/src/main/res/drawable/bg_game_item_live.xml" value="0.20885416666666667" />
         <entry key="..\:/project/TejieBox/app/src/main/res/drawable/bg_game_item_trans_round.xml" value="0.20885416666666667" />
         <entry key="..\:/project/TejieBox/app/src/main/res/drawable/bg_game_main.xml" value="0.3671875" />
+        <entry key="..\:/project/TejieBox/app/src/main/res/drawable/bg_game_shade.xml" value="0.3671875" />
         <entry key="..\:/project/TejieBox/app/src/main/res/drawable/bg_gift_dialog_title.xml" value="0.20885416666666667" />
         <entry key="..\:/project/TejieBox/app/src/main/res/drawable/bg_gift_item_selected.xml" value="0.20885416666666667" />
+        <entry key="..\:/project/TejieBox/app/src/main/res/drawable/bg_gift_item_unselect.xml" value="0.36153846153846153" />
+        <entry key="..\:/project/TejieBox/app/src/main/res/drawable/bg_gift_white_bottom.xml" value="0.36153846153846153" />
+        <entry key="..\:/project/TejieBox/app/src/main/res/drawable/bg_gray_10.xml" value="0.3671875" />
         <entry key="..\:/project/TejieBox/app/src/main/res/drawable/bg_gray_6.xml" value="0.20885416666666667" />
+        <entry key="..\:/project/TejieBox/app/src/main/res/drawable/bg_gray_top_10.xml" value="0.3671875" />
         <entry key="..\:/project/TejieBox/app/src/main/res/drawable/bg_green_btn_6.xml" value="0.2859375" />
+        <entry key="..\:/project/TejieBox/app/src/main/res/drawable/bg_hot.xml" value="0.3671875" />
+        <entry key="..\:/project/TejieBox/app/src/main/res/drawable/bg_integral_btn.xml" value="0.3671875" />
+        <entry key="..\:/project/TejieBox/app/src/main/res/drawable/bg_integral_btn_red.xml" value="0.3328125" />
+        <entry key="..\:/project/TejieBox/app/src/main/res/drawable/bg_integral_selected.xml" value="0.3671875" />
+        <entry key="..\:/project/TejieBox/app/src/main/res/drawable/bg_integral_unselect.xml" value="0.3671875" />
+        <entry key="..\:/project/TejieBox/app/src/main/res/drawable/bg_invite_gift_can_get.xml" value="0.36153846153846153" />
+        <entry key="..\:/project/TejieBox/app/src/main/res/drawable/bg_invite_gift_can_not_get.xml" value="0.36153846153846153" />
+        <entry key="..\:/project/TejieBox/app/src/main/res/drawable/bg_invite_gift_title.xml" value="0.21302083333333333" />
         <entry key="..\:/project/TejieBox/app/src/main/res/drawable/bg_login_enter.xml" value="0.3671875" />
         <entry key="..\:/project/TejieBox/app/src/main/res/drawable/bg_login_enter_296_48.xml" value="0.3671875" />
+        <entry key="..\:/project/TejieBox/app/src/main/res/drawable/bg_new.xml" value="0.3671875" />
         <entry key="..\:/project/TejieBox/app/src/main/res/drawable/bg_open_service.xml" value="0.3671875" />
         <entry key="..\:/project/TejieBox/app/src/main/res/drawable/bg_phone_enter.xml" value="0.3671875" />
+        <entry key="..\:/project/TejieBox/app/src/main/res/drawable/bg_pic_selected.xml" value="0.3671875" />
+        <entry key="..\:/project/TejieBox/app/src/main/res/drawable/bg_pic_shade.xml" value="0.36153846153846153" />
+        <entry key="..\:/project/TejieBox/app/src/main/res/drawable/bg_recharge_fail.xml" value="0.3671875" />
+        <entry key="..\:/project/TejieBox/app/src/main/res/drawable/bg_recharge_success.xml" value="0.3671875" />
+        <entry key="..\:/project/TejieBox/app/src/main/res/drawable/bg_ripple.xml" value="0.3671875" />
+        <entry key="..\:/project/TejieBox/app/src/main/res/drawable/bg_ripple_drawable.xml" value="0.3671875" />
         <entry key="..\:/project/TejieBox/app/src/main/res/drawable/bg_search.xml" value="0.3671875" />
         <entry key="..\:/project/TejieBox/app/src/main/res/drawable/bg_search_dark.xml" value="0.3515625" />
         <entry key="..\:/project/TejieBox/app/src/main/res/drawable/bg_search_drak.xml" value="0.3671875" />
@@ -44,18 +71,29 @@
         <entry key="..\:/project/TejieBox/app/src/main/res/drawable/bg_tag2.xml" value="0.36153846153846153" />
         <entry key="..\:/project/TejieBox/app/src/main/res/drawable/bg_tag3.xml" value="0.36153846153846153" />
         <entry key="..\:/project/TejieBox/app/src/main/res/drawable/bg_trans_10.xml" value="0.3671875" />
+        <entry key="..\:/project/TejieBox/app/src/main/res/drawable/bg_unenter.xml" value="0.3671875" />
         <entry key="..\:/project/TejieBox/app/src/main/res/drawable/bg_white_6.xml" value="0.3671875" />
         <entry key="..\:/project/TejieBox/app/src/main/res/drawable/bg_white_card.xml" value="0.3671875" />
+        <entry key="..\:/project/TejieBox/app/src/main/res/drawable/bg_white_piao_can_get.xml" value="0.36153846153846153" />
+        <entry key="..\:/project/TejieBox/app/src/main/res/drawable/bg_white_piao_get.xml" value="0.36153846153846153" />
+        <entry key="..\:/project/TejieBox/app/src/main/res/drawable/bg_white_piao_got.xml" value="0.36153846153846153" />
+        <entry key="..\:/project/TejieBox/app/src/main/res/drawable/bg_white_piao_overdue.xml" value="0.36153846153846153" />
         <entry key="..\:/project/TejieBox/app/src/main/res/drawable/circle_point.xml" value="0.275" />
         <entry key="..\:/project/TejieBox/app/src/main/res/drawable/line_open_service.xml" value="0.3671875" />
         <entry key="..\:/project/TejieBox/app/src/main/res/drawable/line_tab_bottom.xml" value="0.3671875" />
+        <entry key="..\:/project/TejieBox/app/src/main/res/drawable/point_red.xml" value="0.36153846153846153" />
         <entry key="..\:/project/TejieBox/app/src/main/res/drawable/round_open_service.xml" value="0.3671875" />
         <entry key="..\:/project/TejieBox/app/src/main/res/drawable/splash.xml" value="0.3671875" />
+        <entry key="..\:/project/TejieBox/app/src/main/res/drawable/transparent.xml" value="0.3671875" />
         <entry key="..\:/project/TejieBox/app/src/main/res/layout/activity_account_safe.xml" value="0.33645833333333336" />
         <entry key="..\:/project/TejieBox/app/src/main/res/layout/activity_change_phone1.xml" value="0.34564102564102567" />
         <entry key="..\:/project/TejieBox/app/src/main/res/layout/activity_change_phone2.xml" value="0.35104166666666664" />
         <entry key="..\:/project/TejieBox/app/src/main/res/layout/activity_comment_detail.xml" value="0.21875" />
+        <entry key="..\:/project/TejieBox/app/src/main/res/layout/activity_dialog.xml" value="0.35104166666666664" />
         <entry key="..\:/project/TejieBox/app/src/main/res/layout/activity_game_detail_v2.xml" value="0.35104166666666664" />
+        <entry key="..\:/project/TejieBox/app/src/main/res/layout/activity_gift.xml" value="0.35104166666666664" />
+        <entry key="..\:/project/TejieBox/app/src/main/res/layout/activity_id_card.xml" value="0.35104166666666664" />
+        <entry key="..\:/project/TejieBox/app/src/main/res/layout/activity_integral.xml" value="0.35104166666666664" />
         <entry key="..\:/project/TejieBox/app/src/main/res/layout/activity_login.xml" value="0.35104166666666664" />
         <entry key="..\:/project/TejieBox/app/src/main/res/layout/activity_main.xml" value="0.35104166666666664" />
         <entry key="..\:/project/TejieBox/app/src/main/res/layout/activity_pic_list.xml" value="0.35104166666666664" />
@@ -68,8 +106,15 @@
         <entry key="..\:/project/TejieBox/app/src/main/res/layout/dialog_apk_download.xml" value="0.21875" />
         <entry key="..\:/project/TejieBox/app/src/main/res/layout/dialog_beautiful.xml" value="0.24583333333333332" />
         <entry key="..\:/project/TejieBox/app/src/main/res/layout/dialog_get_gift_code.xml" value="0.2984375" />
+        <entry key="..\:/project/TejieBox/app/src/main/res/layout/dialog_get_integral.xml" value="0.29270833333333335" />
         <entry key="..\:/project/TejieBox/app/src/main/res/layout/dialog_gift.xml" value="0.19270833333333334" />
+        <entry key="..\:/project/TejieBox/app/src/main/res/layout/dialog_loading.xml" value="0.35104166666666664" />
+        <entry key="..\:/project/TejieBox/app/src/main/res/layout/fragment_blank.xml" value="0.31614583333333335" />
+        <entry key="..\:/project/TejieBox/app/src/main/res/layout/fragment_daily_check.xml" value="0.35104166666666664" />
+        <entry key="..\:/project/TejieBox/app/src/main/res/layout/fragment_game.xml" value="0.35104166666666664" />
         <entry key="..\:/project/TejieBox/app/src/main/res/layout/fragment_game_list.xml" value="0.35104166666666664" />
+        <entry key="..\:/project/TejieBox/app/src/main/res/layout/fragment_integral.xml" value="0.35104166666666664" />
+        <entry key="..\:/project/TejieBox/app/src/main/res/layout/fragment_invite_gift.xml" value="0.35104166666666664" />
         <entry key="..\:/project/TejieBox/app/src/main/res/layout/fragment_like_paly.xml" value="0.21875" />
         <entry key="..\:/project/TejieBox/app/src/main/res/layout/fragment_like_play.xml" value="0.35104166666666664" />
         <entry key="..\:/project/TejieBox/app/src/main/res/layout/fragment_login_normal.xml" value="0.35104166666666664" />
@@ -77,11 +122,19 @@
         <entry key="..\:/project/TejieBox/app/src/main/res/layout/fragment_main.xml" value="0.35104166666666664" />
         <entry key="..\:/project/TejieBox/app/src/main/res/layout/fragment_mine.xml" value="0.35104166666666664" />
         <entry key="..\:/project/TejieBox/app/src/main/res/layout/fragment_navigation.xml" value="0.22864583333333333" />
+        <entry key="..\:/project/TejieBox/app/src/main/res/layout/fragment_role.xml" value="0.35104166666666664" />
+        <entry key="..\:/project/TejieBox/app/src/main/res/layout/fragment_white_piao.xml" value="0.35104166666666664" />
         <entry key="..\:/project/TejieBox/app/src/main/res/layout/item_common.xml" value="0.35104166666666664" />
+        <entry key="..\:/project/TejieBox/app/src/main/res/layout/item_daily_check.xml" value="0.35104166666666664" />
+        <entry key="..\:/project/TejieBox/app/src/main/res/layout/item_game_fragment_game.xml" value="0.35104166666666664" />
         <entry key="..\:/project/TejieBox/app/src/main/res/layout/item_game_pic.xml" value="0.20833333333333334" />
         <entry key="..\:/project/TejieBox/app/src/main/res/layout/item_game_pic_small.xml" value="0.20833333333333334" />
+        <entry key="..\:/project/TejieBox/app/src/main/res/layout/item_integral.xml" value="0.35104166666666664" />
+        <entry key="..\:/project/TejieBox/app/src/main/res/layout/item_invite_gift.xml" value="0.35104166666666664" />
         <entry key="..\:/project/TejieBox/app/src/main/res/layout/item_likeplay_fragment_game.xml" value="0.35104166666666664" />
         <entry key="..\:/project/TejieBox/app/src/main/res/layout/item_main_frament_game.xml" value="0.35104166666666664" />
+        <entry key="..\:/project/TejieBox/app/src/main/res/layout/item_role.xml" value="0.35104166666666664" />
+        <entry key="..\:/project/TejieBox/app/src/main/res/layout/item_white_piao.xml" value="0.35104166666666664" />
         <entry key="..\:/project/TejieBox/app/src/main/res/layout/layout_bottom_tab.xml" value="0.35104166666666664" />
         <entry key="..\:/project/TejieBox/app/src/main/res/layout/layout_bottom_tab_new.xml" value="0.35104166666666664" />
         <entry key="..\:/project/TejieBox/app/src/main/res/layout/layout_dialog_default.xml" value="0.35104166666666664" />
@@ -95,6 +148,7 @@
         <entry key="..\:/project/TejieBox/app/src/main/res/layout/layout_jzvd_mv.xml" value="0.21875" />
         <entry key="..\:/project/TejieBox/app/src/main/res/layout/layout_quick_login_body.xml" value="0.35104166666666664" />
         <entry key="..\:/project/TejieBox/app/src/main/res/layout/layout_quick_login_num.xml" value="0.35104166666666664" />
+        <entry key="..\:/project/TejieBox/app/src/main/res/layout/layout_top_tab_gift.xml" value="0.35104166666666664" />
         <entry key="..\:/project/TejieBox/picture_library/src/main/res/drawable/ucrop_ic_next.xml" value="0.3671875" />
       </map>
     </option>

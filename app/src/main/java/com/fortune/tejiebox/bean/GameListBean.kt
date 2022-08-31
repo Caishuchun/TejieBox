@@ -12,7 +12,7 @@ data class GameListBean(
         data class Game(
             val game_channelId: String,
             val game_desc: String,
-            val game_icon: String,
+            val game_cover: String,
             val game_id: Int,
             val game_name: String,
             val game_tag: List<String>,

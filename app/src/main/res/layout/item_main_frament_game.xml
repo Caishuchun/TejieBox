@@ -1,78 +1,84 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.cardview.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:layout_marginStart="@dimen/dp_10"
-    android:layout_marginTop="@dimen/dp_10"
-    android:layout_marginEnd="@dimen/dp_10"
     android:background="@drawable/bg_white_card"
     android:orientation="horizontal"
-    android:padding="@dimen/dp_10">
-
-    <com.fortune.tejiebox.widget.RoundImageView
-        android:id="@+id/iv_item_mainFragment_icon"
-        android:layout_width="@dimen/dp_60"
-        android:layout_height="@dimen/dp_60"
-        android:scaleType="centerCrop"
-        android:src="@mipmap/icon"
-        app:radius="@dimen/dp_10"
-        app:type="round" />
+    app:cardElevation="@dimen/dp_3"
+    app:cardCornerRadius="@dimen/dp_10"
+    app:cardUseCompatPadding="true">
 
     <LinearLayout
-        android:layout_width="0dp"
-        android:layout_height="match_parent"
-        android:layout_marginStart="@dimen/dp_10"
-        android:layout_marginEnd="@dimen/dp_10"
-        android:layout_weight="1"
-        android:orientation="vertical">
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:padding="@dimen/dp_10"
+        android:orientation="horizontal">
+
+        <com.fortune.tejiebox.widget.RoundImageView
+            android:id="@+id/iv_item_mainFragment_icon"
+            android:layout_width="@dimen/dp_60"
+            android:layout_height="@dimen/dp_60"
+            android:scaleType="centerCrop"
+            android:src="@mipmap/icon"
+            app:radius="@dimen/dp_10"
+            app:type="round" />
+
+        <LinearLayout
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_marginStart="@dimen/dp_10"
+            android:layout_marginEnd="@dimen/dp_10"
+            android:layout_weight="1"
+            android:orientation="vertical">
+
+            <TextView
+                android:id="@+id/tv_item_mainFragment_gameName"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textColor="#0A0422"
+                android:textSize="@dimen/sp_14"
+                android:textStyle="bold" />
+
+            <FrameLayout
+                android:layout_width="match_parent"
+                android:layout_height="0dp"
+                android:layout_weight="1"
+                tools:ignore="NestedWeights">
+
+                <com.zhy.view.flowlayout.FlowLayout
+                    android:id="@+id/flowLayout_item_mainFragment"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center_vertical"
+                    android:visibility="visible" />
+            </FrameLayout>
+
+            <TextView
+                android:id="@+id/tv_item_mainFragment_gameDes"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:ellipsize="end"
+                android:maxLines="1"
+                android:singleLine="true"
+                android:textColor="#534F64"
+                android:textSize="@dimen/sp_12" />
+
+        </LinearLayout>
 
         <TextView
-            android:id="@+id/tv_item_mainFragment_gameName"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:textColor="#0A0422"
+            android:id="@+id/tv_item_mainFragment_start"
+            android:layout_width="@dimen/dp_52"
+            android:layout_height="@dimen/dp_24"
+            android:layout_marginTop="@dimen/dp_15"
+            android:layout_marginEnd="@dimen/dp_10"
+            android:background="@drawable/bg_start_btn"
+            android:gravity="center"
+            android:text="启动"
+            android:textColor="@color/white_FFFFFF"
             android:textSize="@dimen/sp_14"
             android:textStyle="bold" />
 
-        <FrameLayout
-            android:layout_width="match_parent"
-            android:layout_height="0dp"
-            android:layout_weight="1"
-            tools:ignore="NestedWeights">
-
-            <com.zhy.view.flowlayout.FlowLayout
-                android:id="@+id/flowLayout_item_mainFragment"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_gravity="center_vertical"
-                android:visibility="visible" />
-        </FrameLayout>
-
-        <TextView
-            android:id="@+id/tv_item_mainFragment_gameDes"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:ellipsize="end"
-            android:maxLines="1"
-            android:singleLine="true"
-            android:textColor="#534F64"
-            android:textSize="@dimen/sp_12" />
-
     </LinearLayout>
-
-    <TextView
-        android:id="@+id/tv_item_mainFragment_start"
-        android:layout_width="@dimen/dp_52"
-        android:layout_height="@dimen/dp_24"
-        android:layout_marginTop="@dimen/dp_15"
-        android:layout_marginEnd="@dimen/dp_10"
-        android:background="@drawable/bg_start_btn"
-        android:gravity="center"
-        android:text="启动"
-        android:textColor="@color/white_FFFFFF"
-        android:textSize="@dimen/sp_14"
-        android:textStyle="bold" />
-
-</LinearLayout>
+</androidx.cardview.widget.CardView>

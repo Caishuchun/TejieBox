@@ -148,6 +148,12 @@ class LoginSecondFragment() : Fragment() {
     private fun toLogin(code: String) {
         DialogUtils.showBeautifulDialog(requireContext())
         val login = RetrofitUtils.builder().login(phone!!, code.toInt())
+        SPUtils.putValue(SPArgument.LOGIN_TOKEN, null)
+        SPUtils.putValue(SPArgument.PHONE_NUMBER, null)
+        SPUtils.putValue(SPArgument.USER_ID, null)
+        SPUtils.putValue(SPArgument.IS_HAVE_ID, 0)
+        SPUtils.putValue(SPArgument.ID_NAME, null)
+        SPUtils.putValue(SPArgument.ID_NUM, null)
         loginObservable = login.subscribeOn(Schedulers.io())
             .observeOn(AndroidSchedulers.mainThread())
             .subscribe({
@@ -158,6 +164,12 @@ class LoginSecondFragment() : Fragment() {
                         1 -> {
                             SPUtils.putValue(SPArgument.LOGIN_TOKEN, it.data?.token)
                             SPUtils.putValue(SPArgument.PHONE_NUMBER, it.data?.phone)
+                            SPUtils.putValue(SPArgument.IS_HAVE_ID, it.data?.id_card)
+                            SPUtils.putValue(SPArgument.USER_ID, it.data?.user_id)
+                            if (it.data?.id_card == 1) {
+                                SPUtils.putValue(SPArgument.ID_NAME, it.data?.card_name)
+                                SPUtils.putValue(SPArgument.ID_NUM, it.data?.car_num)
+                            }
                             EventBus.getDefault()
                                 .postSticky(LoginStatusChange(true, it.data?.phone))
                             (activity as LoginActivity).finish()

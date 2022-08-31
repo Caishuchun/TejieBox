@@ -35,7 +35,8 @@
                 android:layout_height="wrap_content"
                 android:text="首页"
                 android:textColor="#4DFFFFFF"
-                android:textSize="@dimen/sp_12" />
+                android:textSize="@dimen/sp_11"
+                android:textStyle="bold" />
         </LinearLayout>
 
         <LinearLayout
@@ -58,7 +59,8 @@
                 android:layout_height="wrap_content"
                 android:text="在玩"
                 android:textColor="#4DFFFFFF"
-                android:textSize="@dimen/sp_12" />
+                android:textSize="@dimen/sp_11"
+                android:textStyle="bold" />
         </LinearLayout>
 
         <LinearLayout
@@ -81,7 +83,8 @@
                 android:layout_height="wrap_content"
                 android:text="收藏"
                 android:textColor="#4DFFFFFF"
-                android:textSize="@dimen/sp_12" />
+                android:textSize="@dimen/sp_11"
+                android:textStyle="bold" />
         </LinearLayout>
 
         <LinearLayout
@@ -92,11 +95,24 @@
             android:gravity="center"
             android:orientation="vertical">
 
-            <ImageView
-                android:id="@+id/iv_bottomTab_me"
+            <RelativeLayout
                 android:layout_width="@dimen/dp_24"
-                android:layout_height="@dimen/dp_24"
-                android:src="@mipmap/icon_me_unselect" />
+                android:layout_height="@dimen/dp_24">
+
+                <ImageView
+                    android:id="@+id/iv_bottomTab_me"
+                    android:layout_width="@dimen/dp_24"
+                    android:layout_height="@dimen/dp_24"
+                    android:src="@mipmap/icon_me_unselect" />
+
+                <ImageView
+                    android:id="@+id/iv_bottomTab_me_point"
+                    android:layout_width="@dimen/dp_6"
+                    android:layout_height="@dimen/dp_6"
+                    android:layout_alignParentEnd="true"
+                    android:src="@drawable/point_red"
+                    android:visibility="gone" />
+            </RelativeLayout>
 
             <TextView
                 android:id="@+id/tv_bottomTab_me"
@@ -104,7 +120,8 @@
                 android:layout_height="wrap_content"
                 android:text="我的"
                 android:textColor="#4DFFFFFF"
-                android:textSize="@dimen/sp_12" />
+                android:textSize="@dimen/sp_11"
+                android:textStyle="bold" />
         </LinearLayout>
 
     </LinearLayout>

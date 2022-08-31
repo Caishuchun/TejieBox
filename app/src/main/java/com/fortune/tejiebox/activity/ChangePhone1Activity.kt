@@ -36,7 +36,8 @@ class ChangePhone1Activity : BaseActivity() {
         StatusBarUtils.setTextDark(this, true)
         instance = this
 
-        tv_changePhone1_currentPhone.text = "+86 ${SPUtils.getString(SPArgument.PHONE_NUMBER)}"
+        val phone = SPUtils.getString(SPArgument.PHONE_NUMBER)!!
+        tv_changePhone1_currentPhone.text = "+86 ${phone.substring(0, 3)}****${phone.substring(7)}"
 
         RxView.clicks(iv_changePhone1_back)
             .throttleFirst(200, TimeUnit.MILLISECONDS)
@@ -46,7 +47,6 @@ class ChangePhone1Activity : BaseActivity() {
             .throttleFirst(200, TimeUnit.MILLISECONDS)
             .subscribe {
                 toCheckPhone()
-//                toNext("11111111111")
             }
     }
 

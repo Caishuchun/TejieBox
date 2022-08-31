@@ -33,7 +33,8 @@
         android:layout_centerHorizontal="true"
         android:layout_marginBottom="@dimen/dp_20"
         android:text="想玩的手游，这里应有尽有"
-        android:textStyle="bold"
         android:textColor="@color/white_FFFFFF"
-        android:textSize="@dimen/sp_16" />
+        android:textSize="@dimen/sp_16"
+        android:textStyle="bold"
+        android:visibility="gone" />
 </RelativeLayout>

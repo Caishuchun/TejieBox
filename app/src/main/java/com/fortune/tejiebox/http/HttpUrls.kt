@@ -65,4 +65,45 @@ object HttpUrls {
     //上传游戏在线时长
     const val UPDATE_GAME_TIME_INFO = "android/v2.game/duration"
 
+    //身份证实名认证
+    const val ID_CARD = "android/v2.user/idCard"
+
+    //签到列表
+    const val DAILY_CHECK_LIST = "/android/activity.dailyClockIn/list"
+
+    //点击签到
+    const val DAILY_CHECK = "/android/activity.dailyClockIn/submit"
+
+    //白嫖时段
+    const val WHITE_PIAO_LIST = "/android/activity.limitTime/list"
+
+    //白嫖领取
+    const val WHITE_PIAO = "/android/activity.limitTime/receive"
+
+    //获取分享链接
+    const val GET_SHARE_URL = "/android/activity.invite/getShareUrl"
+
+    //获取分享列表
+    const val GET_SHARE_LIST = "/android/activity.invite/list"
+
+    //领取邀请奖励
+    const val GET_INVITE_GIFT = "/android/activity.invite/receive"
+
+    //获取实时积分
+    const val GET_INTEGRAL = "/android/user/integral"
+
+    //是否可以领取积分界面
+    const val CAN_GET_INTEGRAL = "/android/user/redDot"
+
+    //获取游戏角色
+    const val GET_GAME_ROLE = "/android/v2.Exchange/getGvRoleList"
+
+    //获取区服充值基数
+    const val GET_GAME_RECHARGE = "/android/v2.Exchange/getRechargeList"
+
+    //积分充值
+    const val GAME_RECHARGE = "/android/v2.Exchange/boxrecharge"
+
+    //获取游戏礼包
+    const val GET_GIFT_CODE = "/android/v2.game/tjGift"
 }

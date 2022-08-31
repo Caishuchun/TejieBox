@@ -38,4 +38,15 @@ object ClipboardUtils {
             item0Content.text.toString()
         }
     }
+
+    /**
+     * 填充数据到剪切板
+     */
+    fun setClipboardContent(activity: Activity, content: String) {
+        if (manager == null) {
+            manager = activity.getSystemService(Context.CLIPBOARD_SERVICE) as ClipboardManager
+        }
+        val mClipData = ClipData.newPlainText("特戒盒子", content)
+        manager?.setPrimaryClip(mClipData)
+    }
 }

@@ -40,9 +40,9 @@ abstract class BaseActivity : AppCompatActivity(), DownloadTaskListener {
     abstract fun destroy()
 
     override fun onDestroy() {
+        destroy()
         Aria.download(this).unRegister()
         ActivityManager.removeActivity(this)
-        destroy()
         super.onDestroy()
     }
 

@@ -3,7 +3,7 @@
     android:layout_width="@dimen/dp_300"
     android:layout_height="wrap_content"
     android:background="@drawable/bg_white_card"
-    android:minHeight="@dimen/dp_300"
+    android:minHeight="@dimen/dp_200"
     android:orientation="vertical"
     android:paddingBottom="@dimen/dp_10">
 
@@ -16,7 +16,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_centerInParent="true"
-            android:text="@string/notice"
+            android:text="公告"
             android:textColor="@color/black_1A241F"
             android:textSize="@dimen/sp_16"
             android:textStyle="bold" />

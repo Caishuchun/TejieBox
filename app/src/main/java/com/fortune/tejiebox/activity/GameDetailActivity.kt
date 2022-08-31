@@ -14,7 +14,6 @@ import androidx.recyclerview.widget.OrientationHelper
 import androidx.recyclerview.widget.PagerSnapHelper
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
-import com.bumptech.glide.load.engine.DiskCacheStrategy
 import com.fortune.tejiebox.R
 import com.fortune.tejiebox.adapter.BaseAdapterWithPosition
 import com.fortune.tejiebox.base.BaseActivity
@@ -29,6 +28,7 @@ import com.fortune.tejiebox.widget.CenterLayoutManager
 import com.fortune.tejiebox.widget.SafeLinearLayoutManager
 import com.google.gson.Gson
 import com.jakewharton.rxbinding2.view.RxView
+import com.snail.antifake.jni.EmulatorDetectUtil
 import com.umeng.analytics.MobclickAgent
 import com.unity3d.player.JumpUtils
 import io.reactivex.android.schedulers.AndroidSchedulers
@@ -89,13 +89,20 @@ class GameDetailActivity : BaseActivity() {
 
     @SuppressLint("CheckResult", "NotifyDataSetChanged")
     private fun initView() {
+        val emulator = EmulatorDetectUtil.isEmulator(this)
+        if (emulator) {
+            tv_detail_tips.visibility = View.VISIBLE
+        } else {
+            tv_detail_tips.visibility = View.GONE
+        }
+
         RxView.clicks(iv_detail_back)
             .throttleFirst(200, TimeUnit.MILLISECONDS)
             .subscribe {
                 finish()
             }
 
-        RxView.clicks(tv_detail_start)
+        RxView.clicks(ll_detail_start)
             .throttleFirst(200, TimeUnit.MILLISECONDS)
             .subscribe {
                 if (MyApp.getInstance().isHaveToken()) {
@@ -111,7 +118,6 @@ class GameDetailActivity : BaseActivity() {
             .addBindView { itemView, itemData, position ->
                 Glide.with(this)
                     .load(itemData)
-                    .diskCacheStrategy(DiskCacheStrategy.ALL)
                     .into(itemView.iv_item_gamePicSmall)
 
                 if (currentPicPosition == position) {
@@ -141,7 +147,6 @@ class GameDetailActivity : BaseActivity() {
             .addBindView { itemView, itemData, position ->
                 Glide.with(this)
                     .load(itemData)
-                    .diskCacheStrategy(DiskCacheStrategy.ALL)
                     .into(itemView.iv_item_gamePic)
 
                 RxView.clicks(itemView.rootView)
@@ -191,37 +196,53 @@ class GameDetailActivity : BaseActivity() {
      * 启动游戏
      */
     private fun toStartGame() {
-        val addPlayingGame = RetrofitUtils.builder().addPlayingGame(gameId, 1)
-        addPlayingGameObservable = addPlayingGame.subscribeOn(Schedulers.io())
-            .observeOn(AndroidSchedulers.mainThread())
-            .subscribe({
-                LogUtils.d("success=>${Gson().toJson(it)}")
-                if (it != null) {
-                    when (it.code) {
-                        1 -> {
-                            EventBus.getDefault().post(PlayingDataChange(""))
-                            isPlayingGame = true
-                            SPUtils.putValue(
-                                SPArgument.GAME_TIME_INFO,
-                                "$gameId-${System.currentTimeMillis()}"
-                            )
-                            JumpUtils.jump2Game(this, gameChannel)
+        val isHaveId = SPUtils.getInt(SPArgument.IS_HAVE_ID)
+        if (isHaveId == 1) {
+            DialogUtils.showBeautifulDialog(this)
+            val addPlayingGame = RetrofitUtils.builder().addPlayingGame(gameId, 1)
+            addPlayingGameObservable = addPlayingGame.subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe({
+                    DialogUtils.dismissLoading()
+                    LogUtils.d("success=>${Gson().toJson(it)}")
+                    if (it != null) {
+                        when (it.code) {
+                            1 -> {
+                                EventBus.getDefault().post(PlayingDataChange(""))
+                                isPlayingGame = true
+                                SPUtils.putValue(
+                                    SPArgument.GAME_TIME_INFO,
+                                    "$gameId-${System.currentTimeMillis()}"
+                                )
+                                JumpUtils.jump2Game(
+                                    this,
+                                    gameChannel + Box2GameUtils.getPhoneAndToken()
+                                )
+                            }
+                            -1 -> {
+                                ToastUtils.show(it.msg)
+                                ActivityManager.toSplashActivity(this)
+                            }
+                            else -> {
+                                ToastUtils.show(it.msg)
+                            }
                         }
-                        -1 -> {
-                            ToastUtils.show(it.msg)
-                            ActivityManager.toSplashActivity(this)
-                        }
-                        else -> {
-                            ToastUtils.show(it.msg)
-                        }
+                    } else {
+                        ToastUtils.show(getString(R.string.network_fail_to_responseDate))
                     }
-                } else {
-                    ToastUtils.show(getString(R.string.network_fail_to_responseDate))
-                }
-            }, {
-                LogUtils.d("fail=>${it.message.toString()}")
-                ToastUtils.show(HttpExceptionUtils.getExceptionMsg(this, it))
-            })
+                }, {
+                    DialogUtils.dismissLoading()
+                    LogUtils.d("fail=>${it.message.toString()}")
+                    ToastUtils.show(HttpExceptionUtils.getExceptionMsg(this, it))
+                })
+        } else {
+            isPlayingGame = true
+            val intent = Intent(this, IdCardActivity::class.java)
+            intent.putExtra(IdCardActivity.FROM, 2)
+            intent.putExtra(IdCardActivity.GAME_ID, gameId)
+            intent.putExtra(IdCardActivity.GAME_CHANNEL, gameChannel)
+            startActivity(intent)
+        }
     }
 
     /**
@@ -247,6 +268,11 @@ class GameDetailActivity : BaseActivity() {
                             }
                             isCollect = !isCollect
                             iv_detail_like.setImageResource(if (isCollect) R.mipmap.icon_like_selected4game else R.mipmap.icon_like_unselect4game)
+                            tv_detail_like.text = if (isCollect) "已收藏" else "收藏"
+                            tv_detail_like.setTextColor(
+                                if (isCollect) Color.parseColor("#ff3159")
+                                else Color.parseColor("#534F64")
+                            )
                         }
                         -1 -> {
                             ToastUtils.show(it.msg)
@@ -357,7 +383,6 @@ class GameDetailActivity : BaseActivity() {
 
         //处理头部图片信息
         picLists.clear()
-        picLists.add(info.game_cover)
         picLists.addAll(info.game_pic)
         picAdapter.notifyDataSetChanged()
         picAdapter4Small.notifyDataSetChanged()
@@ -367,11 +392,9 @@ class GameDetailActivity : BaseActivity() {
         gameChannel = info.game_channelId
         //处理游戏信息
         Glide.with(this)
-            .load(info.game_icon)
+            .load(info.game_cover)
             .placeholder(R.mipmap.bg_gray_6)
-            .diskCacheStrategy(DiskCacheStrategy.ALL)
             .into(iv_detail_icon)
-
 
         tv_detail_name.text = info.game_name
         tv_detail_des.text = info.game_desc
@@ -403,11 +426,32 @@ class GameDetailActivity : BaseActivity() {
         //收藏
         isCollect = info.is_fav == 1
         iv_detail_like.setImageResource(if (isCollect) R.mipmap.icon_like_selected4game else R.mipmap.icon_like_unselect4game)
-        RxView.clicks(iv_detail_like)
+        tv_detail_like.text = if (isCollect) "已收藏" else "收藏"
+        tv_detail_like.setTextColor(
+            if (isCollect) Color.parseColor("#ff3159")
+            else Color.parseColor("#534F64")
+        )
+        RxView.clicks(ll_detail_like)
             .throttleFirst(200, TimeUnit.MILLISECONDS)
             .subscribe {
                 if (MyApp.getInstance().isHaveToken()) {
                     toCollectOrUncollectGame()
+                } else {
+                    LoginUtils.toQuickLogin(this)
+                }
+            }
+
+        //免费充值
+        RxView.clicks(tv_detail_integral)
+            .throttleFirst(200, TimeUnit.MILLISECONDS)
+            .subscribe {
+                if (MyApp.getInstance().isHaveToken()) {
+                    val intent = Intent(this, IntegralActivity::class.java)
+                    intent.putExtra(IntegralActivity.GAME_ID, info.game_id)
+                    intent.putExtra(IntegralActivity.GAME_ICON, info.game_cover)
+                    intent.putExtra(IntegralActivity.GAME_NAME, info.game_name)
+                    intent.putExtra(IntegralActivity.GAME_CHANNEL_ID, info.game_channelId)
+                    startActivity(intent)
                 } else {
                     LoginUtils.toQuickLogin(this)
                 }
@@ -436,8 +480,13 @@ class GameDetailActivity : BaseActivity() {
         }
 
         //特戒盒子专属礼包
-        tv_detail_code.text = info.cdkey
-        tv_detail_codeMsg.text = "礼包奖励: ${info.desc}"
+        if (null == info.cdkey || info.cdkey.isEmpty()) {
+            ll_detail_code.visibility = View.GONE
+        } else {
+            ll_detail_code.visibility = View.VISIBLE
+            tv_detail_code.text = info.cdkey
+            tv_detail_codeMsg.text = "礼包奖励: ${info.desc}"
+        }
 
         //游戏详情相关
         tv_detail_days.text = getDays(info.game_update_time)
@@ -477,7 +526,6 @@ class GameDetailActivity : BaseActivity() {
         mHandler.removeMessages(0)
         EventBus.getDefault().unregister(this)
 
-
         gameInfoObservable?.dispose()
         gameInfoObservable = null
         collectGameObservable?.dispose()
@@ -503,7 +551,7 @@ class GameDetailActivity : BaseActivity() {
                 val gameId = split[0].toInt()
                 val startTime = split[1].toLong()
                 val endTime = System.currentTimeMillis()
-                if (endTime - startTime >= 2 * 60 * 1000) {
+                if (endTime - startTime >= 1 * 60 * 1000) {
                     val updateGameTimeInfo = RetrofitUtils.builder().updateGameTimeInfo(
                         gameId,
                         startTime.toString(),

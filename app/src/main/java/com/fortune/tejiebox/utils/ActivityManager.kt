@@ -4,7 +4,6 @@ import android.app.Activity
 import android.content.Intent
 import com.fortune.tejiebox.activity.MainActivity
 import com.fortune.tejiebox.activity.SplashActivity
-import com.fortune.tejiebox.bean.UserInfoBean
 import com.fortune.tejiebox.bean.VersionBean
 import com.fortune.tejiebox.event.LoginStatusChange
 import com.fortune.tejiebox.room.*
@@ -57,7 +56,7 @@ object ActivityManager {
      * 退到起始页面
      */
     fun toSplashActivity(activity: Activity) {
-        UserInfoBean.clear()
+        EventBus.getDefault().postSticky(LoginStatusChange(false,null))
         VersionBean.clear()
         SPUtils.clear()
         SearchHisDataBase.getDataBase(activity).searchHisDao().deleteAll()
@@ -73,7 +72,6 @@ object ActivityManager {
      * 退出登录
      */
     fun exitLogin(activity: MainActivity) {
-        UserInfoBean.clear()
         VersionBean.clear()
         SPUtils.clear()
         SearchHisDataBase.getDataBase(activity).searchHisDao().deleteAll()

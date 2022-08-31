@@ -45,6 +45,13 @@ class BottomTab(context: Context, attrs: AttributeSet) : LinearLayout(context, a
         lateinit var mView: View
     }
 
+    /**
+     * 小红点的展示与否
+     */
+    fun showRedPoint(isShow: Boolean) {
+        mView.iv_bottomTab_me_point.visibility = if (isShow) View.VISIBLE else View.GONE
+    }
+
     init {
         //获取布局文件
         mView = LayoutInflater.from(context).inflate(R.layout.layout_bottom_tab, this, true)

@@ -8,7 +8,9 @@ import android.view.View
 import android.webkit.*
 import com.fortune.tejiebox.R
 import com.fortune.tejiebox.base.BaseActivity
+import com.fortune.tejiebox.base.BaseAppUpdateSetting
 import com.fortune.tejiebox.constants.FilesArgument
+import com.fortune.tejiebox.http.HttpUrls
 import com.fortune.tejiebox.utils.DialogUtils
 import com.fortune.tejiebox.utils.StatusBarUtils
 import com.jakewharton.rxbinding2.view.RxView
@@ -40,11 +42,11 @@ class WebActivity : BaseActivity() {
         when (intent.getStringExtra(TYPE)) {
             USER_AGREEMENT -> {
                 tv_web_title.text = getString(R.string.user_agreement)
-                toLoadUrl(FilesArgument.PROTOCOL_SERVICE)
+                toLoadUrl((if (BaseAppUpdateSetting.appType) HttpUrls.REAL_URL else HttpUrls.TEST_URL) + FilesArgument.PROTOCOL_SERVICE)
             }
             PRIVACY_AGREEMENT -> {
                 tv_web_title.text = getString(R.string.privacy_agreement)
-                toLoadUrl(FilesArgument.PROTOCOL_PRIVACY)
+                toLoadUrl((if (BaseAppUpdateSetting.appType) HttpUrls.REAL_URL else HttpUrls.TEST_URL) + FilesArgument.PROTOCOL_PRIVACY)
             }
             GAME_WEB -> {
                 val gameName = intent.getStringExtra(GAME_NAME)

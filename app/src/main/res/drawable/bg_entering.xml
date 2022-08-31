@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layer-list xmlns:android="http://schemas.android.com/apk/res/android">
+    <item>
+        <shape android:shape="rectangle">
+            <corners android:radius="@dimen/dp_10" />
+            <!--低端机上,当设置了type="radial",必须加上gradientRadius才行,要不然会崩溃-->
+            <gradient
+                android:endColor="#605F60FF"
+                android:gradientRadius="@dimen/dp_10"
+                android:startColor="#5F60FF"
+                android:type="radial" />
+        </shape>
+    </item>
+    <item
+        android:bottom="@dimen/dp_2"
+        android:left="@dimen/dp_2"
+        android:right="@dimen/dp_2"
+        android:top="@dimen/dp_2">
+        <shape android:shape="rectangle">
+            <corners android:radius="@dimen/dp_10" />
+            <solid android:color="@color/white_FFFFFF" />
+            <stroke
+                android:width="@dimen/dp_2"
+                android:color="#5F60FF" />
+        </shape>
+    </item>
+</layer-list>

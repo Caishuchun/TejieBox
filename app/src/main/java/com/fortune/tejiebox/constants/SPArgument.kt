@@ -18,4 +18,12 @@ object SPArgument {
     const val IS_NEED_SHADE_NEW = "is_need_shade_new" //是否需要遮罩层,第二版
     const val TIME_4_PHONE_CHARGE = "time4PhoneCharge" //手机话费的倒计时
     const val GAME_TIME_INFO = "game_time_info" //游戏信息 game_id-startTime-endTime
+
+    const val IS_HAVE_ID = "is_have_id" //是否认证了,拥有id
+    const val ID_NAME = "id_name" //身份证名称
+    const val ID_NUM = "id_num" //身份证号
+    const val USER_ID = "user_id" //userId
+    const val INTEGRAL = "integral" //积分
+
+    const val IS_LOGIN_ED = "isLogined" //是否已经登录了
 }

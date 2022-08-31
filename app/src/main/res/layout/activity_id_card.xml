@@ -1,0 +1,101 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@mipmap/bg_all"
+    android:orientation="vertical"
+    tools:context=".activity.IdCardActivity">
+
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/dp_30" />
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/dp_60">
+
+        <ImageView
+            android:id="@+id/iv_idCard_back"
+            android:layout_width="@dimen/dp_60"
+            android:layout_height="@dimen/dp_60"
+            android:layout_centerVertical="true"
+            android:padding="@dimen/dp_16"
+            android:src="@mipmap/back_black" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerInParent="true"
+            android:text="实名认证"
+            android:textColor="#0A0422"
+            android:textSize="@dimen/sp_18"
+            android:textStyle="bold" />
+    </RelativeLayout>
+
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_margin="@dimen/dp_20"
+        android:text="根据文化部相关要求，网络游戏用户需要实名认证，请确保所填信息真实有效，认证成功后，不可更改。"
+        android:textColor="#0A0422"
+        android:textSize="@dimen/sp_12" />
+
+
+    <EditText
+        android:id="@+id/et_idCard_name"
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/dp_54"
+        android:layout_marginStart="@dimen/dp_24"
+        android:layout_marginEnd="@dimen/dp_24"
+        android:background="@drawable/bg_enter_selecter"
+        android:gravity="center_vertical"
+        android:hint="输入实名姓名"
+        android:maxLines="1"
+        android:paddingStart="@dimen/dp_24"
+        android:paddingEnd="@dimen/dp_24"
+        android:singleLine="true"
+        android:textSize="@dimen/sp_16" />
+
+    <EditText
+        android:id="@+id/et_idCard_id"
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/dp_54"
+        android:layout_marginStart="@dimen/dp_24"
+        android:layout_marginTop="@dimen/dp_16"
+        android:layout_marginEnd="@dimen/dp_24"
+        android:background="@drawable/bg_enter_selecter"
+        android:gravity="center_vertical"
+        android:hint="输入实名身份证号码"
+        android:maxLength="18"
+        android:maxLines="1"
+        android:paddingStart="@dimen/dp_24"
+        android:paddingEnd="@dimen/dp_24"
+        android:singleLine="true"
+        android:textSize="@dimen/sp_16" />
+
+    <Button
+        android:id="@+id/btn_idCard_issue"
+        android:layout_width="@dimen/dp_180"
+        android:layout_height="@dimen/dp_42"
+        android:layout_gravity="center_horizontal"
+        android:layout_marginTop="@dimen/dp_30"
+        android:background="@drawable/bg_game_shade"
+        android:letterSpacing="0.2"
+        android:text="提交"
+        android:textColor="@color/white_FFFFFF"
+        android:textSize="@dimen/sp_14"
+        android:textStyle="bold" />
+
+    <TextView
+        android:id="@+id/tv_idCard_next"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center_horizontal"
+        android:layout_marginTop="@dimen/dp_10"
+        android:padding="@dimen/dp_10"
+        android:textColor="@color/black_1A241F"
+        android:textSize="@dimen/sp_12" />
+
+</LinearLayout>

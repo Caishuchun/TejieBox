@@ -2,6 +2,7 @@ package com.fortune.tejiebox.utils
 
 import android.content.Context
 import android.content.SharedPreferences
+import com.fortune.tejiebox.constants.SPArgument
 import com.fortune.tejiebox.myapp.MyApp
 
 /**
@@ -79,7 +80,11 @@ object SPUtils {
      * 清空sp
      */
     fun clear() {
+        val isLogined = getBoolean(SPArgument.IS_LOGIN_ED, false)
         sp.edit().clear().apply()
+        if (isLogined) {
+            putValue(SPArgument.IS_LOGIN_ED, true)
+        }
     }
 
 }

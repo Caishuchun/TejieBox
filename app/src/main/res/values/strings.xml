@@ -58,29 +58,37 @@
     <string name="save_pic_fail">下载保存到本地失败</string>
 
     <!--下载游戏-->
-    <string name="notice">公告</string>
-
-    <!--Gift-->
-
-    <!--抢充值-->
-
-    <!--图集-->
+    <string name="open">开启</string>
+    <string name="exchange">兑换</string>
+    <string name="residue">剩余</string>
+    <string name="daily_check">每日签到</string>
+    <string name="limit_white_piao">限时白嫖</string>
+    <string name="invite_gift">邀请大礼</string>
+    <string name="day">第X天</string>
+    <string name="signed">已签到</string>
+    <string name="get_integral">获得 X 个金币</string>
+    <string name="get_experience">获得X经验</string>
+    <string name="time_5_9" tools:ignore="TypographyDashes">05:00 - 09:00</string>
+    <string name="time_10_14" tools:ignore="TypographyDashes">10:00 - 14:00</string>
+    <string name="time_15_19" tools:ignore="TypographyDashes">15:00 - 19:00</string>
+    <string name="time_20_24" tools:ignore="TypographyDashes">20:00 - 24:00</string>
+    <string name="overdue">已过期</string>
+    <string name="can_get">可领取</string>
+    <string name="get">领取</string>
+    <string name="invite_success">成功邀请好友即可获得</string>
+    <string name="can_obtain">即可获得</string>
+    <string name="complete_goal">完成目标</string>
+    <string name="update_app_level">将APP等级提升至X级</string>
+    <string name="share_tips">每日首次分享至微信或者QQ可获得X金币</string>
+    <string name="level_update_share_title">万款游戏,随便玩</string>
+    <string name="level_update_share_msg">充值礼包/元宝回收/免费泡点/满级VIP/……只要你能想到的,我们这里,应有尽有!</string>
 
     <!--android 8.0适配安装-->
     <string name="author_fail">授权失败,无法安装更新应用</string>
 
-    <!--礼包码-->
-
-    <!--升级等级-->
-
-    <!--公告-->
-
-    <!--新增视频-->
-
-    <!--开始部分页面,按日期开始增加文字-->
     <!--20210823-->
     <string name="string_048">取消收藏</string>
     <string name="string_049">收藏成功</string>
-    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
 
 </resources>

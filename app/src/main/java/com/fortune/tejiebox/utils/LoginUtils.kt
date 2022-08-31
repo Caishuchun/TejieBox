@@ -6,12 +6,13 @@ import android.content.Intent
 import android.graphics.Color
 import android.view.Gravity
 import android.view.LayoutInflater
-import android.view.View
 import com.fortune.tejiebox.R
 import com.fortune.tejiebox.activity.LoginActivity
+import com.fortune.tejiebox.base.BaseAppUpdateSetting
 import com.fortune.tejiebox.constants.FilesArgument
 import com.fortune.tejiebox.constants.SPArgument
 import com.fortune.tejiebox.event.LoginStatusChange
+import com.fortune.tejiebox.http.HttpUrls
 import com.fortune.tejiebox.http.RetrofitUtils
 import com.google.gson.Gson
 import com.jakewharton.rxbinding2.view.RxView
@@ -31,6 +32,7 @@ object LoginUtils {
 
     private var quickLogin4AliObservable: Disposable? = null
     private var helper: PhoneNumberAuthHelper? = null
+    private var isFirstCheck = true
 
     /**
      * 初始化
@@ -113,11 +115,11 @@ object LoginUtils {
                 //协议
                 .setAppPrivacyOne(
                     activity.getString(R.string.user_agreement),
-                    FilesArgument.PROTOCOL_SERVICE
+                    (if (BaseAppUpdateSetting.appType) HttpUrls.REAL_URL else HttpUrls.TEST_URL) + FilesArgument.PROTOCOL_SERVICE
                 )
                 .setAppPrivacyTwo(
                     activity.getString(R.string.privacy_agreement),
-                    FilesArgument.PROTOCOL_PRIVACY
+                    (if (BaseAppUpdateSetting.appType) HttpUrls.REAL_URL else HttpUrls.TEST_URL) + FilesArgument.PROTOCOL_PRIVACY
                 )
                 .setPrivacyBefore(activity.getString(R.string.login_tips))
                 .setCheckboxHidden(true)
@@ -179,101 +181,101 @@ object LoginUtils {
                 //唤起授权⻚失败,建议切换到其他登录⽅式
                 helper?.hideLoginLoading()
                 helper?.quitLoginPage()
-                toLogin(activity)
+                toLogin(activity, true)
             }
             "600004" -> {
                 //获取运营商配置信息失败,创建⼯单联系⼯程师
                 helper?.hideLoginLoading()
                 helper?.quitLoginPage()
-                toLogin(activity)
+                toLogin(activity, false)
             }
             "600005" -> {
                 //⼿机终端不安全,切换到其他登录⽅式
                 helper?.hideLoginLoading()
                 helper?.quitLoginPage()
-                toLogin(activity)
+                toLogin(activity, false)
             }
             "600007" -> {
                 //未检测到sim卡,提示⽤户检查 SIM 卡后重试
                 helper?.hideLoginLoading()
                 helper?.quitLoginPage()
-                toLogin(activity)
+                toLogin(activity, false)
             }
             "600008" -> {
                 //蜂窝⽹络未开启,提示⽤户开启移动⽹络后重试
                 helper?.hideLoginLoading()
                 helper?.quitLoginPage()
-                toLogin(activity)
+                toLogin(activity, false)
             }
             "600009" -> {
                 //⽆法判断运营商,创建⼯单联系⼯程师
                 helper?.hideLoginLoading()
                 helper?.quitLoginPage()
-                toLogin(activity)
+                toLogin(activity, false)
             }
             "600010" -> {
                 //未知异常,创建⼯单联系⼯程师
                 helper?.hideLoginLoading()
                 helper?.quitLoginPage()
-                toLogin(activity)
+                toLogin(activity, false)
             }
             "600011" -> {
                 //创建⼯单联系⼯程师,切换到其他登录⽅式
                 helper?.hideLoginLoading()
                 helper?.quitLoginPage()
-                toLogin(activity)
+                toLogin(activity, false)
             }
             "600012" -> {
                 //预取号失败
                 helper?.hideLoginLoading()
                 helper?.quitLoginPage()
-                toLogin(activity)
+                toLogin(activity, true)
             }
             "600013" -> {
                 //运营商维护升级,该功能不可⽤,创建⼯单联系⼯程师
                 helper?.hideLoginLoading()
                 helper?.quitLoginPage()
-                toLogin(activity)
+                toLogin(activity, false)
             }
             "600014" -> {
                 //运营商维护升级，该功能已达最⼤调⽤次数,创建⼯单联系⼯程师
                 helper?.hideLoginLoading()
                 helper?.quitLoginPage()
-                toLogin(activity)
+                toLogin(activity, false)
             }
             "600015" -> {
                 //接⼝超时,切换到其他登录⽅式
                 helper?.hideLoginLoading()
                 helper?.quitLoginPage()
-                toLogin(activity)
+                toLogin(activity, false)
             }
             "600017" -> {
                 //AppID、Appkey解析失败
                 helper?.hideLoginLoading()
                 helper?.quitLoginPage()
-                toLogin(activity)
+                toLogin(activity, true)
             }
             "600021" -> {
                 //点击登录时检测到运营商已切换,提示⽤户退出授权⻚，重新登录
                 helper?.hideLoginLoading()
                 helper?.quitLoginPage()
-                toLogin(activity)
+                toLogin(activity, true)
             }
             "600023" -> {
                 //加载⾃定义控件异常
                 helper?.hideLoginLoading()
                 helper?.quitLoginPage()
-                toLogin(activity)
+                toLogin(activity, true)
             }
             "600024" -> {
                 //终端环境检查⽀持认证
-                helper?.getLoginToken(activity, 500)
+                helper?.getLoginToken(activity, 1500)
             }
             "600025" -> {
                 //终端检测参数错误,检查传⼊参数类型与范围是否正确
                 helper?.hideLoginLoading()
                 helper?.quitLoginPage()
-                toLogin(activity)
+                toLogin(activity, true)
             }
             "600026" -> {
                 //授权⻚已加载时不允许调⽤加速或预取号接⼝, 检查是否有授权⻚拉起后，去调⽤preLogin 或者accelerateAuthPage的接⼝，该⾏为不 允许
@@ -287,18 +289,26 @@ object LoginUtils {
                 //点击切换按钮，⽤户取消免密登录
                 helper?.hideLoginLoading()
                 helper?.quitLoginPage()
-                toLogin(activity)
+                toLogin(activity, false)
             }
         }
     }
 
     /**
      * 跳转到登录界面
+     * @param needRetry 是否需要重试
      */
-    private fun toLogin(activity: Activity) {
-        DialogUtils.dismissLoading()
-        LogUtils.d("toLogin..................")
-        activity.startActivity(Intent(activity, LoginActivity::class.java))
+    private fun toLogin(activity: Activity, needRetry: Boolean) {
+        //失败之后再来一次,如果依然失败,则进行短信验证码登录
+        if (isFirstCheck && needRetry) {
+            isFirstCheck = false
+            helper?.getLoginToken(activity, 1500)
+        } else {
+            isFirstCheck = false
+            DialogUtils.dismissLoading()
+            LogUtils.d("toLogin..................")
+            activity.startActivity(Intent(activity, LoginActivity::class.java))
+        }
     }
 
     /**
@@ -312,6 +322,10 @@ object LoginUtils {
         val quickLogin4Ali = RetrofitUtils.builder().quickLogin4Ali(accessCode)
         SPUtils.putValue(SPArgument.LOGIN_TOKEN, null)
         SPUtils.putValue(SPArgument.PHONE_NUMBER, null)
+        SPUtils.putValue(SPArgument.USER_ID, null)
+        SPUtils.putValue(SPArgument.IS_HAVE_ID, 0)
+        SPUtils.putValue(SPArgument.ID_NAME, null)
+        SPUtils.putValue(SPArgument.ID_NUM, null)
         quickLogin4AliObservable = quickLogin4Ali.subscribeOn(Schedulers.io())
             .observeOn(AndroidSchedulers.mainThread())
             .subscribe({
@@ -322,6 +336,12 @@ object LoginUtils {
                         1 -> {
                             SPUtils.putValue(SPArgument.LOGIN_TOKEN, it.data?.token)
                             SPUtils.putValue(SPArgument.PHONE_NUMBER, it.data?.phone)
+                            SPUtils.putValue(SPArgument.USER_ID, it.data?.user_id)
+                            SPUtils.putValue(SPArgument.IS_HAVE_ID, it.data?.id_card)
+                            if (it.data?.id_card == 1) {
+                                SPUtils.putValue(SPArgument.ID_NAME, it.data?.card_name)
+                                SPUtils.putValue(SPArgument.ID_NUM, it.data?.car_num)
+                            }
                             EventBus.getDefault()
                                 .postSticky(LoginStatusChange(true, it.data?.phone))
                             helper?.hideLoginLoading()
