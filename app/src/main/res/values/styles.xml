@@ -15,9 +15,14 @@
         <item name="android:windowTranslucentStatus">true</item>
     </style>
 
-    <!--界面主题样式-->
+    <!--启动页界面主题样式-->
     <style name="SplashTheme" parent="NormalTheme">
-        <item name="android:windowBackground">@drawable/bg_splash</item>
+        <item name="android:windowBackground">@drawable/splash</item>
+    </style>
+
+    <!--为了进游戏不再出现白屏而设置的主题样式-->
+    <style name="NoWhiteScreenTheme" parent="NormalTheme">
+        <item name="android:windowBackground">@color/color_transparent</item>
     </style>
 
     <!-- 等待对话框样式 -->
@@ -55,6 +60,12 @@
         <item name="android:windowNoTitle">true</item>
         <!--设置是否半透明-->
         <item name="android:windowIsTranslucent">true</item>
+    </style>
+
+    <!--ProcessActivity-->
+    <style name="ActivityTheme4Process" parent="NormalTheme">
+        <!--设置背景颜色-->
+        <item name="android:windowBackground">@drawable/splash_tj</item>
     </style>
 
     <!--加载进度条-->

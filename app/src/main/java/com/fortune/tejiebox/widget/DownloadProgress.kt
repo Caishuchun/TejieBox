@@ -1,12 +1,12 @@
 package com.fortune.tejiebox.widget
 
+import android.annotation.SuppressLint
 import android.content.Context
 import android.graphics.Canvas
 import android.graphics.Color
 import android.graphics.Paint
 import android.util.AttributeSet
 import android.view.View
-import com.fortune.tejiebox.R
 import kotlin.math.ceil
 
 /**
@@ -29,6 +29,9 @@ class DownloadProgress(
     //每一格进度,进度条的长度
     private var mSpace = 0f
 
+    //文字和进度之间的间距
+    private var mInterval = 0f
+
     private val progressPaint = Paint()
 
     /**
@@ -50,9 +53,10 @@ class DownloadProgress(
         mWidth = w
         mHeight = h
         //进度数值直接设置为控件高度
-        progressPaint.textSize = mHeight.toFloat()
+        progressPaint.textSize = mHeight * 0.8f
         //间距..
         mSpace = mWidth.toFloat() / 100
+        mInterval = mSpace
     }
 
     /**
@@ -63,6 +67,7 @@ class DownloadProgress(
         postInvalidate()
     }
 
+    @SuppressLint("DrawAllocation")
     override fun onDraw(canvas: Canvas?) {
         super.onDraw(canvas)
         val s = "$mProgress%"
@@ -75,16 +80,23 @@ class DownloadProgress(
             //没超过,则是进度*间距
             mProgress * mSpace
         }
+        //这一步就是为了在进度条和数值之间有个间距
+        val intervalLineEnd = if (lineEnd - mInterval <= 0f) {
+            0f
+        } else {
+            lineEnd - mInterval
+        }
         //绘制进度,之所以2/3是为了进度在文字中间,为什么不是1/2?
+        //居上1/3,居下1/3,线宽1/3
         canvas?.drawLine(
             0f,
             mHeight.toFloat() / 3 * 2,
-            lineEnd,
+            intervalLineEnd,
             mHeight.toFloat() / 3 * 2,
             progressPaint
         )
         //绘制文字
-        canvas?.drawText(s, lineEnd, mHeight.toFloat(), progressPaint)
+        canvas?.drawText(s, lineEnd, mHeight * 0.9f, progressPaint)
     }
 
     /**

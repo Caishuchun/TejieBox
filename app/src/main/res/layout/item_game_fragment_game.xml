@@ -40,17 +40,14 @@
                 android:background="?android:attr/selectableItemBackground"
                 android:visibility="visible" />
 
-            <TextView
-                android:id="@+id/tv_item_gameFragment_type"
-                android:layout_width="@dimen/dp_15"
-                android:layout_height="@dimen/dp_15"
+            <ImageView
+                android:id="@+id/iv_item_gameFragment_type"
+                android:layout_width="@dimen/dp_20"
+                android:layout_height="@dimen/dp_20"
                 android:layout_alignParentEnd="true"
+                android:layout_alignParentBottom="true"
                 android:layout_margin="@dimen/dp_1_5"
-                android:background="@drawable/bg_hot"
-                android:gravity="center"
-                android:text="火"
-                android:textColor="@color/white_FFFFFF"
-                android:textSize="@dimen/sp_10"
+                android:src="@mipmap/icon_new"
                 android:visibility="gone" />
 
         </RelativeLayout>

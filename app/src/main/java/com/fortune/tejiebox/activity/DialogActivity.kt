@@ -287,6 +287,9 @@ class DialogActivity : BaseActivity() {
 
     @Subscribe(sticky = true, threadMode = ThreadMode.MAIN)
     fun whenLogin(loginStatusChange: LoginStatusChange) {
+        if (loginStatusChange == null) {
+            return
+        }
         if (loginStatusChange.isLogin && isLogin) {
             isLogin = false
             toGetGiftCode()
@@ -295,7 +298,9 @@ class DialogActivity : BaseActivity() {
 
     override fun destroy() {
         EventBus.getDefault().unregister(this)
-        callback?.cancel()
+        if (type == TYPE.GET_INTEGRAL) {
+            callback?.cancel()
+        }
         timer?.dispose()
         timer = null
 

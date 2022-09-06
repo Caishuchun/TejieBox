@@ -346,5 +346,11 @@ object RetrofitUtils {
          */
         @GET(HttpUrls.GET_GIFT_CODE)
         fun getGiftCode(): Flowable<GetGiftCodeBean>
+
+        /**
+         * 获取游戏充值基数
+         */
+        @GET(HttpUrls.SPLASH_URL)
+        fun getSplashUrl(): Flowable<SplashUrlBean>
     }
 }

@@ -232,6 +232,9 @@ class MineFragment : Fragment() {
     @SuppressLint("SetTextI18n")
     @Subscribe(sticky = true, threadMode = ThreadMode.MAIN)
     fun login(loginStatusChange: LoginStatusChange) {
+        if (loginStatusChange == null) {
+            return
+        }
         mView?.tv_mineFragment_phone?.let {
             if (loginStatusChange.isLogin) {
                 val phone = loginStatusChange.phone
@@ -271,6 +274,9 @@ class MineFragment : Fragment() {
     @SuppressLint("SetTextI18n")
     @Subscribe(sticky = true, threadMode = ThreadMode.MAIN)
     fun changeIntegral(integralChange: IntegralChange) {
+        if (integralChange == null) {
+            return
+        }
         if (integralChange.integral == -1) {
             if (MyApp.getInstance().isHaveToken()) {
                 getIntegral(false)
@@ -289,6 +295,9 @@ class MineFragment : Fragment() {
      */
     @Subscribe(sticky = true, threadMode = ThreadMode.MAIN)
     fun isHaveId(isHaveIdChange: IsHaveIdChange) {
+        if (isHaveIdChange == null) {
+            return
+        }
         mView?.tv_mineFragment_idCardMsg?.let {
             if (isHaveIdChange.isHaveId == 1) {
                 it.text = "已认证"
@@ -305,15 +314,18 @@ class MineFragment : Fragment() {
      */
     @Subscribe(sticky = true, threadMode = ThreadMode.MAIN)
     fun isShowRedPoint(redPointChange: RedPointChange) {
+        if (redPointChange == null) {
+            return
+        }
         if (redPointChange.isShow) {
-            Thread{
+            Thread {
                 Thread.sleep(200)
                 requireActivity().runOnUiThread {
                     mView?.iv_mineFragment_point?.visibility = View.VISIBLE
                 }
             }.start()
         } else {
-            Thread{
+            Thread {
                 Thread.sleep(200)
                 requireActivity().runOnUiThread {
                     mView?.iv_mineFragment_point?.visibility = View.GONE

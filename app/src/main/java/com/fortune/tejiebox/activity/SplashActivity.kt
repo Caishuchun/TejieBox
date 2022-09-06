@@ -3,6 +3,8 @@ package com.fortune.tejiebox.activity
 import android.Manifest
 import android.annotation.SuppressLint
 import android.content.Intent
+import android.graphics.Bitmap
+import android.graphics.BitmapFactory
 import android.graphics.Color
 import android.os.Environment
 import com.fortune.tejiebox.R
@@ -43,13 +45,40 @@ class SplashActivity : BaseActivity() {
     @SuppressLint("CheckResult")
     override fun doSomething() {
         StatusBarUtils.setTextDark(this, false)
+        setTheme(R.style.NormalTheme)
         instance = this
         LoginUtils.init(this)
+
+        toSetSplashBg()
 
         toDeleteGameApk()
         getPermission(0)
     }
 
+    /**
+     * 设置封面背景图片
+     */
+    private fun toSetSplashBg() {
+        val splashDir = getExternalFilesDir("splash")
+        if (splashDir == null || !splashDir.exists() || !splashDir.isDirectory) {
+            return
+        }
+        val splashImg = splashDir.listFiles()
+        if (splashImg.isEmpty()) {
+            return
+        }
+        val imgIndex = (splashImg.indices).random()
+        var bitmap: Bitmap? = null
+        try {
+            bitmap = BitmapFactory.decodeFile(splashImg[imgIndex].path)
+        } catch (e: Exception) {
+            return
+        }
+        if (bitmap == null) {
+            return
+        }
+        iv_splash_bg.setImageBitmap(bitmap)
+    }
 
     /**
      * 删除游戏安装包

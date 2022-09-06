@@ -168,7 +168,7 @@ class GameFragment : Fragment() {
                 }
 
                 itemView.runView_item_gameFragment.visibility = View.GONE
-                itemView.tv_item_gameFragment_type.visibility = View.GONE
+                itemView.iv_item_gameFragment_type.visibility = View.GONE
 
                 Glide.with(this)
                     .load(itemData.game_cover)
@@ -187,22 +187,19 @@ class GameFragment : Fragment() {
                             super.onResourceReady(resource, transition)
                             itemView.runView_item_gameFragment.visibility =
                                 if (itemData.game_top == 1) View.VISIBLE else View.GONE
-//                            新/火标志先行隐藏
-//                            when (itemData.icon_type) {
-//                                1 -> {
-//                                    itemView.tv_item_gameFragment_type.visibility = View.VISIBLE
-//                                    itemView.tv_item_gameFragment_type.text = "新"
-//                                    itemView.tv_item_gameFragment_type.setBackgroundResource(R.drawable.bg_new)
-//                                }
-//                                2 -> {
-//                                    itemView.tv_item_gameFragment_type.visibility = View.VISIBLE
-//                                    itemView.tv_item_gameFragment_type.text = "火"
-//                                    itemView.tv_item_gameFragment_type.setBackgroundResource(R.drawable.bg_hot)
-//                                }
-//                                else -> {
-//                                    itemView.tv_item_gameFragment_type.visibility = View.GONE
-//                                }
-//                            }
+                            when (itemData.icon_type) {
+                                1 -> {
+                                    itemView.iv_item_gameFragment_type.visibility = View.VISIBLE
+                                    itemView.iv_item_gameFragment_type.setImageResource(R.mipmap.icon_new)
+                                }
+                                2 -> {
+                                    itemView.iv_item_gameFragment_type.visibility = View.VISIBLE
+                                    itemView.iv_item_gameFragment_type.setImageResource(R.mipmap.icon_hot)
+                                }
+                                else -> {
+                                    itemView.iv_item_gameFragment_type.visibility = View.GONE
+                                }
+                            }
                         }
                     })
                 itemView.tv_item_gameFragment_name.text = itemData.game_name
@@ -520,16 +517,25 @@ class GameFragment : Fragment() {
 
     @Subscribe(threadMode = ThreadMode.MAIN)
     fun likeDataChange(data: LikeDataChange) {
+        if (data == null) {
+            return
+        }
         getInfo(false)
     }
 
     @Subscribe(threadMode = ThreadMode.MAIN)
     fun playingDataChange(data: PlayingDataChange) {
+        if (data == null) {
+            return
+        }
         getInfo(false)
     }
 
     @Subscribe(sticky = true, threadMode = ThreadMode.MAIN)
     fun login(loginStatusChange: LoginStatusChange) {
+        if (loginStatusChange == null) {
+            return
+        }
         if (type != 0) {
             getInfo(false)
         }

@@ -159,6 +159,9 @@ class GiftActivity : BaseActivity() {
     @SuppressLint("SetTextI18n")
     @Subscribe(sticky = true, threadMode = ThreadMode.MAIN)
     fun changeIntegral(integralChange: IntegralChange) {
+        if (integralChange == null) {
+            return
+        }
         if (isFirstCreate) {
             isFirstCreate = false
             return
@@ -182,6 +185,9 @@ class GiftActivity : BaseActivity() {
 
     @Subscribe(sticky = true)
     fun showPoint(giftShowPoint: GiftShowPoint) {
+        if (giftShowPoint == null) {
+            return
+        }
         when (giftShowPoint.isShowDailyCheck) {
             GiftShowState.SHOW -> tt_gift.setDailyCheckPoint(true)
             GiftShowState.UN_SHOW -> tt_gift.setDailyCheckPoint(false)

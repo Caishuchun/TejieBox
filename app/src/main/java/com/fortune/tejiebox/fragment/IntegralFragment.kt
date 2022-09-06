@@ -275,9 +275,6 @@ class IntegralFragment : Fragment() {
      */
     @SuppressLint("SetTextI18n")
     fun setRoleInfo(role: RoleListBean.Data.Role, gameVersion: String) {
-        mView?.ll_integralFragment_title?.let {
-            it.visibility = View.VISIBLE
-        }
         mView?.ll_integralFragment_roleInfo?.let {
             it.visibility = View.VISIBLE
         }

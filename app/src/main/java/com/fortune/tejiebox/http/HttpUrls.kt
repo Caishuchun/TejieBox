@@ -106,4 +106,7 @@ object HttpUrls {
 
     //获取游戏礼包
     const val GET_GIFT_CODE = "/android/v2.game/tjGift"
+
+    //获取封面图片
+    const val SPLASH_URL = "/android/v2.game/carousel"
 }

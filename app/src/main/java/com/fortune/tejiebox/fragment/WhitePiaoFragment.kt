@@ -95,7 +95,7 @@ class WhitePiaoFragment : Fragment() {
                     }
                 } else {
                     (requireActivity()).finish()
-                    ToastUtils.show(getString(R.string.network_fail_to_responseDate))
+                    ToastUtils.show(resources.getString(R.string.network_fail_to_responseDate))
                 }
             }, {
                 DialogUtils.dismissLoading()
@@ -143,7 +143,7 @@ class WhitePiaoFragment : Fragment() {
                     itemView.rl_white_piao_bg.setBackgroundResource(R.drawable.bg_white_piao_can_get)
                     itemView.iv_white_piao_integral.setImageResource(R.mipmap.money_ed)
                     itemView.tv_white_piao_btn.text =
-                        "$time  ${getString(R.string.can_get)}"
+                        "$time  ${resources.getString(R.string.can_get)}"
                 }
 
                 /**
@@ -153,7 +153,7 @@ class WhitePiaoFragment : Fragment() {
                     itemView.rl_white_piao_bg.setBackgroundResource(R.drawable.bg_white_piao_overdue)
                     itemView.iv_white_piao_integral.setImageResource(R.mipmap.money_ed)
                     itemView.tv_white_piao_btn.text =
-                        "$time  ${getString(R.string.overdue)}"
+                        "$time  ${resources.getString(R.string.overdue)}"
                 }
 
                 itemView.tv_white_piao_integral.text = "+${itemData.integral}"
@@ -162,64 +162,64 @@ class WhitePiaoFragment : Fragment() {
                     1 -> {
                         when (itemData.status) {
                             0 -> {
-                                canGet(getString(R.string.time_5_9))
+                                canGet(resources.getString(R.string.time_5_9))
                             }
                             1 -> {
-                                get(getString(R.string.time_5_9))
+                                get(resources.getString(R.string.time_5_9))
                             }
                             2 -> {
-                                overdue(getString(R.string.time_5_9))
+                                overdue(resources.getString(R.string.time_5_9))
                             }
                             3 -> {
-                                got(getString(R.string.time_5_9))
+                                got(resources.getString(R.string.time_5_9))
                             }
                         }
                     }
                     2 -> {
                         when (itemData.status) {
                             0 -> {
-                                canGet(getString(R.string.time_10_14))
+                                canGet(resources.getString(R.string.time_10_14))
                             }
                             1 -> {
-                                get(getString(R.string.time_10_14))
+                                get(resources.getString(R.string.time_10_14))
                             }
                             2 -> {
-                                overdue(getString(R.string.time_10_14))
+                                overdue(resources.getString(R.string.time_10_14))
                             }
                             3 -> {
-                                got(getString(R.string.time_10_14))
+                                got(resources.getString(R.string.time_10_14))
                             }
                         }
                     }
                     3 -> {
                         when (itemData.status) {
                             0 -> {
-                                canGet(getString(R.string.time_15_19))
+                                canGet(resources.getString(R.string.time_15_19))
                             }
                             1 -> {
-                                get(getString(R.string.time_15_19))
+                                get(resources.getString(R.string.time_15_19))
                             }
                             2 -> {
-                                overdue(getString(R.string.time_15_19))
+                                overdue(resources.getString(R.string.time_15_19))
                             }
                             3 -> {
-                                got(getString(R.string.time_15_19))
+                                got(resources.getString(R.string.time_15_19))
                             }
                         }
                     }
                     4 -> {
                         when (itemData.status) {
                             0 -> {
-                                canGet(getString(R.string.time_20_24))
+                                canGet(resources.getString(R.string.time_20_24))
                             }
                             1 -> {
-                                get(getString(R.string.time_20_24))
+                                get(resources.getString(R.string.time_20_24))
                             }
                             2 -> {
-                                overdue(getString(R.string.time_20_24))
+                                overdue(resources.getString(R.string.time_20_24))
                             }
                             3 -> {
-                                got(getString(R.string.time_20_24))
+                                got(resources.getString(R.string.time_20_24))
                             }
                         }
                     }
@@ -272,16 +272,16 @@ class WhitePiaoFragment : Fragment() {
 
                                                     when (position) {
                                                         0 -> {
-                                                            got(getString(R.string.time_5_9))
+                                                            got(resources.getString(R.string.time_5_9))
                                                         }
                                                         1 -> {
-                                                            got(getString(R.string.time_10_14))
+                                                            got(resources.getString(R.string.time_10_14))
                                                         }
                                                         2 -> {
-                                                            got(getString(R.string.time_15_19))
+                                                            got(resources.getString(R.string.time_15_19))
                                                         }
                                                         3 -> {
-                                                            got(getString(R.string.time_20_24))
+                                                            got(resources.getString(R.string.time_20_24))
                                                         }
                                                     }
                                                 }
@@ -296,7 +296,7 @@ class WhitePiaoFragment : Fragment() {
                                     }
                                 }
                             } else {
-                                ToastUtils.show(getString(R.string.network_fail_to_responseDate))
+                                ToastUtils.show(resources.getString(R.string.network_fail_to_responseDate))
                             }
                         }, {
                             DialogUtils.dismissLoading()

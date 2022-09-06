@@ -7,8 +7,8 @@
 
     <ImageView
         android:id="@+id/iv_dialog_color"
-        android:layout_width="@dimen/dp_180"
-        android:layout_height="@dimen/dp_180"
+        android:layout_width="@dimen/dp_150"
+        android:layout_height="@dimen/dp_150"
         android:layout_centerInParent="true"
         android:src="@mipmap/color3" />
 
@@ -21,7 +21,7 @@
         android:gravity="center_horizontal"
         android:orientation="vertical"
         android:padding="@dimen/dp_10"
-        android:visibility="visible">
+        android:visibility="gone">
 
         <TextView
             android:layout_width="wrap_content"
@@ -119,103 +119,73 @@
             android:textSize="@dimen/sp_16" />
     </LinearLayout>
 
-    <LinearLayout
+    <RelativeLayout
         android:id="@+id/ll_dialog_giftCode"
         android:layout_width="@dimen/dp_200"
-        android:layout_height="@dimen/dp_250"
+        android:layout_height="@dimen/dp_296"
         android:layout_centerInParent="true"
-        android:background="@drawable/bg_white_card"
-        android:gravity="center_horizontal"
-        android:orientation="vertical"
+        android:background="@mipmap/bg_gift_code"
         android:visibility="visible">
 
-        <RelativeLayout
-            android:layout_width="match_parent"
+        <ImageView
+            android:id="@+id/iv_dialog_giftCode_cancel"
+            android:layout_width="@dimen/dp_40"
             android:layout_height="@dimen/dp_40"
-            android:background="@drawable/bg_gray_top_10">
+            android:layout_alignParentEnd="true"
+            android:padding="@dimen/dp_5"
+            android:src="@mipmap/delete_search" />
 
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_centerInParent="true"
-                android:gravity="center"
-                android:text="免费礼包"
-                android:textColor="@color/black_1A241F"
-                android:textSize="@dimen/sp_16" />
-
-            <ImageView
-                android:id="@+id/iv_dialog_giftCode_cancel"
-                android:layout_width="@dimen/dp_40"
-                android:layout_height="@dimen/dp_40"
-                android:layout_alignParentEnd="true"
-                android:padding="@dimen/dp_5"
-                android:src="@mipmap/delete_search" />
-        </RelativeLayout>
-
-        <RelativeLayout
+        <LinearLayout
+            android:id="@+id/ll_dialog_giftCode_show"
             android:layout_width="match_parent"
-            android:layout_height="match_parent">
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/dp_90"
+            android:orientation="vertical">
 
             <LinearLayout
-                android:id="@+id/ll_dialog_giftCode_show"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_centerInParent="true"
                 android:gravity="center"
-                android:orientation="vertical"
-                android:visibility="visible">
-
-                <LinearLayout
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:orientation="horizontal">
-
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="礼包码:"
-                        android:textColor="@color/black_1A241F"
-                        android:textSize="@dimen/sp_16"
-                        android:textStyle="bold" />
-
-                    <TextView
-                        android:id="@+id/tv_dialog_giftCode_code"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_marginStart="@dimen/dp_5"
-                        android:text="正在获取"
-                        android:textColor="#e13357"
-                        android:textSize="@dimen/sp_16"
-                        android:textStyle="bold" />
-                </LinearLayout>
-
-                <TextView
-                    android:id="@+id/tv_dialog_giftCode_time"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="@dimen/dp_20"
-                    android:text="请稍等..."
-                    android:textColor="#4cba3f"
-                    android:textSize="@dimen/sp_14" />
+                android:orientation="horizontal">
 
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="过期请重新领取礼包码"
-                    android:textSize="@dimen/sp_14" />
+                    android:layout_marginEnd="@dimen/dp_5"
+                    android:text="礼包码:"
+                    android:textColor="#bd622b"
+                    android:textSize="@dimen/sp_16" />
+
+                <TextView
+                    android:id="@+id/tv_dialog_giftCode_code"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="正在获取"
+                    android:textColor="#da5a0e"
+                    android:textSize="@dimen/sp_24"
+                    android:textStyle="bold" />
             </LinearLayout>
 
             <TextView
-                android:id="@+id/tv_dialog_giftCode_login"
+                android:id="@+id/tv_dialog_giftCode_time"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_centerInParent="true"
-                android:padding="@dimen/dp_10"
-                android:text="未登录,请先点击登录"
-                android:textSize="@dimen/sp_14"
-                android:visibility="gone" />
+                android:layout_gravity="center_horizontal"
+                android:layout_marginTop="@dimen/dp_10"
+                android:text="请稍等..."
+                android:textSize="@dimen/sp_14" />
+        </LinearLayout>
 
-        </RelativeLayout>
+        <TextView
+            android:id="@+id/tv_dialog_giftCode_login"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerHorizontal="true"
+            android:layout_marginTop="@dimen/dp_100"
+            android:padding="@dimen/dp_10"
+            android:text="未登录,请先点击登录"
+            android:textSize="@dimen/sp_14"
+            android:visibility="gone" />
 
-    </LinearLayout>
+    </RelativeLayout>
 </RelativeLayout>

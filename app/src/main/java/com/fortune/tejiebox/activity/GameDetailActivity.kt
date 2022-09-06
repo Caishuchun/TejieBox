@@ -208,12 +208,16 @@ class GameDetailActivity : BaseActivity() {
                     if (it != null) {
                         when (it.code) {
                             1 -> {
+                                //起个子线程的页面
+                                startActivity(Intent(this, ProcessActivity::class.java))
+
                                 EventBus.getDefault().post(PlayingDataChange(""))
                                 isPlayingGame = true
                                 SPUtils.putValue(
                                     SPArgument.GAME_TIME_INFO,
                                     "$gameId-${System.currentTimeMillis()}"
                                 )
+
                                 JumpUtils.jump2Game(
                                     this,
                                     gameChannel + Box2GameUtils.getPhoneAndToken()

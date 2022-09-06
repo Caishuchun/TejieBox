@@ -681,6 +681,9 @@ class SearchGameActivity : BaseActivity() {
                     if (it != null) {
                         when (it.code) {
                             1 -> {
+                                //起个子线程的页面
+                                startActivity(Intent(this, ProcessActivity::class.java))
+
                                 EventBus.getDefault().post(PlayingDataChange(""))
                                 isPlayingGame = true
                                 SPUtils.putValue(

@@ -61,6 +61,11 @@
         tools:ignore="LockedOrientationActivity,UnusedAttribute"
         tools:replace="android:icon,android:theme,android:name,android:allowBackup">
         <activity
+            android:name=".activity.ProcessActivity"
+            android:process=":unity"
+            android:theme="@style/ActivityTheme4Process"
+            android:screenOrientation="landscape" />
+        <activity
             android:name=".activity.DialogActivity"
             android:screenOrientation="portrait"
             android:theme="@style/ActivityTheme4Dialog" />

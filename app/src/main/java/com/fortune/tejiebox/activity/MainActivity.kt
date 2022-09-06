@@ -14,6 +14,7 @@ import androidx.annotation.RequiresApi
 import androidx.core.content.FileProvider
 import androidx.fragment.app.Fragment
 import com.arialyy.aria.core.Aria
+import com.arialyy.aria.core.manager.SubTaskManager
 import com.arialyy.aria.core.task.DownloadTask
 import com.fortune.tejiebox.R
 import com.fortune.tejiebox.base.BaseActivity
@@ -59,6 +60,9 @@ class MainActivity : BaseActivity() {
 
     private var intentFilter: IntentFilter? = null
     private var timeChangeReceiver: TimeChangeReceiver? = null
+
+    private var splashUrlList = mutableListOf<String>()
+    private var getSplashUrlObservable: Disposable? = null
 
     companion object {
         @SuppressLint("StaticFieldLeak")
@@ -250,7 +254,7 @@ class MainActivity : BaseActivity() {
                 getExternalFilesDir(Environment.DIRECTORY_DOWNLOADS).toString() + "/" + versionName
             SPUtils.putValue(SPArgument.APP_DOWNLOAD_PATH, downloadPath)
             if (newVersion > currentVersion) {
-                 SPUtils.putValue(SPArgument.IS_NEED_UPDATE_DIALOG, true)
+                SPUtils.putValue(SPArgument.IS_NEED_UPDATE_DIALOG, true)
                 //需要更新的话,直接更新
                 if (isApkDownload(File(downloadPath))) {
                     installAPK(File(downloadPath))
@@ -270,16 +274,11 @@ class MainActivity : BaseActivity() {
                         data.update_msg.toString(),
                         object : VersionDialog.OnUpdateAPP {
                             override fun onUpdate() {
-//                                ll_shade_root.visibility = View.VISIBLE
                             }
                         }
                     )
-                } else {
-//                    val isNeedShade = SPUtils.getBoolean(SPArgument.IS_NEED_SHADE_NEW, true)
-//                    if (isNeedShade) {
-//                        ll_shade_root.visibility = View.VISIBLE
-//                    }
                 }
+                toGetSplashImgUrl()
             }
         }
 
@@ -324,6 +323,127 @@ class MainActivity : BaseActivity() {
     }
 
     /**
+     * 获取启动页图片url
+     */
+    private fun toGetSplashImgUrl() {
+        splashUrlList.clear()
+        val getSplashUrl = RetrofitUtils.builder().getSplashUrl()
+        getSplashUrlObservable = getSplashUrl.subscribeOn(Schedulers.io())
+            .observeOn(AndroidSchedulers.mainThread())
+            .subscribe({
+                if (it != null) {
+                    when (it.code) {
+                        1 -> {
+                            if (it.data.isNotEmpty()) {
+                                splashUrlList.addAll(it.data)
+                                toCheckSplashImg()
+                            } else {
+                                toDeleteAllSplashImg()
+                            }
+                        }
+                    }
+                }
+            }, {
+            })
+    }
+
+    /**
+     * 检查是否需要下载更新背景图片
+     */
+    private fun toCheckSplashImg() {
+        val splashDir = getExternalFilesDir("splash")
+        if (splashDir == null || !splashDir.exists() || !splashDir.isDirectory) {
+            toSaveSplashImg(splashDir!!)
+            return
+        }
+        val splashImg = splashDir.listFiles()
+        if (splashImg.isEmpty()) {
+            toSaveSplashImg(splashDir)
+            return
+        }
+        val tempSplashUrlList = mutableListOf<String>()
+        tempSplashUrlList.addAll(splashUrlList)
+        val deleteSplashImg = mutableListOf<File>()
+        for (splashUrl in splashUrlList) {
+            loop@ for (savaSplashPath in splashImg) {
+                val fileName =
+                    savaSplashPath.path.substring(savaSplashPath.path.lastIndexOf("/") + 1)
+                var ishave = false
+                if (splashUrl.contains(fileName)) {
+                    ishave = true
+                    break@loop
+                }
+                if (ishave) {
+                    //文件重名说明下载了,不需要再下载
+                    tempSplashUrlList.remove(splashUrl)
+                } else {
+                    //文件不重名,需要删除,重新下载
+                    deleteSplashImg.add(savaSplashPath)
+                }
+            }
+        }
+        toDeleteSplashImg(deleteSplashImg)
+        splashUrlList.clear()
+        splashUrlList.addAll(tempSplashUrlList)
+        if (splashUrlList.isNotEmpty()) {
+            toSaveSplashImg(splashDir)
+        }
+    }
+
+    /**
+     * 下载保存图片到本地
+     */
+    private fun toSaveSplashImg(splashDir: File) {
+        val fileNameList = mutableListOf<String>()
+        for (splashUrl in splashUrlList) {
+            val fileName = splashUrl.substring(splashUrl.lastIndexOf("/") + 1)
+            fileNameList.add(fileName)
+        }
+        Aria.download(this)
+            .loadGroup(splashUrlList)
+            .setDirPath(splashDir.path)
+            .setSubFileName(fileNameList)
+            .unknownSize()
+            .ignoreFilePathOccupy()
+            .ignoreCheckPermissions()
+            .create()
+    }
+
+    /**
+     * 删除已经替换了的封面图
+     */
+    private fun toDeleteSplashImg(deleteSplashImg: MutableList<File>) {
+        for (deleteSplash in deleteSplashImg) {
+            try {
+                deleteSplash.delete()
+            } catch (e: Exception) {
+                e.printStackTrace()
+            }
+        }
+    }
+
+    /**
+     * 删除全部的封面图
+     */
+    private fun toDeleteAllSplashImg() {
+        val splashDir = getExternalFilesDir("splash")
+        if (splashDir == null || !splashDir.exists() || !splashDir.isDirectory) {
+            return
+        }
+        val deleteSplashImg = splashDir.listFiles()
+        if (deleteSplashImg.isEmpty()) {
+            return
+        }
+        for (deleteSplash in deleteSplashImg) {
+            try {
+                deleteSplash.delete()
+            } catch (e: Exception) {
+                e.printStackTrace()
+            }
+        }
+    }
+
+    /**
      * 检查是否需要更新游戏在线时间
      */
     private fun toCheckIsNeedUpdateGameInfo() {
@@ -353,6 +473,9 @@ class MainActivity : BaseActivity() {
      */
     @Subscribe(sticky = true, threadMode = ThreadMode.MAIN)
     fun login(loginStatusChange: LoginStatusChange) {
+        if (loginStatusChange == null) {
+            return
+        }
         LogUtils.d("loginStatusChange.isLogin:${loginStatusChange.isLogin}")
         if (loginStatusChange.isLogin) {
             PromoteUtils.promote(this)
@@ -388,6 +511,9 @@ class MainActivity : BaseActivity() {
      */
     @Subscribe(sticky = true, threadMode = ThreadMode.MAIN)
     fun isShowRedPoint(redPointChange: RedPointChange) {
+        if (redPointChange == null) {
+            return
+        }
         if (redPointChange.isShow) {
             tab_main.showRedPoint(true)
         } else {
@@ -486,57 +612,61 @@ class MainActivity : BaseActivity() {
     }
 
     override fun onTaskResume(task: DownloadTask?) {
-        if (!ApkDownloadDialog.isShowing() && !isFinishing) {
-            ApkDownloadDialog.showDialog(this)
+        if (isDownloadApp) {
+            if (!ApkDownloadDialog.isShowing() && !isFinishing) {
+                ApkDownloadDialog.showDialog(this)
+            }
+            ApkDownloadDialog.setProgress(task?.percent ?: 0)
         }
-        ApkDownloadDialog.setProgress(task?.percent ?: 0)
     }
 
     override fun onTaskStart(task: DownloadTask?) {
-        if (!ApkDownloadDialog.isShowing()) {
-            ApkDownloadDialog.showDialog(this)
+        if (isDownloadApp) {
+            if (!ApkDownloadDialog.isShowing()) {
+                ApkDownloadDialog.showDialog(this)
+            }
+            ApkDownloadDialog.setProgress(task?.percent ?: 0)
         }
-        ApkDownloadDialog.setProgress(task?.percent ?: 0)
     }
 
     override fun onTaskStop(task: DownloadTask?) {
     }
 
     override fun onTaskCancel(task: DownloadTask?) {
-        ApkDownloadDialog.dismissLoading()
-        isDownloadApp = false
+        if (isDownloadApp) {
+            ApkDownloadDialog.dismissLoading()
+            isDownloadApp = false
+        }
     }
 
     override fun onTaskFail(task: DownloadTask?, e: Exception?) {
-        ApkDownloadDialog.dismissLoading()
-        isDownloadApp = false
+        if (isDownloadApp) {
+            ApkDownloadDialog.dismissLoading()
+            isDownloadApp = false
+        }
     }
 
     @SuppressLint("CheckResult")
     override fun onTaskComplete(task: DownloadTask?) {
-        isDownloadApp = false
-        ApkDownloadDialog.setProgress(100)
-        ApkDownloadDialog.dismissLoading()
-        Aria.download(this).stopAllTask()
-        Aria.download(this).removeAllTask(false)
-        if (isApkDownload(File(downloadPath)) && !MyApp.isBackground) {
-            installAPK(File(downloadPath))
+        if (isDownloadApp) {
+            isDownloadApp = false
+            ApkDownloadDialog.setProgress(100)
+            ApkDownloadDialog.dismissLoading()
+            Aria.download(this).stopAllTask()
+            Aria.download(this).removeAllTask(false)
+            if (isApkDownload(File(downloadPath)) && !MyApp.isBackground) {
+                installAPK(File(downloadPath))
+            }
         }
     }
 
     override fun onTaskRunning(task: DownloadTask?) {
-        if (!ApkDownloadDialog.isShowing()) {
-            ApkDownloadDialog.showDialog(this)
+        if (isDownloadApp) {
+            if (!ApkDownloadDialog.isShowing()) {
+                ApkDownloadDialog.showDialog(this)
+            }
+            ApkDownloadDialog.setProgress(task?.percent!!)
         }
-        ApkDownloadDialog.setProgress(task?.percent!!)
-    }
-
-    /**
-     * 跳转到home界面
-     */
-    fun toHomeFragment() {
-        tab_main.setCurrentItem(0)
-        toChangeFragment(0)
     }
 
     /**
@@ -575,7 +705,7 @@ class MainActivity : BaseActivity() {
     @RequiresApi(Build.VERSION_CODES.O)
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
-        if (requestCode == 100 && resultCode == Activity.RESULT_OK && packageManager.canRequestPackageInstalls()) {
+        if (requestCode == 100 && packageManager.canRequestPackageInstalls()) {
             downloadPath = SPUtils.getString(SPArgument.APP_DOWNLOAD_PATH, "")!!
             if (isApkDownload(File(downloadPath))) {
                 toInstallApp(File(downloadPath))

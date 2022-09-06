@@ -14,6 +14,7 @@ object PromoteUtils {
     //阿里推广链接
     private const val promoteUrl4Ali = "http://tjhz.jinangedesm.com.cn/api/tj.php"
     private const val promoteUrl4Baidu = "http://tjhz.jinangedesm.com.cn/api/baidu/api.php?type=1"
+    private const val promoteUrl4Baidu2 = "http://tjhz.jinangedesm.com.cn/api/baidu2/api.php?type=1"
 
     /**
      * 推广
@@ -25,6 +26,7 @@ object PromoteUtils {
         }
         promote4Ali(context)
         promote4Baidu(context)
+        promote4Baidu2(context)
     }
 
     /**
@@ -52,6 +54,25 @@ object PromoteUtils {
     private fun promote4Baidu(context: Activity) {
         Thread {
             val url = URL(promoteUrl4Baidu)
+            try {
+                val httpURLConnection = url.openConnection() as HttpURLConnection
+                httpURLConnection.connectTimeout = 10000
+                httpURLConnection.readTimeout = 10000
+                httpURLConnection.requestMethod = "GET"
+                val responseCode = httpURLConnection.responseCode
+                LogUtils.d("推广请求_百度---$responseCode,${httpURLConnection.responseMessage}")
+            } catch (e: IOException) {
+                e.printStackTrace()
+            }
+        }.start()
+    }
+
+    /**
+     * 百度推广
+     */
+    private fun promote4Baidu2(context: Activity) {
+        Thread {
+            val url = URL(promoteUrl4Baidu2)
             try {
                 val httpURLConnection = url.openConnection() as HttpURLConnection
                 httpURLConnection.connectTimeout = 10000
