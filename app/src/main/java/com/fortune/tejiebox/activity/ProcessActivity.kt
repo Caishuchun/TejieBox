@@ -3,8 +3,6 @@ package com.fortune.tejiebox.activity
 import android.annotation.SuppressLint
 import com.fortune.tejiebox.R
 import com.fortune.tejiebox.base.BaseActivity
-import com.fortune.tejiebox.utils.ToastUtils
-import kotlinx.android.synthetic.main.activity_process.*
 
 class ProcessActivity : BaseActivity() {
     companion object {

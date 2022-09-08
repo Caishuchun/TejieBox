@@ -92,7 +92,7 @@ class CrashHandler private constructor() : Thread.UncaughtExceptionHandler {
             Environment.MEDIA_MOUNTED
         ) {
             try { //这里我并不需要存很多错误日志，只能存一个
-                val path = mContext!!.getExternalFilesDir("log")?.path
+                val path = mContext!!.getExternalFilesDir("tj_error_log")?.path
                 val dir = File(path)
                 if (!dir.exists()) {
                     dir.mkdirs()

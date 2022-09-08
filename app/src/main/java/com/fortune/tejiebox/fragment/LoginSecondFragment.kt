@@ -173,6 +173,10 @@ class LoginSecondFragment() : Fragment() {
                             EventBus.getDefault()
                                 .postSticky(LoginStatusChange(true, it.data?.phone))
                             (activity as LoginActivity).finish()
+
+                            if (it.data?.first_login == 1) {
+                                PromoteUtils.promote(requireActivity())
+                            }
                         }
                         else -> {
                             it.msg?.let { it1 -> ToastUtils.show(it1) }

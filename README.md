@@ -5,6 +5,10 @@
 2. git config --global http.proxy 127.0.0.1:7890
 3. git config --global https.proxy 127.0.0.1:7890
 
+### V3.0.5
+1. 微信充值修复
+2. 推广和51统计
+
 ### V3.0.3
 1. 启动游戏走子进程
 2. 更新进度条优化,字线分离

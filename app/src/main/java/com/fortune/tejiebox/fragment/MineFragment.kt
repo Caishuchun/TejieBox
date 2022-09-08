@@ -122,7 +122,7 @@ class MineFragment : Fragment() {
         }
 
         mView?.tv_mineFragment_version?.let {
-            it.text = "V ${MyApp.getInstance().getVersion()}"
+            it.text = "V${MyApp.getInstance().getVersion()}"
         }
         mView?.tv_mineFragment_cache?.let {
             it.text = CacheUtils.getCacheSize()

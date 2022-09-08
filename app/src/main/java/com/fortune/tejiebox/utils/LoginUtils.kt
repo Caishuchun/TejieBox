@@ -346,6 +346,10 @@ object LoginUtils {
                                 .postSticky(LoginStatusChange(true, it.data?.phone))
                             helper?.hideLoginLoading()
                             helper?.quitLoginPage()
+
+                            if (it.data?.first_login == 1) {
+                                PromoteUtils.promote(activity)
+                            }
                         }
                         else -> {
                             helper?.hideLoginLoading()

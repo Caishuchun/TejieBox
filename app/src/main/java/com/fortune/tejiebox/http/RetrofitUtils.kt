@@ -47,7 +47,7 @@ object RetrofitUtils {
                     .removeHeader("User-Agent")
                     .addHeader(
                         "User-Agent",
-                        "HFDD-APP/Android/${
+                        "TejieBox-APP/Android/${
                             MyApp.getInstance().getVersion()
                         }${BaseAppUpdateSetting.patch}"
                     )

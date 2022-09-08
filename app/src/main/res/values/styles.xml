@@ -20,11 +20,6 @@
         <item name="android:windowBackground">@drawable/splash</item>
     </style>
 
-    <!--为了进游戏不再出现白屏而设置的主题样式-->
-    <style name="NoWhiteScreenTheme" parent="NormalTheme">
-        <item name="android:windowBackground">@color/color_transparent</item>
-    </style>
-
     <!-- 等待对话框样式 -->
     <style name="new_circle_progress" parent="@android:style/Theme.Dialog">
         <item name="android:windowFrame">@null</item>

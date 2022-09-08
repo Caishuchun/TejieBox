@@ -317,7 +317,7 @@ class MainActivity : BaseActivity() {
                 )
                 startActivity(intent)
             }
-        }, 200)
+        }, 1000)
 
         toCheckIsNeedUpdateGameInfo()
     }
@@ -478,7 +478,6 @@ class MainActivity : BaseActivity() {
         }
         LogUtils.d("loginStatusChange.isLogin:${loginStatusChange.isLogin}")
         if (loginStatusChange.isLogin) {
-            PromoteUtils.promote(this)
             toCheckCanGetIntegral()
             when (mainPage) {
                 MainPage.MAIN -> {

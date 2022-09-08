@@ -17,25 +17,30 @@ object ClipboardUtils {
      * 获取剪切板数据
      */
     fun getClipboardContent(activity: Activity): String {
-        if (manager == null) {
-            manager = activity.getSystemService(Context.CLIPBOARD_SERVICE) as ClipboardManager
-        }
-        val primaryClip = manager?.primaryClip
-        if (primaryClip == null || primaryClip.itemCount <= 0) {
+        try {
+            if (manager == null) {
+                manager = activity.getSystemService(Context.CLIPBOARD_SERVICE) as ClipboardManager
+            }
+            val primaryClip = manager?.primaryClip
+            if (primaryClip == null || primaryClip.itemCount <= 0) {
+                return ""
+            }
+            val item0Content = primaryClip.getItemAt(0)
+            //清空剪切板
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
+                //api28以上
+                manager?.clearPrimaryClip()
+            } else {
+                manager?.setPrimaryClip(ClipData(null))
+            }
+            return if (item0Content == null || item0Content.text == null) {
+                ""
+            } else {
+                item0Content.text.toString()
+            }
+        } catch (e: Exception) {
+            e.printStackTrace()
             return ""
-        }
-        val item0Content = primaryClip.getItemAt(0)
-        //清空剪切板
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
-            //api28以上
-            manager?.clearPrimaryClip()
-        } else {
-            manager?.setPrimaryClip(ClipData(null))
-        }
-        return if (item0Content == null || item0Content.text == null) {
-            ""
-        } else {
-            item0Content.text.toString()
         }
     }
 
@@ -43,10 +48,14 @@ object ClipboardUtils {
      * 填充数据到剪切板
      */
     fun setClipboardContent(activity: Activity, content: String) {
-        if (manager == null) {
-            manager = activity.getSystemService(Context.CLIPBOARD_SERVICE) as ClipboardManager
+        try {
+            if (manager == null) {
+                manager = activity.getSystemService(Context.CLIPBOARD_SERVICE) as ClipboardManager
+            }
+            val mClipData = ClipData.newPlainText("特戒盒子", content)
+            manager?.setPrimaryClip(mClipData)
+        }catch (e:Exception){
+            e.printStackTrace()
         }
-        val mClipData = ClipData.newPlainText("特戒盒子", content)
-        manager?.setPrimaryClip(mClipData)
     }
 }

@@ -207,12 +207,9 @@ class GameFragment : Fragment() {
                 //在玩和收藏,描述替换成在线时长
                 if (type == 0) {
                     itemView.tv_item_gameFragment_des.text = itemData.game_desc
-                    itemView.tv_item_gameFragment_des.setTextColor(Color.parseColor("#767676"))
                 } else {
                     itemView.tv_item_gameFragment_des.text =
                         timeFormat(itemData.duration_sum.toLong())
-//                        timeFormat(Random.nextLong(24 * 60 * 60 * 100))
-                    itemView.tv_item_gameFragment_des.setTextColor(Color.parseColor("#16cd41"))
                 }
 
                 RxView.clicks(itemView)

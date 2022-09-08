@@ -3,8 +3,11 @@ package com.fortune.tejiebox.myapp
 import android.annotation.SuppressLint
 import android.app.Activity
 import android.app.Application
+import android.content.Context
 import android.graphics.*
+import android.os.Build
 import android.os.Bundle
+import android.webkit.WebView
 import com.fortune.tejiebox.base.BaseAppUpdateSetting
 import com.fortune.tejiebox.constants.SPArgument
 import com.fortune.tejiebox.utils.*
@@ -81,6 +84,24 @@ class MyApp : Application() {
             override fun onActivityDestroyed(activity: Activity) {
             }
         })
+    }
+
+    override fun attachBaseContext(base: Context?) {
+        super.attachBaseContext(base)
+        fixWebViewDataDirectoryBug()
+    }
+
+    /**
+     * 由于开启子线程用来玩游戏,webView会出现问题,该方法就是用来修复这个bug的
+     */
+    private fun fixWebViewDataDirectoryBug() {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
+            val processName = getProcessName()
+            val packageName = this.packageName
+            if (packageName != processName) {
+                WebView.setDataDirectorySuffix(processName)
+            }
+        }
     }
 
     override fun onTrimMemory(level: Int) {
