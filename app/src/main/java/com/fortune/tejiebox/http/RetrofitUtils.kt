@@ -16,9 +16,7 @@ import retrofit2.http.*
 import java.util.concurrent.TimeUnit
 
 /**
- * Author: 蔡小树
- * Time: 2019/12/26 14:44
- * Description:
+ * Retrofit工具类
  */
 
 object RetrofitUtils {
@@ -345,7 +343,9 @@ object RetrofitUtils {
          * 获取游戏充值基数
          */
         @GET(HttpUrls.GET_GIFT_CODE)
-        fun getGiftCode(): Flowable<GetGiftCodeBean>
+        fun getGiftCode(
+            @Query("code", encoded = true) code: String
+        ): Flowable<GetGiftCodeBean>
 
         /**
          * 获取游戏充值基数

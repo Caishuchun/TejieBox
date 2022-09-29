@@ -4,9 +4,7 @@ import com.fortune.tejiebox.base.BaseAppUpdateSetting
 import com.orhanobut.logger.Logger
 
 /**
- * Author: 蔡小树
- * Time: 2020/4/14 9:48
- * Description: log工具类
+ * 日志工具类
  */
 
 object LogUtils {

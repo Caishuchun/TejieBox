@@ -65,7 +65,7 @@ class MineFragment : Fragment() {
     @SuppressLint("SetTextI18n")
     private fun getIntegral(needDialog: Boolean = true) {
         mView?.tv_mineFragment_integral?.let {
-            it.text = "0积分"
+            it.text = "0元"
         }
         val getIntegral = RetrofitUtils.builder().getIntegral()
         getIntegralObservable = getIntegral.subscribeOn(Schedulers.io())
@@ -77,7 +77,7 @@ class MineFragment : Fragment() {
                         1 -> {
                             SPUtils.putValue(SPArgument.INTEGRAL, it.data.integral)
                             mView?.tv_mineFragment_integral?.let { tv ->
-                                tv.text = "${it.data.integral}积分"
+                                tv.text = "${it.data.integral / 10}元"
                             }
                         }
                         -1 -> {
@@ -136,7 +136,7 @@ class MineFragment : Fragment() {
                 )
                 .subscribe {
                     if (MyApp.getInstance().isHaveToken()) {
-                        requireContext().startActivity(
+                        requireActivity().startActivity(
                             Intent(
                                 requireContext(),
                                 ChangePhone1Activity::class.java
@@ -159,7 +159,7 @@ class MineFragment : Fragment() {
                         val isHaveId = SPUtils.getInt(SPArgument.IS_HAVE_ID)
                         val intent = Intent(requireContext(), IdCardActivity::class.java)
                         intent.putExtra(IdCardActivity.FROM, isHaveId)
-                        requireContext().startActivity(intent)
+                        requireActivity().startActivity(intent)
                     } else {
                         LoginUtils.toQuickLogin(requireActivity())
                     }
@@ -174,7 +174,7 @@ class MineFragment : Fragment() {
                 )
                 .subscribe {
                     if (MyApp.getInstance().isHaveToken()) {
-                        requireContext().startActivity(
+                        requireActivity().startActivity(
                             Intent(
                                 requireContext(),
                                 GiftActivity::class.java
@@ -263,7 +263,7 @@ class MineFragment : Fragment() {
             getIntegral()
         } else {
             mView?.tv_mineFragment_integral?.let {
-                it.text = "0积分"
+                it.text = "0元"
             }
         }
     }
@@ -285,7 +285,7 @@ class MineFragment : Fragment() {
         if (integralChange.integral >= 0) {
             SPUtils.putValue(SPArgument.INTEGRAL, integralChange.integral)
             mView?.tv_mineFragment_integral?.let {
-                it.text = "${integralChange.integral}积分"
+                it.text = "${integralChange.integral / 10}元"
             }
         }
     }

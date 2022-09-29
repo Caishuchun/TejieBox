@@ -2,7 +2,6 @@ package com.fortune.tejiebox.fragment
 
 import android.annotation.SuppressLint
 import android.content.Intent
-import android.graphics.Color
 import android.graphics.drawable.Drawable
 import android.os.Bundle
 import android.view.LayoutInflater
@@ -42,6 +41,7 @@ import kotlinx.android.synthetic.main.item_game_fragment_game.view.*
 import org.greenrobot.eventbus.EventBus
 import org.greenrobot.eventbus.Subscribe
 import org.greenrobot.eventbus.ThreadMode
+import java.text.DecimalFormat
 import java.util.concurrent.TimeUnit
 
 private const val TYPE = "type"
@@ -121,7 +121,9 @@ class GameFragment : Fragment() {
             RxView.clicks(it)
                 .throttleFirst(200, TimeUnit.MILLISECONDS)
                 .subscribe {
-                    startActivity(Intent(requireContext(), SearchGameActivity::class.java))
+                    requireActivity().startActivity(
+                        Intent(requireContext(), SearchGameActivity::class.java)
+                    )
                 }
         }
 
@@ -209,7 +211,7 @@ class GameFragment : Fragment() {
                     itemView.tv_item_gameFragment_des.text = itemData.game_desc
                 } else {
                     itemView.tv_item_gameFragment_des.text =
-                        timeFormat(itemData.duration_sum.toLong())
+                        timeFormat4Hours(itemData.duration_sum.toLong())
                 }
 
                 RxView.clicks(itemView)
@@ -217,7 +219,7 @@ class GameFragment : Fragment() {
                     .subscribe {
                         val intent = Intent(requireActivity(), GameDetailActivity::class.java)
                         intent.putExtra(GameDetailActivity.GAME_ID, itemData.game_id)
-                        requireContext().startActivity(intent)
+                        requireActivity().startActivity(intent)
                     }
 
                 RxView.longClicks(itemView)
@@ -233,7 +235,7 @@ class GameFragment : Fragment() {
                     .subscribe {
                         DialogUtils.showDefaultDialog(requireContext(),
                             "删除游戏",
-                            "确定从${if (type == 0) "在玩列表" else "收藏列表"}中删除\"${itemData.game_name}\"吗?",
+                            "确定从${if (type == 1) "在玩列表" else "收藏列表"}中删除\"${itemData.game_name}\"吗?",
                             "取消",
                             "确认",
                             object : DialogUtils.OnDialogListener {
@@ -306,40 +308,21 @@ class GameFragment : Fragment() {
     }
 
     /**
-     * 格式化在线时长  XX天XX时XX分
+     * 格式化在线时长 "在线XX.X小时"
      */
-    private fun timeFormat(time: Long): String {
-        return if (time < 60L * 60L) {
-            //一小时内
-            val minutes = time / 60L
-            "${minutes}分钟"
-        } else if (time < 60L * 60L * 24) {
-            //一天内
-            val hours = time / (60L * 60L)
-            val other = time - hours * (60L * 60L)
-            val minutes = other / 60L
-            if (minutes == 0L) {
-                "${hours}小时"
-            } else {
-                "${hours}小时${minutes}分钟"
-            }
+    private fun timeFormat4Hours(time: Long): String {
+        var hours = if (time <= 0L) {
+            0.1
         } else {
-            //很多天
-            val days = time / (60L * 60L * 24)
-            val other = time - days * (60L * 60L * 24)
-            val hours = other / (60L * 60L)
-            val other2 = other - hours * (60L * 60L)
-            val minutes = other2 / 60L
-            if (hours == 0L) {
-                if (minutes == 0L) {
-                    "${days}天"
-                } else {
-                    "${days}天${minutes}分钟"
-                }
-            } else {
-                "${days}天${hours}小时"
-            }
+            val hour = time.toFloat() / (60L * 60L)
+            val decimalFormat = DecimalFormat("##0.0")
+            val format = decimalFormat.format(hour)
+            format.toDouble()
         }
+        if (hours < 0.1) {
+            hours = 0.1
+        }
+        return "在线${hours}小时"
     }
 
     /**
@@ -517,7 +500,9 @@ class GameFragment : Fragment() {
         if (data == null) {
             return
         }
-        getInfo(false)
+        if (type == 2) {
+            getInfo(false)
+        }
     }
 
     @Subscribe(threadMode = ThreadMode.MAIN)
@@ -525,7 +510,9 @@ class GameFragment : Fragment() {
         if (data == null) {
             return
         }
-        getInfo(false)
+        if (type == 1) {
+            getInfo(false)
+        }
     }
 
     @Subscribe(sticky = true, threadMode = ThreadMode.MAIN)

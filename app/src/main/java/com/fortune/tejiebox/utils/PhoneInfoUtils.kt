@@ -20,9 +20,7 @@ import kotlin.math.ceil
 
 
 /**
- * Author: 蔡小树
- * Time: 2019/12/26 11:20
- * Description:
+ * PhoneInfoUtils
  */
 
 object PhoneInfoUtils {

@@ -9,20 +9,22 @@
     android:orientation="vertical">
 
     <TextView
-        android:id="@+id/tv_item_integral"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="1000积分"
-        android:textColor="#f14744"
-        android:textSize="@dimen/sp_14" />
-
-    <TextView
         android:id="@+id/tv_item_recharge"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="@dimen/dp_2"
-        android:text="10元充值"
+        android:layout_marginBottom="@dimen/dp_2"
+        android:text="使用余额"
         android:textColor="#626262"
-        android:textSize="@dimen/sp_12" />
+        android:textSize="@dimen/sp_12"
+        android:visibility="gone" />
+
+    <TextView
+        android:id="@+id/tv_item_integral"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="100元充值"
+        android:textColor="#f14744"
+        android:textSize="@dimen/sp_14" />
+
 
 </LinearLayout>

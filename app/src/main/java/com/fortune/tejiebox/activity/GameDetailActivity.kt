@@ -45,6 +45,7 @@ import java.text.SimpleDateFormat
 import java.util.*
 import java.util.concurrent.TimeUnit
 
+
 class GameDetailActivity : BaseActivity() {
     private var gameInfoObservable: Disposable? = null
     private lateinit var picAdapter: BaseAdapterWithPosition<String>
@@ -72,12 +73,10 @@ class GameDetailActivity : BaseActivity() {
         const val GAME_CHANNEL_ID = "game_channel_id"
     }
 
-
     override fun getLayoutId() = R.layout.activity_game_detail_v2
 
     override fun doSomething() {
         StatusBarUtils.setTextDark(this, false)
-
         instance = this
         gameId = intent.getIntExtra(GAME_ID, -1)
         gameChannelId = intent.getStringExtra(GAME_CHANNEL_ID)
@@ -321,7 +320,7 @@ class GameDetailActivity : BaseActivity() {
      * 获取游戏数据
      */
     private fun getInfo() {
-        DialogUtils.showBeautifulDialog(this)
+//        DialogUtils.showBeautifulDialog(this)
         val gameInfo = if (null == gameChannelId) {
             RetrofitUtils.builder().gameInfo(game_id = gameId)
         } else {
@@ -567,8 +566,8 @@ class GameDetailActivity : BaseActivity() {
                         }, {})
                 }
             }
-            SPUtils.putValue(SPArgument.GAME_TIME_INFO, null)
         }
+        SPUtils.putValue(SPArgument.GAME_TIME_INFO, null)
     }
 
     override fun onPause() {

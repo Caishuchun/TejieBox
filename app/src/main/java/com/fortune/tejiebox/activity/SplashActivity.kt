@@ -172,7 +172,7 @@ class SplashActivity : BaseActivity() {
                 if (isFirst) {
                     isFirst = false
                 }
-                if (countDownTime > 0) {
+                if (countDownTime >= 0) {
                     tv_splash_countDown.text = countDownTime.toString()
                     countDownTime--
                 } else {
@@ -224,7 +224,6 @@ class SplashActivity : BaseActivity() {
      */
     @SuppressLint("CheckResult")
     private fun toMain() {
-        SPUtils.putValue(SPArgument.TIME_4_PHONE_CHARGE, System.currentTimeMillis())
         SPUtils.putValue(SPArgument.IS_LOGIN, true)
         startActivity(Intent(this, MainActivity::class.java))
         finish()

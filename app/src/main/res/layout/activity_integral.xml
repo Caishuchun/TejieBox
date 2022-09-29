@@ -27,7 +27,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_centerInParent="true"
-            android:text="积分兑换"
+            android:text="游戏充值"
             android:textColor="#0A0422"
             android:textSize="@dimen/sp_18"
             android:textStyle="bold" />

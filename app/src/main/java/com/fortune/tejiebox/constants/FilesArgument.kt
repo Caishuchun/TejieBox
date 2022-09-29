@@ -1,9 +1,7 @@
 package com.fortune.tejiebox.constants
 
 /**
- * Author: 蔡小树
- * Time: 2020/4/14 18:14
- * Description:
+ * 协议地址
  */
 
 object FilesArgument {

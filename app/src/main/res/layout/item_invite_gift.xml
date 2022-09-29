@@ -11,8 +11,8 @@
 
     <com.fortune.tejiebox.widget.RoundImageView
         android:id="@+id/iv_item_gift_from"
-        android:layout_width="@dimen/dp_38"
-        android:layout_height="@dimen/dp_38"
+        android:layout_width="@dimen/dp_32"
+        android:layout_height="@dimen/dp_32"
         android:layout_centerInParent="true"
         android:scaleType="centerCrop"
         android:src="@mipmap/icon"

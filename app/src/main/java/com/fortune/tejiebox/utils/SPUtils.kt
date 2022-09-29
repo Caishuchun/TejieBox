@@ -6,9 +6,7 @@ import com.fortune.tejiebox.constants.SPArgument
 import com.fortune.tejiebox.myapp.MyApp
 
 /**
- * Author: 蔡小树
- * Time: 2020/4/14 9:53
- * Description: SP 工具类
+ * Sp存储工具类
  */
 
 object SPUtils {

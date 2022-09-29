@@ -79,7 +79,7 @@ class InviteGiftFragment : Fragment() {
      */
     @SuppressLint("SetTextI18n")
     private fun getShareList() {
-        DialogUtils.showBeautifulDialog(requireContext())
+//        DialogUtils.showBeautifulDialog(requireContext())
         val getShareList = RetrofitUtils.builder().getShareList()
         getShareListObservable = getShareList.subscribeOn(Schedulers.io())
             .observeOn(AndroidSchedulers.mainThread())
@@ -92,7 +92,7 @@ class InviteGiftFragment : Fragment() {
                             if (it.getData() != null) {
                                 shareReward = it.getData()?.share_reward!!
                                 inviteReward = it.getData()?.invite_reward!!
-                                mView?.tv_inviteGift_inviteMoney?.text = "+$inviteReward"
+                                mView?.tv_inviteGift_inviteMoney?.text = "+${inviteReward / 10}元"
                                 if (it.getData()?.list != null) {
                                     mData.clear()
                                     for (data in it.getData()!!.list!!) {
@@ -165,13 +165,13 @@ class InviteGiftFragment : Fragment() {
             .addBindView { itemView, itemData, position ->
                 itemView.iv_item_gift_from.setImageResource(
                     when (itemData.channel) {
-                        "wx" -> R.mipmap.gift_wechat
-                        "qq" -> R.mipmap.gift_qq
+                        "wx" -> R.mipmap.gift_qq
+                        "qq" -> R.mipmap.gift_wechat
                         else -> R.mipmap.icon
                     }
                 )
                 itemView.tv_item_gift_name.text = "成功邀请${itemData.user?.user_phone ?: "特戒盒子"}获得"
-                itemView.tv_item_gift_integral.text = inviteReward.toString()
+                itemView.tv_item_gift_integral.text = "+${inviteReward / 10}元"
                 when (itemData.receive) {
                     0 -> {
                         //没有领取
@@ -270,7 +270,7 @@ class InviteGiftFragment : Fragment() {
                                 (activity as GiftActivity).isFirstCreate = false
                                 SPUtils.putValue(SPArgument.INTEGRAL, it.getData()?.user_integral)
                                 DialogActivity.showGetIntegral(
-                                    requireContext(),
+                                    requireActivity(),
                                     inviteReward,
                                     true,
                                     object : DialogActivity.OnCallback {

@@ -71,7 +71,7 @@ class GiftActivity : BaseActivity() {
      */
     @SuppressLint("SetTextI18n")
     private fun getIntegral() {
-        DialogUtils.showBeautifulDialog(this)
+//        DialogUtils.showBeautifulDialog(this)
         val getIntegral = RetrofitUtils.builder().getIntegral()
         getIntegralObservable = getIntegral.subscribeOn(Schedulers.io())
             .observeOn(AndroidSchedulers.mainThread())
@@ -80,7 +80,7 @@ class GiftActivity : BaseActivity() {
                 when (it.code) {
                     1 -> {
                         SPUtils.putValue(SPArgument.INTEGRAL, it.data.integral)
-                        tv_gift_integral.text = "${it.data.integral}"
+                        tv_gift_integral.text = "${it.data.integral / 10}元"
                         EventBus.getDefault().postSticky(IntegralChange(it.data.integral))
                     }
                     -1 -> {
@@ -119,6 +119,8 @@ class GiftActivity : BaseActivity() {
                 toChangeFragment(index)
             }
         })
+
+        tv_gift_tips.text = "进入任一游戏详情页 --> 点击\"免费充值\" --> 选择区服角色 --> 选择充值金额 --> 点击\"确认充值\" --> 充值成功"
     }
 
     private fun toChangeFragment(index: Int) {
@@ -167,17 +169,17 @@ class GiftActivity : BaseActivity() {
             return
         }
         if (integralChange.integral > 0) {
-            val oldIntegral = tv_gift_integral.text.toString().trim().toInt()
+            val oldIntegral = tv_gift_integral.text.toString().trim().replace("元", "").toInt() * 10
             val newIntegral = integralChange.integral
             SPUtils.putValue(SPArgument.INTEGRAL, newIntegral)
             if (oldIntegral == newIntegral) {
                 return
             }
             val animator = ValueAnimator.ofInt(oldIntegral, newIntegral)
-            animator.duration = 1000
+            animator.duration = 500
             animator.interpolator = LinearInterpolator()
             animator.addUpdateListener {
-                tv_gift_integral.text = "${animator.animatedValue}"
+                tv_gift_integral.text = "${animator.animatedValue.toString().toInt() / 10}元"
             }
             animator.start()
         }

@@ -9,9 +9,7 @@ import com.fortune.tejiebox.utils.ActivityManager
 import com.fortune.tejiebox.utils.StatusBarUtils
 
 /**
- * Author: 蔡小树
- * Time: 2020/4/14 9:39
- * Description:
+ * Activity基类
  */
 
 abstract class BaseActivity : AppCompatActivity(), DownloadTaskListener {

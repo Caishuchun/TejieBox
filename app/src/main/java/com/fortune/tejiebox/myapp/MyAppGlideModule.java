@@ -13,9 +13,7 @@ import com.bumptech.glide.module.AppGlideModule;
 import com.bumptech.glide.request.RequestOptions;
 
 /**
- * Author: 蔡小树
- * Time: 2020/1/8 16:06
- * Description:
+ * Glide配置
  */
 
 @GlideModule

@@ -33,15 +33,15 @@
             android:textStyle="bold" />
     </RelativeLayout>
 
-
     <TextView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_margin="@dimen/dp_20"
+        android:layout_marginBottom="@dimen/dp_10"
+        android:background="#F7F7F7"
+        android:padding="@dimen/dp_10"
         android:text="根据文化部相关要求，网络游戏用户需要实名认证，请确保所填信息真实有效，认证成功后，不可更改。"
         android:textColor="#0A0422"
         android:textSize="@dimen/sp_12" />
-
 
     <EditText
         android:id="@+id/et_idCard_name"

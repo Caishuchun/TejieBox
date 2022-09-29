@@ -13,6 +13,7 @@
     <style name="NormalTheme" parent="AppTheme">
         <item name="windowNoTitle">true</item>
         <item name="android:windowTranslucentStatus">true</item>
+        <item name="android:windowAnimationStyle">@animator/activity_anim</item>
     </style>
 
     <!--启动页界面主题样式-->

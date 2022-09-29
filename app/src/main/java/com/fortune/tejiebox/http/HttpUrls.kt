@@ -1,9 +1,7 @@
 package com.fortune.tejiebox.http
 
 /**
- * Author: 蔡小树
- * Time: 2020/5/13 上午 10:18
- * Description:
+ * url请求地址
  */
 
 object HttpUrls {

@@ -14,11 +14,21 @@ import java.io.InputStreamReader
 import java.util.*
 import java.util.regex.Pattern
 
-
 /**
- * Author: 蔡小树
- * Time: 2019/12/19 11:26
- * Description:
+ * 工具类
+ * @param isPhone 检查是是不是正确的手机号
+ * @param isPassword 是否是合格的密码
+ * @param isIdCardNum 是否是合格的身份证
+ * @param isDate 是否是合格的日期
+ * @param isEmail 是否是合格的邮件
+ * @param isUrl 是否是个合规的网址
+ * @param isGotOutOfLine 判断文字是否违规
+ * @param showSoftKeyboard 显示软键盘
+ * @param hindKeyboard 隐藏软键盘
+ * @param copy 复制到粘贴板
+ * @param share 分享
+ * @param sendSMS 发送短信
+ * @param px2dp px转dp
  */
 
 object OtherUtils {

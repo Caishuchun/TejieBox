@@ -6,14 +6,12 @@ import com.fortune.tejiebox.activity.MainActivity
 import com.fortune.tejiebox.activity.SplashActivity
 import com.fortune.tejiebox.bean.VersionBean
 import com.fortune.tejiebox.event.LoginStatusChange
-import com.fortune.tejiebox.room.*
+import com.fortune.tejiebox.room.SearchHisDataBase
 import org.greenrobot.eventbus.EventBus
 import kotlin.system.exitProcess
 
 /**
- * Author: 蔡小树
- * Time: 2020/4/14 9:42
- * Description: Activity管理工具类
+ * Activity管理工具类
  */
 
 object ActivityManager {
@@ -56,7 +54,7 @@ object ActivityManager {
      * 退到起始页面
      */
     fun toSplashActivity(activity: Activity) {
-        EventBus.getDefault().postSticky(LoginStatusChange(false,null))
+        EventBus.getDefault().postSticky(LoginStatusChange(false, null))
         VersionBean.clear()
         SPUtils.clear()
         SearchHisDataBase.getDataBase(activity).searchHisDao().deleteAll()
@@ -77,7 +75,7 @@ object ActivityManager {
         SearchHisDataBase.getDataBase(activity).searchHisDao().deleteAll()
         val glideCacheUtil = GlideCacheUtil()
         glideCacheUtil.clearImageAllCache(activity)
-        EventBus.getDefault().postSticky(LoginStatusChange(false,null))
+        EventBus.getDefault().postSticky(LoginStatusChange(false, null))
     }
 
     /**

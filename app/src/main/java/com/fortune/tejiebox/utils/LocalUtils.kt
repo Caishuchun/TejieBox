@@ -13,9 +13,7 @@ import androidx.core.content.ContextCompat
 import com.fortune.tejiebox.myapp.MyApp
 
 /**
- * Author: 蔡小树
- * Time: 2019/12/27 17:57
- * Description:
+ * 位置工具类
  */
 
 @SuppressLint("StaticFieldLeak")

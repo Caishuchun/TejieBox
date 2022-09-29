@@ -10,8 +10,8 @@ android {
         applicationId "com.fortune.tejiebox"
         minSdkVersion 21
         targetSdkVersion 29
-        versionCode 20220908
-        versionName "3.0.5"
+        versionCode 20220929
+        versionName "3.0.6"
         multiDexEnabled true
         aaptOptions {
             cruncherEnabled = false
@@ -136,8 +136,6 @@ dependencies {
     kapt "androidx.room:room-compiler:2.2.6"
     // optional - RxJava support for Room
     implementation "androidx.room:room-rxjava2:2.2.6"
-    //阿里云热修复
-    implementation 'com.aliyun.ams:alicloud-android-hotfix:3.2.18'
     //文件下载
     implementation 'com.arialyy.aria:core:3.8.12'
     annotationProcessor 'com.arialyy.aria:compiler:3.8.12'
@@ -149,8 +147,6 @@ dependencies {
     implementation 'me.weyye.hipermission:library:1.0.7'
     //图片缩放
     implementation 'com.github.chrisbanes:PhotoView:2.3.0'
-    //轮播图
-    implementation 'io.github.youth5201314:banner:2.2.2'
     //毛玻璃
     implementation 'com.github.centerzx:ShapeBlurView:1.0.1'
     //检测是否是模拟器

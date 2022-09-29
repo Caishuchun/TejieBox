@@ -6,9 +6,7 @@ import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
 
 /**
- * Author: 蔡小树
- * Time: 2019/12/25 18:14
- * Description:
+ * Adapter基类(带有position)
  */
 
 class BaseAdapterWithPosition<T> private constructor() :

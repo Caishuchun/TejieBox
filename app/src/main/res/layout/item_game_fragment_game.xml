@@ -29,16 +29,12 @@
                 android:layout_height="match_parent"
                 android:layout_centerInParent="true"
                 android:layout_margin="@dimen/dp_1_5"
+                android:background="@drawable/bg_game_icon_un"
+                android:foreground="@drawable/bg_game_icon_select"
                 android:scaleType="centerCrop"
                 android:src="@drawable/icon"
                 app:radius="@dimen/dp_9"
                 app:type="round" />
-
-            <View
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:background="?android:attr/selectableItemBackground"
-                android:visibility="visible" />
 
             <ImageView
                 android:id="@+id/iv_item_gameFragment_type"

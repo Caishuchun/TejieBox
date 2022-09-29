@@ -16,12 +16,7 @@ import java.lang.reflect.Type
 import java.nio.charset.Charset
 
 /**
- * Author: 蔡小树
- * Time: 2020/1/2 11:21
- * Description:
- */
-/**
- * Created by Jane on 2018/8/16.
+ * Gson的解析工厂类
  */
 class BaseGsonConverterFactory private constructor(gson: Gson?) : Converter.Factory() {
     private val gson: Gson

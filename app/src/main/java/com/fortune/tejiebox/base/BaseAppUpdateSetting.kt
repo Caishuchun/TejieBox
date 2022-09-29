@@ -1,9 +1,7 @@
 package com.fortune.tejiebox.base
 
 /**
- * Author: 蔡小树
- * Time: 2021/1/13 9:54
- * Description:
+ * 配置文件
  */
 
 object BaseAppUpdateSetting {

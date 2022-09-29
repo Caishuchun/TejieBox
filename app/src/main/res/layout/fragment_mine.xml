@@ -117,7 +117,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginStart="@dimen/dp_10"
-            android:text="特戒积分"
+            android:text="特戒余额"
             android:textColor="#0A0422"
             android:textSize="@dimen/sp_16" />
 
@@ -128,7 +128,7 @@
             android:layout_marginEnd="@dimen/dp_5"
             android:layout_weight="1"
             android:gravity="end"
-            android:text="0积分"
+            android:text="0元"
             android:textColor="#5F60FF"
             android:textSize="@dimen/sp_14" />
 

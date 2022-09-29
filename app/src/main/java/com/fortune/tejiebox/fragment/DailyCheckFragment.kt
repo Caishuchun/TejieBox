@@ -59,7 +59,7 @@ class DailyCheckFragment : Fragment() {
     }
 
     private fun getData() {
-        DialogUtils.showBeautifulDialog(requireContext())
+//        DialogUtils.showBeautifulDialog(requireContext())
         val dailyCheckList = RetrofitUtils.builder().dailyCheckList()
         dailyCheckListObservable = dailyCheckList.subscribeOn(Schedulers.io())
             .observeOn(AndroidSchedulers.mainThread())
@@ -170,7 +170,7 @@ class DailyCheckFragment : Fragment() {
                 itemView.iv_item_dailyCheck_type.setImageResource(
                     if (itemData.status == 0) R.mipmap.money else R.mipmap.money_ed
                 )
-                itemView.tv_item_dailyCheck_num.text = "+${itemData.num}"
+                itemView.tv_item_dailyCheck_num.text = "+${itemData.num?.div(10)}元"
 
                 itemView.tv_item_dailyCheck_num.setTextColor(
                     if (itemData.status == 0) resources.getColor(R.color.orange_FF9C00)
@@ -239,7 +239,7 @@ class DailyCheckFragment : Fragment() {
                             (activity as GiftActivity).isFirstCreate = false
                             SPUtils.putValue(SPArgument.INTEGRAL, it.getData()?.user_integral)
                             DialogActivity.showGetIntegral(
-                                requireContext(),
+                                requireActivity(),
                                 num,
                                 true,
                                 object : DialogActivity.OnCallback {

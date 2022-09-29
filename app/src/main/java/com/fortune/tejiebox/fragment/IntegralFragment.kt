@@ -92,7 +92,7 @@ class IntegralFragment : Fragment() {
      */
     @SuppressLint("SetTextI18n")
     private fun getIntegral() {
-        DialogUtils.showBeautifulDialog(requireContext())
+//        DialogUtils.showBeautifulDialog(requireContext())
         val getIntegral = RetrofitUtils.builder().getIntegral()
         getIntegralObservable = getIntegral.subscribeOn(Schedulers.io())
             .observeOn(AndroidSchedulers.mainThread())
@@ -103,7 +103,7 @@ class IntegralFragment : Fragment() {
                     when (it.code) {
                         1 -> {
                             mView?.tv_integralFragment_currentIntegral?.let { tv ->
-                                tv.text = "剩余积分: ${it.data.integral}"
+                                tv.text = "剩余余额: ${it.data.integral / 10}元"
                             }
                             SPUtils.putValue(SPArgument.INTEGRAL, it.data.integral)
                         }
@@ -149,8 +149,10 @@ class IntegralFragment : Fragment() {
             .setData(mData)
             .setLayoutId(R.layout.item_integral)
             .addBindView { itemView, itemData, position ->
-                itemView.tv_item_integral.text = "${itemData.money.toInt() * 10}积分"
-                itemView.tv_item_recharge.text = "${itemData.money}元充值"
+                itemView.tv_item_integral.text = "${itemData.money}元充值"
+//                itemView.tv_item_recharge.text = "余额兑换"
+//                itemView.tv_item_integral.text = "${itemData.money.toInt() * 10}积分"
+//                itemView.tv_item_recharge.text = "${itemData.money}元充值"
 
                 if (position == mSelectPosition) {
                     itemView.ll_item_bg.setBackgroundResource(R.drawable.bg_integral_selected)
@@ -166,7 +168,7 @@ class IntegralFragment : Fragment() {
                             mSelectRecharge = itemData
                             mAdapter?.notifyDataSetChanged()
                             mView?.tv_integralFragment_tips?.let {
-                                it.text = "${itemData.money.toInt() * 10}积分兑换${itemData.money}元充值"
+                                it.text = "使用特戒余额充值${itemData.money}元"
                             }
                         }
                     }
@@ -182,15 +184,15 @@ class IntegralFragment : Fragment() {
                 .throttleFirst(200, TimeUnit.MILLISECONDS)
                 .subscribe {
                     if (mSelectRecharge == null || mSelectRole == null) {
-                        ToastUtils.show("请选择区服角色和兑换金额!")
+                        ToastUtils.show("请选择区服角色和充值金额!")
                     } else {
                         val currentIntegral = SPUtils.getInt(SPArgument.INTEGRAL, 0)
                         val needIntegral = mSelectRecharge!!.money.toInt() * 10
                         if (needIntegral > currentIntegral) {
                             DialogActivity.showRechargeResult(
-                                requireContext(),
+                                requireActivity(),
                                 false,
-                                "积分不足"
+                                "余额不足"
                             )
                         } else {
                             val playerId = mSelectRole!!.roleId
@@ -235,16 +237,18 @@ class IntegralFragment : Fragment() {
                                 IntegralChange(-1)
                             )
                             DialogActivity.showRechargeResult(
-                                requireContext(),
+                                requireActivity(),
                                 true,
-                                "成功消耗${rechargeMoney * 10}特戒盒子积分兑换${rechargeMoney}元充值"
+                                "成功使用特戒余额充值${rechargeMoney}元"
                             )
 
                             mView?.tv_integralFragment_currentIntegral?.let { tv ->
                                 val currentIntegral =
-                                    tv.text.toString().trim().replace("剩余积分: ", "").toInt()
+                                    tv.text.toString().trim()
+                                        .replace("剩余余额: ", "").replace("元", "")
+                                        .toInt() * 10
                                 val residue = currentIntegral - rechargeMoney * 10
-                                tv.text = "剩余积分: $residue"
+                                tv.text = "剩余余额: ${residue / 10}元"
                                 SPUtils.putValue(SPArgument.INTEGRAL, residue)
                             }
                         }
@@ -254,7 +258,7 @@ class IntegralFragment : Fragment() {
                         }
                         else -> {
                             DialogActivity.showRechargeResult(
-                                requireContext(),
+                                requireActivity(),
                                 false,
                                 it.msg
                             )
@@ -303,7 +307,7 @@ class IntegralFragment : Fragment() {
             mSelectPosition = -1
             mSelectRecharge = null
             mView?.tv_integralFragment_tips?.let {
-                it.text = "使用积分兑换充值"
+                it.text = "使用特戒余额免费充值"
             }
             mSelectRole = role
             toGetGameRechargeList(role)

@@ -661,8 +661,8 @@ class SearchGameActivity : BaseActivity() {
     /**
      * 获取游戏礼包
      */
-    private fun toGetGiftCode() {
-        DialogActivity.showGiftCode(this)
+    private fun toGetGiftCode(giftNum: String = "888888") {
+        DialogActivity.showGiftCode(this, giftNum)
     }
 
     /**
@@ -690,6 +690,7 @@ class SearchGameActivity : BaseActivity() {
                                     SPArgument.GAME_TIME_INFO,
                                     "$gameId-${System.currentTimeMillis()}"
                                 )
+
                                 JumpUtils.jump2Game(
                                     this,
                                     gameChannelid + Box2GameUtils.getPhoneAndToken()
@@ -775,7 +776,11 @@ class SearchGameActivity : BaseActivity() {
         ll_search_noInput.visibility = View.GONE
         rv_search_input.visibility = View.GONE
         if (str == "888888" || str == "免费礼包") {
+            //通用礼包
             toGetGiftCode()
+        } else if (str.startsWith("88") && str.length == 6 && isDigit(str)) {
+            //特定礼包 88+游戏id
+            toGetGiftCode(str)
         } else {
             rv_search_result.visibility = View.VISIBLE
             DialogUtils.showBeautifulDialog(this)
@@ -818,6 +823,18 @@ class SearchGameActivity : BaseActivity() {
                     ToastUtils.show(HttpExceptionUtils.getExceptionMsg(this, it))
                 })
         }
+    }
+
+    /**
+     * 判断是否是纯数字
+     */
+    private fun isDigit(str: String): Boolean {
+        for (char in str) {
+            if (!Character.isDigit(char)) {
+                return false
+            }
+        }
+        return true
     }
 
     /**
@@ -922,8 +939,8 @@ class SearchGameActivity : BaseActivity() {
                         }, {})
                 }
             }
-            SPUtils.putValue(SPArgument.GAME_TIME_INFO, null)
         }
+        SPUtils.putValue(SPArgument.GAME_TIME_INFO, null)
     }
 
     override fun onPause() {

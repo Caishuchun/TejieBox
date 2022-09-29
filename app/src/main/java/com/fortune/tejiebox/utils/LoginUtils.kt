@@ -299,7 +299,7 @@ object LoginUtils {
      * @param needRetry 是否需要重试
      */
     private fun toLogin(activity: Activity, needRetry: Boolean) {
-        //失败之后再来一次,如果依然失败,则进行短信验证码登录
+        //失败之后再来一次,如果依然失败,否则进行短信验证码登录
         if (isFirstCheck && needRetry) {
             isFirstCheck = false
             helper?.getLoginToken(activity, 1500)

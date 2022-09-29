@@ -141,8 +141,8 @@
                                 android:layout_width="0dp"
                                 android:layout_height="wrap_content"
                                 android:layout_weight="1"
-                                android:text="大区名称"
                                 android:autoSizeMaxTextSize="@dimen/dp_14"
+                                android:text="大区名称"
                                 android:textColor="#0A0422"
                                 android:textSize="@dimen/sp_14" />
 
@@ -204,7 +204,7 @@
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:gravity="end"
-                        android:text="剩余积分: 0"
+                        android:text="剩余余额: 正在获取..."
                         android:textColor="#ff9000"
                         android:textSize="@dimen/sp_14" />
 
@@ -234,7 +234,7 @@
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="使用积分"
+                    android:text="使用余额"
                     android:textColor="#0A0422"
                     android:textSize="@dimen/sp_14" />
 
@@ -243,7 +243,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="@dimen/dp_5"
-                    android:text="使用积分兑换充值"
+                    android:text="使用特戒余额免费充值"
                     android:textSize="@dimen/sp_12" />
             </LinearLayout>
 
@@ -273,7 +273,7 @@
             android:layout_marginEnd="@dimen/dp_16"
             android:layout_marginBottom="@dimen/dp_12"
             android:background="@drawable/bg_integral_btn"
-            android:text="确认兑换"
+            android:text="确认充值"
             android:textColor="@color/white_FFFFFF"
             android:textSize="@dimen/sp_16" />
     </RelativeLayout>

@@ -4,9 +4,7 @@ import android.widget.Toast
 import com.fortune.tejiebox.myapp.MyApp
 
 /**
- * Author: 蔡小树
- * Time: 2020/4/14 16:41
- * Description: Toast 工具类
+ * Toast工具类
  */
 
 object ToastUtils {
@@ -20,7 +18,7 @@ object ToastUtils {
         if (toast != null) {
             toast!!.cancel()
         }
-        toast = Toast.makeText(MyApp.getInstance(), message?:"", Toast.LENGTH_SHORT)
+        toast = Toast.makeText(MyApp.getInstance(), message ?: "", Toast.LENGTH_SHORT)
         toast!!.show()
     }
 

@@ -20,9 +20,7 @@ import com.umeng.commonsdk.UMConfigure
 import com.umeng.umcrash.UMCrash
 
 /**
- * Author: 蔡小树
- * Time: 2020/4/14 9:56
- * Description:
+ * MyApp
  */
 
 class MyApp : Application() {

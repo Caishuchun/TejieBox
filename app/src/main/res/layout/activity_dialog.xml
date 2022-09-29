@@ -42,7 +42,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="@dimen/dp_10"
-            android:text="积分 +20"
+            android:text="余额 +2元"
             android:textColor="@color/black_1A241F"
             android:textSize="@dimen/sp_12"
             android:textStyle="bold" />
@@ -88,7 +88,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="@dimen/dp_10"
-            android:text="兑换成功"
+            android:text="充值成功"
             android:textColor="@color/black_1A241F"
             android:textSize="@dimen/sp_16"
             android:textStyle="bold" />
@@ -99,7 +99,7 @@
             android:layout_height="wrap_content"
             android:layout_marginTop="@dimen/dp_10"
             android:gravity="center"
-            android:text="成功消耗500特戒盒子积分兑换50元充值"
+            android:text="成功使用特戒余额充值50元"
             android:textColor="#6a6a6a"
             android:textSize="@dimen/sp_14" />
 
@@ -125,7 +125,7 @@
         android:layout_height="@dimen/dp_296"
         android:layout_centerInParent="true"
         android:background="@mipmap/bg_gift_code"
-        android:visibility="visible">
+        android:visibility="gone">
 
         <ImageView
             android:id="@+id/iv_dialog_giftCode_cancel"

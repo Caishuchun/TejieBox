@@ -7,9 +7,7 @@ import com.fortune.tejiebox.base.BaseDialog
 import kotlinx.android.synthetic.main.layout_dialog_version.*
 
 /**
- * Author: 蔡小树
- * Time: 2020/7/14 上午 9:52
- * Description:
+ * 版本更新Dialog
  */
 
 object VersionDialog {

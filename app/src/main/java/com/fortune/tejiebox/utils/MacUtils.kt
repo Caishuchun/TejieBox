@@ -14,9 +14,7 @@ import java.net.NetworkInterface
 import java.util.*
 
 /**
- * Author: 蔡小树
- * Time: 2019/12/29 10:09
- * Description:
+ * 手机Mac地址工具类
  */
 
 object MacUtils {
@@ -28,7 +26,8 @@ object MacUtils {
             strMac = getLocalMacAddressFromWifiInfo(context)
             Log.d(TAG, "6.0以下 MAC = $strMac")
         } else if (Build.VERSION.SDK_INT < Build.VERSION_CODES.N
-            && Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+            && Build.VERSION.SDK_INT >= Build.VERSION_CODES.M
+        ) {
             strMac = getMacfromMarshmallow()
             Log.d(TAG, "6.0以上7.0以下:MAC = $strMac")
         } else if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {

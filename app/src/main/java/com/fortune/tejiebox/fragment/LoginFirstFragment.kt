@@ -101,7 +101,7 @@ class LoginFirstFragment : Fragment() {
             .subscribe {
                 val intent = Intent(activity, WebActivity::class.java)
                 intent.putExtra(WebActivity.TYPE, WebActivity.USER_AGREEMENT)
-                startActivity(intent)
+                requireActivity().startActivity(intent)
             }
         RxView.clicks(view.tv_login_first_privacyAgreement)
             .throttleFirst(200, TimeUnit.MILLISECONDS)

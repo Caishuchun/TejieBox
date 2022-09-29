@@ -59,7 +59,7 @@ class WhitePiaoFragment : Fragment() {
      * 获取数据
      */
     private fun getInfo() {
-        DialogUtils.showBeautifulDialog(requireContext())
+//        DialogUtils.showBeautifulDialog(requireContext())
         val whitePiaoList = RetrofitUtils.builder().whitePiaoList()
         whitePiaoListObservable = whitePiaoList.subscribeOn(Schedulers.io())
             .observeOn(AndroidSchedulers.mainThread())
@@ -156,7 +156,7 @@ class WhitePiaoFragment : Fragment() {
                         "$time  ${resources.getString(R.string.overdue)}"
                 }
 
-                itemView.tv_white_piao_integral.text = "+${itemData.integral}"
+                itemView.tv_white_piao_integral.text = "+${itemData.integral?.div(10)}元"
 
                 when (itemData.id) {
                     1 -> {
@@ -261,7 +261,7 @@ class WhitePiaoFragment : Fragment() {
                                             it.getData()?.user_integral
                                         )
                                         DialogActivity.showGetIntegral(
-                                            requireContext(),
+                                            requireActivity(),
                                             itemData.integral!!,
                                             true,
                                             object : DialogActivity.OnCallback {

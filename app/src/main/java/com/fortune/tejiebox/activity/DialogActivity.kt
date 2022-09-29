@@ -1,7 +1,7 @@
 package com.fortune.tejiebox.activity
 
 import android.annotation.SuppressLint
-import android.content.Context
+import android.app.Activity
 import android.content.Intent
 import android.text.Html
 import android.view.View
@@ -41,7 +41,7 @@ class DialogActivity : BaseActivity() {
          * 展示领取积分界面
          */
         fun showGetIntegral(
-            context: Context,
+            context: Activity,
             integral: Int,
             canCancel: Boolean,
             callback: OnCallback?
@@ -60,7 +60,7 @@ class DialogActivity : BaseActivity() {
          * 展示积分兑换结果
          */
         fun showRechargeResult(
-            context: Context,
+            context: Activity,
             success: Boolean,
             msg: String
         ) {
@@ -72,14 +72,18 @@ class DialogActivity : BaseActivity() {
             this.callback = null
         }
 
+        private var giftNum = "888888"
+
         /**
          * 展示免费礼包
          */
         fun showGiftCode(
-            context: Context
+            context: Activity,
+            giftNum: String
         ) {
             context.startActivity(Intent(context, DialogActivity::class.java))
             this.type = TYPE.GIFT_CODE
+            this.giftNum = giftNum
             this.canCancel = true
             this.callback = null
         }
@@ -160,7 +164,7 @@ class DialogActivity : BaseActivity() {
      */
     @SuppressLint("SetTextI18n")
     private fun toGetGiftCode() {
-        val getGiftCode = RetrofitUtils.builder().getGiftCode()
+        val getGiftCode = RetrofitUtils.builder().getGiftCode(giftNum)
         getGiftCodeObservable = getGiftCode.subscribeOn(Schedulers.io())
             .observeOn(AndroidSchedulers.mainThread())
             .subscribe({
@@ -193,15 +197,18 @@ class DialogActivity : BaseActivity() {
                         }
                         else -> {
                             ToastUtils.show(it.msg)
+                            finish()
                         }
                     }
                 } else {
                     ToastUtils.show(getString(R.string.network_fail_to_responseDate))
+                    finish()
                 }
             }, {
                 DialogUtils.dismissLoading()
                 LogUtils.d("fail=>${it.message.toString()}")
                 ToastUtils.show(HttpExceptionUtils.getExceptionMsg(this, it))
+                finish()
             })
     }
 
@@ -241,13 +248,13 @@ class DialogActivity : BaseActivity() {
         when (success) {
             true -> {
                 iv_dialog_recharge.setImageResource(R.mipmap.recharge_success)
-                tv_dialog_recharge_title.text = "兑换成功"
+                tv_dialog_recharge_title.text = "充值成功"
                 tv_dialog_recharge_msg.text = msg
                 tv_dialog_recharge_sure.setBackgroundResource(R.drawable.bg_recharge_success)
             }
             false -> {
                 iv_dialog_recharge.setImageResource(R.mipmap.recharge_fail)
-                tv_dialog_recharge_title.text = "兑换失败"
+                tv_dialog_recharge_title.text = "充值失败"
                 tv_dialog_recharge_msg.text = msg
                 tv_dialog_recharge_sure.setBackgroundResource(R.drawable.bg_recharge_fail)
             }
@@ -274,7 +281,7 @@ class DialogActivity : BaseActivity() {
             .throttleFirst(200, TimeUnit.MILLISECONDS)
             .subscribe { }
 
-        tv_integral_integral.text = "积分 +$integral"
+        tv_integral_integral.text = "余额 +${integral / 10}元"
         iv_dialog_color.postDelayed({
             val explosionField = ExplosionField.attach2Window(this)
             explosionField.explode(iv_dialog_color)

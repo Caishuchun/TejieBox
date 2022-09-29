@@ -1,6 +1,7 @@
 package com.fortune.tejiebox.activity
 
 import android.annotation.SuppressLint
+import android.content.Intent
 import android.text.Html
 import android.view.View
 import com.fortune.tejiebox.R
@@ -181,6 +182,9 @@ class IdCardActivity : BaseActivity() {
                 if (it != null) {
                     when (it.code) {
                         1 -> {
+                            //起个子线程的页面
+                            startActivity(Intent(this, ProcessActivity::class.java))
+
                             EventBus.getDefault().post(PlayingDataChange(""))
                             isPlayingGame = true
                             SPUtils.putValue(
