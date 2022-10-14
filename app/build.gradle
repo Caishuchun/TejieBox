@@ -10,8 +10,8 @@ android {
         applicationId "com.fortune.tejiebox"
         minSdkVersion 21
         targetSdkVersion 29
-        versionCode 20220929
-        versionName "3.0.6"
+        versionCode 20221013
+        versionName "3.0.8"
         multiDexEnabled true
         aaptOptions {
             cruncherEnabled = false

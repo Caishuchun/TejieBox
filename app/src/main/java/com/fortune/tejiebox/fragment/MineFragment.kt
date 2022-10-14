@@ -121,8 +121,18 @@ class MineFragment : Fragment() {
             }
         }
 
+        val channel = SPUtils.getString(SPArgument.UM_CHANNEL_ID, null)
+        var patch = ""
+        if (channel != null) {
+            patch = when (channel) {
+                "100" -> ""
+                "101" -> ".1"
+                else -> ""
+            }
+        }
+
         mView?.tv_mineFragment_version?.let {
-            it.text = "V${MyApp.getInstance().getVersion()}"
+            it.text = "V${MyApp.getInstance().getVersion()}$patch"
         }
         mView?.tv_mineFragment_cache?.let {
             it.text = CacheUtils.getCacheSize()

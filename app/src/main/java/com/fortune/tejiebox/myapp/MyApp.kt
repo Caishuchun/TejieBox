@@ -42,18 +42,10 @@ class MyApp : Application() {
             .tag("TejieBox")
             .build()
 
+        UMUtils.init(this)
+
         Logger.addLogAdapter(AndroidLogAdapter(formatStrategy))
         CrashHandler.instance!!.init(this)
-        UMConfigure.init(
-            this, "62bd575605844627b5d180c2", null,
-            UMConfigure.DEVICE_TYPE_PHONE, ""
-        )
-        UMConfigure.setLogEnabled(BaseAppUpdateSetting.isDebug)
-        UMCrash.registerUMCrashCallback {
-            return@registerUMCrashCallback "UMCrash_TejieBox"
-        }
-        MobclickAgent.setPageCollectionMode(MobclickAgent.PageMode.MANUAL)
-        UMConfigure.setProcessEvent(true)
 
         registerActivityLifecycleCallbacks(object : ActivityLifecycleCallbacks {
             override fun onActivityCreated(activity: Activity, savedInstanceState: Bundle?) {

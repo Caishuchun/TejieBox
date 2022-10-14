@@ -134,6 +134,7 @@ class MainActivity : BaseActivity() {
     @SuppressLint("CheckResult")
     override fun onBackPressed() {
         if (canQuit) {
+            MobclickAgent.onKillProcess(this)
             super.onBackPressed()
         } else {
             ToastUtils.show(getString(R.string.double_click_quit))
@@ -363,26 +364,34 @@ class MainActivity : BaseActivity() {
         }
         val tempSplashUrlList = mutableListOf<String>()
         tempSplashUrlList.addAll(splashUrlList)
-        val deleteSplashImg = mutableListOf<File>()
-        for (splashUrl in splashUrlList) {
-            loop@ for (savaSplashPath in splashImg) {
-                val fileName =
-                    savaSplashPath.path.substring(savaSplashPath.path.lastIndexOf("/") + 1)
-                var ishave = false
-                if (splashUrl.contains(fileName)) {
-                    ishave = true
-                    break@loop
-                }
-                if (ishave) {
-                    //文件重名说明下载了,不需要再下载
-                    tempSplashUrlList.remove(splashUrl)
-                } else {
-                    //文件不重名,需要删除,重新下载
-                    deleteSplashImg.add(savaSplashPath)
+        val deleteSplashImgList = mutableListOf<File>()
+
+        //是否需要删除这个本地封面
+        var isNeedDeleteSplashImg: Boolean
+        //遍历本地存储的封面
+        for (localSplashImg in splashImg) {
+            //先行假设是需要删除然后下载新的
+            isNeedDeleteSplashImg = true
+            //本地存储封面的文件名
+            val localSplashImgName =
+                localSplashImg.path.substring(localSplashImg.path.lastIndexOf("/") + 1)
+            //遍历服务器上现有的封面
+            for (serviceSplashImg in splashUrlList) {
+                //现行服务器上封面文件名
+                val serviceSplashImgName =
+                    serviceSplashImg.substring(serviceSplashImg.lastIndexOf("/") + 1)
+                if (serviceSplashImgName == localSplashImgName) {
+                    //如果服务器封面图片等于本地存储封面图片,说明该封面没有任何问题,需要沿用,不再下载了
+                    isNeedDeleteSplashImg = false
+                    tempSplashUrlList.remove(serviceSplashImg)
                 }
             }
+            if (isNeedDeleteSplashImg) {
+                //如果需要删除本地封面图
+                deleteSplashImgList.add(localSplashImg)
+            }
         }
-        toDeleteSplashImg(deleteSplashImg)
+        toDeleteSplashImg(deleteSplashImgList)
         splashUrlList.clear()
         splashUrlList.addAll(tempSplashUrlList)
         if (splashUrlList.isNotEmpty()) {
@@ -413,6 +422,9 @@ class MainActivity : BaseActivity() {
      * 删除已经替换了的封面图
      */
     private fun toDeleteSplashImg(deleteSplashImg: MutableList<File>) {
+        if (deleteSplashImg.isNullOrEmpty()) {
+            return
+        }
         for (deleteSplash in deleteSplashImg) {
             try {
                 deleteSplash.delete()
@@ -478,7 +490,9 @@ class MainActivity : BaseActivity() {
         }
         LogUtils.d("loginStatusChange.isLogin:${loginStatusChange.isLogin}")
         if (loginStatusChange.isLogin) {
-            toCheckCanGetIntegral()
+            if (loginStatusChange.isHaveRewardInteger == null || !loginStatusChange.isHaveRewardInteger) {
+                toCheckCanGetIntegral()
+            }
             when (mainPage) {
                 MainPage.MAIN -> {
                     tab_main.setCurrentItem(0)

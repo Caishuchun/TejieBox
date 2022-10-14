@@ -5,6 +5,7 @@ import android.content.Intent
 import com.fortune.tejiebox.activity.MainActivity
 import com.fortune.tejiebox.activity.SplashActivity
 import com.fortune.tejiebox.bean.VersionBean
+import com.fortune.tejiebox.constants.SPArgument
 import com.fortune.tejiebox.event.LoginStatusChange
 import com.fortune.tejiebox.room.SearchHisDataBase
 import org.greenrobot.eventbus.EventBus
@@ -56,7 +57,9 @@ object ActivityManager {
     fun toSplashActivity(activity: Activity) {
         EventBus.getDefault().postSticky(LoginStatusChange(false, null))
         VersionBean.clear()
+        val channel = SPUtils.getString(SPArgument.UM_CHANNEL_ID, null)
         SPUtils.clear()
+        SPUtils.putValue(SPArgument.UM_CHANNEL_ID,channel)
         SearchHisDataBase.getDataBase(activity).searchHisDao().deleteAll()
         val glideCacheUtil = GlideCacheUtil()
         glideCacheUtil.clearImageAllCache(activity)
@@ -71,7 +74,9 @@ object ActivityManager {
      */
     fun exitLogin(activity: MainActivity) {
         VersionBean.clear()
+        val channel = SPUtils.getString(SPArgument.UM_CHANNEL_ID, null)
         SPUtils.clear()
+        SPUtils.putValue(SPArgument.UM_CHANNEL_ID,channel)
         SearchHisDataBase.getDataBase(activity).searchHisDao().deleteAll()
         val glideCacheUtil = GlideCacheUtil()
         glideCacheUtil.clearImageAllCache(activity)

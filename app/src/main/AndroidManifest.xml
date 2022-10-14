@@ -121,16 +121,7 @@
             android:theme="@style/SplashTheme">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
-
                 <category android:name="android.intent.category.LAUNCHER" />
-            </intent-filter>
-            <intent-filter>
-                <action android:name="android.intent.action.VIEW" />
-
-                <category android:name="android.intent.category.DEFAULT" />
-                <category android:name="android.intent.category.BROWSABLE" />
-
-                <data android:scheme="um.62bd575605844627b5d180c2" />
             </intent-filter>
         </activity>
         <activity
@@ -151,28 +142,21 @@
                 android:name="android.support.FILE_PROVIDER_PATHS"
                 android:resource="@xml/file_paths"
                 tools:replace="android:resource" />
-        </provider> <!-- 阿里云热修复 -->
-        <meta-data
-            android:name="com.taobao.android.hotfix.IDSECRET"
-            android:value="333731922" />
-        <meta-data
-            android:name="com.taobao.android.hotfix.APPSECRET"
-            android:value="ea16fb036c214f32bbecb43a59bf0978" />
-        <meta-data
-            android:name="com.taobao.android.hotfix.RSASECRET"
-            android:value="MIIEvwIBADANBgkqhkiG9w0BAQEFAASCBKkwggSlAgEAAoIBAQCM5l/sIuP5H9OPsVWMu51hEbP0q295MMvsUf5YRQwz12RDCvYxKe6aVeCbJAOTl5RaMpuTfeK4ieca93BgInTo4YDpQHsHlYHiKl+uFjDoz177wqeIuN8ARcz4XN2JG5zkpjgrGx4prbIaF99qrcFMoBcOwkvzVowpJrAnF87uG0AMLvvPDx0bNF57mcspuZT2QQZQPIKJuIRIU5cV4QVDJ3YmsF5fJVYqPgOD6kpb8J1VA6URlgvdtGzx1GJv28GGDVwHYmC79h0ssU5+wie9v62NpvtJvywIOLa3YD6PfEFBGra0QcNQUlrY8Rr8Eh0J/yO4qlRBBCDCpwOgnxPJAgMBAAECggEBAINn43P2Akl4HjX3/EJZQ2ihOwTn0fnjwXuv6JboJn4+1loUYhDt+4JiryvhRZijmI8afa/risPykN+8f0iZOhFrJm/jXBpxnAWS4VMZjRnDNOF15AuF5yx47LWA3nedkhBI2T+SdeoG/YCKXSo/zHQrJfX0zSKvx94lH8oF0U6MGn8BrWQirfSpp369Ph4DnN2muqh/oupcCzTRrkFikolUvWMYQ9fvAGiA7epxey5WNc2QwsGNShYiNnn+p3U516NHD6DNva7AxvVrWwvvAmVf4SynblQHBP/XgWGrHD5zSzwkIkEge1GTFAye5ql8lE5ROHbYDCQmBLtq1e83jRUCgYEA+EXKUD/a6hVXfklyUdE/UH/pG0aPuirg6Pn9hQRrH7UmeN1014OeQrI1LaPmXmi/oMnvnLz5+IDrbMhZFv2Yg9hWmhk7OQB/5V0yEICSgeaNjQrtJG2L2QQcpdIo+2MtbmmQXhsUVsGlrClCkRMOb6D/1+MQwtLLeD4ZWraH9S8CgYEAkUkM0QeboKpubktoQKq8J+Z/jlOJTy3DNxC2apTn/lvgMxH2s/p9MbPyxwrWA5k36d46fCn4r+k2iJCyNhcSPtWFlxRGOy91PTeKQ5zQTBXjBsmQ87uwRd1xvCAXIARy3tK8GT03vhBIh9X2zwAquhFmCOQEuGcle/Wpy829uIcCgYEAzrn+Dfg9pnCC2+r4P9xGJhd72HRWtSODBzsxuBLHyC0kjbuI0PMNUmflE83HwpDiD1ZWKGLKmftvDLN+S0B6QD5hTgr4XyxlUmzZhRgp5fQ9pVWVxKFasydTW1e1PC2G5MsNpO5TbzHra4EnpnkBqj2bCv5NNIwlVEgRAJHAf40CgYBb4j9g09bxPdipmLdObqyg734snVhx4xdbdA5qSdKPY7vfkLTeDsWu8YfRqmC/1d8u4YVLkZ/eYThEFn8fBmhbpN7gNcpVFCapmL6xFDQIaq8yU7iA7WsGRI7x07nMXgPoOI8Nx1HBurqkbgWx1QEwvGAzr0Hs/g8O3seMRYp/cQKBgQDm37Ct0nL6NHUAd9qVvnTkh8xha2PO1IRj3ofbxJ7OG5YRrrTyeJOjlgwRnz2wOG0uhDMZRI/b+Limyd9uYf0QqctBMwTgMO3GUJvVS3tzXzPxel1nGSfIGYHZYJWMLnmf61DdsKACwmGFXz0/xdgqOrAvx1+HUdc7L9XOCBkISA==" /> <!-- 阿里云一键登录 -->
+        </provider>
         <!-- 联通电信授权页 -->
         <activity
             android:name="com.mobile.auth.gatewayauth.LoginAuthActivity"
             android:configChanges="orientation|keyboardHidden|screenSize"
             android:exported="false"
-            android:launchMode="singleTop" /> <!-- 协议页面webview -->
+            android:launchMode="singleTop" />
+        <!-- 协议页面webview -->
         <activity
             android:name="com.mobile.auth.gatewayauth.activity.AuthWebVeiwActivity"
             android:configChanges="orientation|keyboardHidden|screenSize"
             android:exported="false"
             android:launchMode="singleTop"
-            android:screenOrientation="behind" /> <!-- 移动授权页 -->
+            android:screenOrientation="behind" />
+        <!-- 移动授权页 -->
         <activity
             android:name="com.cmic.sso.sdk.activity.LoginAuthActivity"
             android:configChanges="orientation|keyboardHidden|screenSize"

@@ -33,6 +33,7 @@ object FlipAnimUtils {
         if (view == null) {
             return
         }
+        mHandler.removeMessages(101)
         val scaleXValuesHolder = PropertyValuesHolder.ofKeyframe(
             View.SCALE_X,
             Keyframe.ofFloat(0f, 1.0f),
@@ -75,6 +76,7 @@ object FlipAnimUtils {
             }
 
             override fun onAnimationEnd(animation: Animator?) {
+                mHandler.removeMessages(101)
                 val message = Message()
                 message.what = 101
                 message.obj = view

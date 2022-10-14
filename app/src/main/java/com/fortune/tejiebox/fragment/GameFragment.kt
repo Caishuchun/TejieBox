@@ -268,7 +268,7 @@ class GameFragment : Fragment() {
                 val position =
                     (mView?.rv_gameFragment_game?.layoutManager as StaggeredGridLayoutManager)
                         .findFirstVisibleItemPositions(mFirstVisibleItems)
-                if (currentPage >= 2 && position[0] >= (currentPage - 2) * 15) {
+                if (currentPage >= 2 && position[0] >= (currentPage - 2) * 32 + 16) {
                     if (currentPage < countPage) {
                         currentPage++
                         getGameList(needLoading = false)

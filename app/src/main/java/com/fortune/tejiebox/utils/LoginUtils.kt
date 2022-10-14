@@ -7,6 +7,7 @@ import android.graphics.Color
 import android.view.Gravity
 import android.view.LayoutInflater
 import com.fortune.tejiebox.R
+import com.fortune.tejiebox.activity.DialogActivity
 import com.fortune.tejiebox.activity.LoginActivity
 import com.fortune.tejiebox.base.BaseAppUpdateSetting
 import com.fortune.tejiebox.constants.FilesArgument
@@ -342,14 +343,33 @@ object LoginUtils {
                                 SPUtils.putValue(SPArgument.ID_NAME, it.data?.card_name)
                                 SPUtils.putValue(SPArgument.ID_NUM, it.data?.car_num)
                             }
-                            EventBus.getDefault()
-                                .postSticky(LoginStatusChange(true, it.data?.phone))
+
+                            // 是否有奖励积分可以弹框
+                            var isHaveRewardInteger = false
+                            if (it.data?.first_login == 1) {
+                                // 首次注册的推广统计
+                                PromoteUtils.promote(activity)
+                                // 首次注册且有奖励积分的
+                                if (it.data?.integral != null && it.data?.integral!! > 0) {
+                                    isHaveRewardInteger = true
+                                    DialogActivity.showGetIntegral(
+                                        activity,
+                                        it.data?.integral!!,
+                                        true,
+                                        null
+                                    )
+                                }
+                            }
+
+                            EventBus.getDefault().postSticky(
+                                LoginStatusChange(
+                                    true,
+                                    it.data?.phone,
+                                    isHaveRewardInteger
+                                )
+                            )
                             helper?.hideLoginLoading()
                             helper?.quitLoginPage()
-
-                            if (it.data?.first_login == 1) {
-                                PromoteUtils.promote(activity)
-                            }
                         }
                         else -> {
                             helper?.hideLoginLoading()

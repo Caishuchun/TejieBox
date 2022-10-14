@@ -62,5 +62,6 @@ class VersionBean {
         var update_msg: String? = null
         var update_url: String? = null
         var default_page: String? = null
+        var channel: Int? = null
     }
 }

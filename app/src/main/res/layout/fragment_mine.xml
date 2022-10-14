@@ -106,6 +106,7 @@
         android:layout_width="match_parent"
         android:layout_height="@dimen/dp_54"
         android:gravity="center_vertical"
+        android:visibility="gone"
         android:padding="@dimen/dp_10">
 
         <ImageView
@@ -149,6 +150,7 @@
         android:layout_width="match_parent"
         android:layout_height="@dimen/dp_0_5"
         android:layout_margin="@dimen/dp_10"
+        android:visibility="gone"
         android:background="@drawable/line_tab_bottom" />
 
     <LinearLayout

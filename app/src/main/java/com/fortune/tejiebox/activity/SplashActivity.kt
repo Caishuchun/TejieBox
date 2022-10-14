@@ -203,6 +203,16 @@ class SplashActivity : BaseActivity() {
                 if (it != null) {
                     if (it.getCode() == 1) {
                         VersionBean.setData(it.getData()!!)
+
+                        val channel = it.getData()?.channel ?: return@subscribe
+
+                        //获取本地存储的渠道号,如果没有存储过,说明是第一次进入,则保存并初始化;如果有值,说明已经存在,不在这里再进行初始化了
+                        val uMChannelId = SPUtils.getString(SPArgument.UM_CHANNEL_ID, null)
+                        if (null == uMChannelId) {
+//                            SPUtils.putValue(SPArgument.UM_CHANNEL_ID, null)
+                            SPUtils.putValue(SPArgument.UM_CHANNEL_ID, channel.toString())
+                            UMUtils.init(this)
+                        }
                     } else if (it.getCode() == -1) {
                         ToastUtils.show(it.getMsg()!!)
                         SPUtils.putValue(SPArgument.LOGIN_TOKEN, null)
