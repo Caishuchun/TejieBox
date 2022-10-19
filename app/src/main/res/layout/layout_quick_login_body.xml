@@ -26,6 +26,7 @@
             android:textSize="@dimen/sp_18" />
 
         <ImageView
+            android:id="@+id/iv_login4ali_title"
             android:layout_width="@dimen/dp_173"
             android:layout_height="@dimen/dp_46"
             android:layout_gravity="center_horizontal"

@@ -24,6 +24,7 @@
         android:textStyle="bold" />
 
     <ImageView
+        android:id="@+id/iv_login_first_title"
         android:layout_width="@dimen/dp_173"
         android:layout_height="@dimen/dp_46"
         android:layout_gravity="center_horizontal"

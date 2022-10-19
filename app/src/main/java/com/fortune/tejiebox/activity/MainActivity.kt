@@ -18,6 +18,7 @@ import com.arialyy.aria.core.manager.SubTaskManager
 import com.arialyy.aria.core.task.DownloadTask
 import com.fortune.tejiebox.R
 import com.fortune.tejiebox.base.BaseActivity
+import com.fortune.tejiebox.base.BaseAppUpdateSetting
 import com.fortune.tejiebox.bean.VersionBean
 import com.fortune.tejiebox.constants.SPArgument
 import com.fortune.tejiebox.event.*
@@ -185,9 +186,10 @@ class MainActivity : BaseActivity() {
                             val data = it.data
                             if (null != data) {
                                 if (data.daily_clock_in == 1 || data.limit_time == 1 || data.invite == 1) {
-                                    if (null != data.is_click && data.is_click == 0) {
-                                        startActivity(Intent(this, GiftActivity::class.java))
-                                    }
+                                    //取消了这里进入App后主动弹出余额页面的功能
+//                                    if (null != data.is_click && data.is_click == 0) {
+//                                        startActivity(Intent(this, GiftActivity::class.java))
+//                                    }
                                     EventBus.getDefault().postSticky(RedPointChange(true))
                                     tab_main.showRedPoint(true)
                                 } else {
@@ -250,7 +252,17 @@ class MainActivity : BaseActivity() {
             val newVersion = data.version_name!!.replace(".", "").toInt()
             val currentVersion = MyApp.getInstance().getVersion().replace(".", "").toInt()
             LogUtils.d("toDownLoadApk==>newVersion = $newVersion, currentVersion = $currentVersion")
-            val versionName = data.update_url!!.substring(data.update_url!!.lastIndexOf("/") + 1)
+            //获取实际的下载地址
+            val updateUrl = if (BaseAppUpdateSetting.isToPromoteVersion) {
+                if (data.update_url2 == null || data.update_url2?.isEmpty() == true) {
+                    data.update_url!!
+                } else {
+                    data.update_url2!!
+                }
+            } else {
+                data.update_url!!
+            }
+            val versionName = updateUrl.substring(updateUrl.lastIndexOf("/") + 1)
             downloadPath =
                 getExternalFilesDir(Environment.DIRECTORY_DOWNLOADS).toString() + "/" + versionName
             SPUtils.putValue(SPArgument.APP_DOWNLOAD_PATH, downloadPath)
@@ -260,7 +272,7 @@ class MainActivity : BaseActivity() {
                 if (isApkDownload(File(downloadPath))) {
                     installAPK(File(downloadPath))
                 } else {
-                    toDownloadApk(data.update_url!!)
+                    toDownloadApk(updateUrl)
                 }
             } else {
                 if (isApkDownload(File(downloadPath))) {
@@ -328,7 +340,10 @@ class MainActivity : BaseActivity() {
      */
     private fun toGetSplashImgUrl() {
         splashUrlList.clear()
-        val getSplashUrl = RetrofitUtils.builder().getSplashUrl()
+        val getSplashUrl = RetrofitUtils.builder().getSplashUrl(
+            if (BaseAppUpdateSetting.isToPromoteVersion) 1
+            else null
+        )
         getSplashUrlObservable = getSplashUrl.subscribeOn(Schedulers.io())
             .observeOn(AndroidSchedulers.mainThread())
             .subscribe({

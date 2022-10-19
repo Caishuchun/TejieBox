@@ -24,4 +24,10 @@ object BaseAppUpdateSetting {
      * @param patch ""表示基础版本,".1"/".11"表示热更版本
      */
     const val patch = ""
+
+    /**
+     * 是否是推广版本
+     * @suppress 记得修改string.xml中的应用名
+     */
+    const val isToPromoteVersion = true
 }

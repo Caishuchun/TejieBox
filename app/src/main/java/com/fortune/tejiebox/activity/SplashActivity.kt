@@ -131,7 +131,7 @@ class SplashActivity : BaseActivity() {
         )
         HiPermission.create(this)
             .permissions(permissions)
-            .msg("为了您正常使用特戒盒子,需要以下权限")
+            .msg("为了您正常使用${resources.getString(R.string.app_name)},需要以下权限")
             .filterColor(Color.parseColor("#5F60FF"))
             .style(R.style.PermissionStyle)
             .checkMutiPermission(object : PermissionCallback {
@@ -211,7 +211,7 @@ class SplashActivity : BaseActivity() {
                         if (null == uMChannelId) {
 //                            SPUtils.putValue(SPArgument.UM_CHANNEL_ID, null)
                             SPUtils.putValue(SPArgument.UM_CHANNEL_ID, channel.toString())
-                            UMUtils.init(this)
+                            UMUtils.init(this, false)
                         }
                     } else if (it.getCode() == -1) {
                         ToastUtils.show(it.getMsg()!!)

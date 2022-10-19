@@ -17,6 +17,7 @@ import com.bumptech.glide.Glide
 import com.fortune.tejiebox.R
 import com.fortune.tejiebox.adapter.BaseAdapterWithPosition
 import com.fortune.tejiebox.base.BaseActivity
+import com.fortune.tejiebox.base.BaseAppUpdateSetting
 import com.fortune.tejiebox.bean.GameInfoBean
 import com.fortune.tejiebox.constants.SPArgument
 import com.fortune.tejiebox.event.LikeDataChange
@@ -488,6 +489,10 @@ class GameDetailActivity : BaseActivity() {
         } else {
             ll_detail_code.visibility = View.VISIBLE
             tv_detail_code.text = info.cdkey
+            iv_detail_code_title.setImageResource(
+                if (BaseAppUpdateSetting.isToPromoteVersion) R.mipmap.gift_title2
+                else R.mipmap.gift_title
+            )
             tv_detail_codeMsg.text = "礼包奖励: ${info.desc}"
         }
 

@@ -5,6 +5,7 @@ import android.content.ClipData
 import android.content.ClipboardManager
 import android.content.Context
 import android.os.Build
+import com.fortune.tejiebox.R
 
 /**
  * 剪切板工具类
@@ -52,9 +53,10 @@ object ClipboardUtils {
             if (manager == null) {
                 manager = activity.getSystemService(Context.CLIPBOARD_SERVICE) as ClipboardManager
             }
-            val mClipData = ClipData.newPlainText("特戒盒子", content)
+            val mClipData =
+                ClipData.newPlainText(activity.resources.getString(R.string.app_name), content)
             manager?.setPrimaryClip(mClipData)
-        }catch (e:Exception){
+        } catch (e: Exception) {
             e.printStackTrace()
         }
     }

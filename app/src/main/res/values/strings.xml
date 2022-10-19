@@ -1,6 +1,7 @@
 <resources xmlns:tools="http://schemas.android.com/tools" translatable="false">
     <string name="game_view_content_description">Game view</string>
-    <string name="app_name">特戒盒子</string>
+<!--    <string name="app_name">特戒盒子</string>-->
+    <string name="app_name">特戒</string>
     <string name="network_fail_to_connect">联网失败,请检查网络</string>
     <string name="network_fail_to_request">联网请求失败,请重新尝试</string>
     <string name="network_fail_to_responseDate">数据格式错误,请重新尝试</string>

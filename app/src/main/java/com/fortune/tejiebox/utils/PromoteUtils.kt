@@ -19,7 +19,7 @@ object PromoteUtils {
     private const val promoteUrl4Baidu2 = "http://tjhz.jinangedesm.com.cn/api/baidu2/api.php?type=1"
 
     //51统计链接
-    private const val promoteUrl451 = "https://www.51cr.com/d.php?id=19942|2&f="
+    private const val promoteUrl451 = "https://www.51cr.com/d.php?id=21511|2&f="
 
     /**
      * 推广

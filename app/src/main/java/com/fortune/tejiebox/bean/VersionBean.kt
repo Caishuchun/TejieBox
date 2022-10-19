@@ -54,13 +54,15 @@ class VersionBean {
          * update_type : 2
          * update_msg : 更新信息
          * 更新信息
-         * update_url : http://www.baidu,com
+         * update_url : 正常普通下载地址
+         * update_url2 : 百度推广下载地址,专属名称"特戒"
          */
         var version_name: String? = null
         var version_number: Int? = null
         var update_type: Int? = null
         var update_msg: String? = null
         var update_url: String? = null
+        var update_url2: String? = null
         var default_page: String? = null
         var channel: Int? = null
     }

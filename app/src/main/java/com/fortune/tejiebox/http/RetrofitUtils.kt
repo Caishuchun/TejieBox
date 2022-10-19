@@ -282,7 +282,9 @@ object RetrofitUtils {
          * 获取分享链接
          */
         @GET(HttpUrls.GET_SHARE_URL)
-        fun getShareUrl(): Flowable<GetShareUrlBean>
+        fun getShareUrl(
+            @Query("version", encoded = true) version: Int? = null
+        ): Flowable<GetShareUrlBean>
 
         /**
          * 获取邀请列表
@@ -348,9 +350,11 @@ object RetrofitUtils {
         ): Flowable<GetGiftCodeBean>
 
         /**
-         * 获取游戏充值基数
+         * 获取启动封面图
          */
         @GET(HttpUrls.SPLASH_URL)
-        fun getSplashUrl(): Flowable<SplashUrlBean>
+        fun getSplashUrl(
+            @Query("version", encoded = true) version: Int? = null
+        ): Flowable<SplashUrlBean>
     }
 }

@@ -11,6 +11,7 @@ import androidx.fragment.app.Fragment
 import com.fortune.tejiebox.R
 import com.fortune.tejiebox.activity.LoginActivity
 import com.fortune.tejiebox.activity.WebActivity
+import com.fortune.tejiebox.base.BaseAppUpdateSetting
 import com.fortune.tejiebox.constants.SPArgument
 import com.fortune.tejiebox.event.LoginChangePage
 import com.fortune.tejiebox.http.RetrofitUtils
@@ -46,6 +47,11 @@ class LoginFirstFragment : Fragment() {
 
     @SuppressLint("CheckResult")
     private fun initView(view: View) {
+        view.iv_login_first_title.setImageResource(
+            if(BaseAppUpdateSetting.isToPromoteVersion) R.mipmap.app_title2
+            else R.mipmap.app_title
+        )
+
         RxView.clicks(view.iv_login_first_back)
             .throttleFirst(200, TimeUnit.MILLISECONDS)
             .subscribe {

@@ -10,6 +10,7 @@ import com.fortune.tejiebox.R
 import com.fortune.tejiebox.activity.DialogActivity
 import com.fortune.tejiebox.activity.GiftActivity
 import com.fortune.tejiebox.adapter.BaseAdapterWithPosition
+import com.fortune.tejiebox.base.BaseAppUpdateSetting
 import com.fortune.tejiebox.bean.GetShareListBean
 import com.fortune.tejiebox.bean.RedPointBean
 import com.fortune.tejiebox.constants.SPArgument
@@ -170,7 +171,7 @@ class InviteGiftFragment : Fragment() {
                         else -> R.mipmap.icon
                     }
                 )
-                itemView.tv_item_gift_name.text = "成功邀请${itemData.user?.user_phone ?: "特戒盒子"}获得"
+                itemView.tv_item_gift_name.text = "成功邀请${itemData.user?.user_phone ?: "特戒用户"}获得"
                 itemView.tv_item_gift_integral.text = "+${inviteReward / 10}元"
                 when (itemData.receive) {
                     0 -> {
@@ -307,7 +308,10 @@ class InviteGiftFragment : Fragment() {
      */
     private fun toGetShareUrl() {
         DialogUtils.showBeautifulDialog(requireContext())
-        val getShareUrl = RetrofitUtils.builder().getShareUrl()
+        val getShareUrl = RetrofitUtils.builder().getShareUrl(
+            if (BaseAppUpdateSetting.isToPromoteVersion) 1
+            else null
+        )
         getShareUrlObservable = getShareUrl.subscribeOn(Schedulers.io())
             .observeOn(AndroidSchedulers.mainThread())
             .subscribe({
@@ -319,7 +323,7 @@ class InviteGiftFragment : Fragment() {
                             if (it.getData() != null && it.getData()?.url != null) {
                                 ClipboardUtils.setClipboardContent(
                                     requireActivity(),
-                                    "免费充值天天送，好玩的服处处有 点击下载特戒盒子: ${it.getData()?.url!!}"
+                                    "免费充值天天送，好玩的服处处有 点击下载${resources.getString(R.string.app_name)}: ${it.getData()?.url!!}"
                                 )
                                 ShareJumpUtils.showDefaultDialog(requireActivity())
                             }

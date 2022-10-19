@@ -138,6 +138,10 @@ object LoginUtils {
                 .build()
         )
         val bodyView = LayoutInflater.from(activity).inflate(R.layout.layout_quick_login_body, null)
+        bodyView.iv_login4ali_title.setImageResource(
+            if(BaseAppUpdateSetting.isToPromoteVersion) R.mipmap.app_title2
+            else R.mipmap.app_title
+        )
         RxView.clicks(bodyView.iv_login4ali_back)
             .throttleFirst(200, TimeUnit.MILLISECONDS)
             .subscribe {
