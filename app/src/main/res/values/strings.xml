@@ -18,7 +18,7 @@
     <string name="login">登录/注册</string>
     <string name="login_quick">一键登录/注册</string>
     <string name="login_other_phone">其他手机号登录</string>
-    <string name="login_tips">登录表示您已阅读且同意</string>
+    <string name="login_tips">我已阅读且同意</string>
     <string name="user_agreement">《用户协议》</string>
     <string name="privacy_agreement">《隐私协议》</string>
     <string name="please_enter_code">请输入验证码</string>

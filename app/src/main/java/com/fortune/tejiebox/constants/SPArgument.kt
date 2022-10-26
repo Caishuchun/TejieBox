@@ -24,4 +24,6 @@ object SPArgument {
 
     const val IS_LOGIN_ED = "isLogined" //是否已经登录了
     const val UM_CHANNEL_ID = "umChannelID" //友盟ChannelID
+
+    const val IS_CHECK_AGREEMENT = "isCheckAgreement" //是否已经同意协议
 }

@@ -14,7 +14,6 @@ import androidx.annotation.RequiresApi
 import androidx.core.content.FileProvider
 import androidx.fragment.app.Fragment
 import com.arialyy.aria.core.Aria
-import com.arialyy.aria.core.manager.SubTaskManager
 import com.arialyy.aria.core.task.DownloadTask
 import com.fortune.tejiebox.R
 import com.fortune.tejiebox.base.BaseActivity
@@ -715,6 +714,8 @@ class MainActivity : BaseActivity() {
      *下载到本地后执行安装
      */
     private fun installAPK(file: File) {
+        //版本更新的时候,删除所有的启动图
+        toDeleteAllSplashImg()
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             val canRequestPackageInstalls = packageManager.canRequestPackageInstalls()
             if (canRequestPackageInstalls) {

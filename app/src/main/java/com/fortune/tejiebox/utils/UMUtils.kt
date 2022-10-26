@@ -16,8 +16,13 @@ object UMUtils {
      * 初始化
      */
     fun init(context: Context, isInApplication: Boolean = true) {
+        val isCheckAgreement = SPUtils.getBoolean(SPArgument.IS_CHECK_AGREEMENT, false)
+        if (BaseAppUpdateSetting.isToPromoteVersion && !isCheckAgreement) {
+            return
+        }
         if (BaseAppUpdateSetting.isToPromoteVersion) {
             // 如果是推广版本的App,直接走
+            SPUtils.getString(SPArgument.UM_CHANNEL_ID, null) ?: return
             if (isInApplication) {
                 UMConfigure.init(
                     context, "63467e0c88ccdf4b7e47580a", null,

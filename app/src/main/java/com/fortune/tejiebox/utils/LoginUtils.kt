@@ -123,11 +123,31 @@ object LoginUtils {
                     (if (BaseAppUpdateSetting.appType) HttpUrls.REAL_URL else HttpUrls.TEST_URL) + FilesArgument.PROTOCOL_PRIVACY
                 )
                 .setPrivacyBefore(activity.getString(R.string.login_tips))
-                .setCheckboxHidden(true)
+                .setCheckboxHidden(false)
+                .setCheckBoxWidth(
+                    OtherUtils.px2dp(
+                        activity,
+                        (Math.min(
+                            PhoneInfoUtils.getWidth(activity).toFloat(),
+                            PhoneInfoUtils.getHeight(activity).toFloat()
+                        )) / 360.0f * 24.0f
+                    )
+                )
+                .setCheckBoxHeight(
+                    OtherUtils.px2dp(
+                        activity,
+                        (Math.min(
+                            PhoneInfoUtils.getWidth(activity).toFloat(),
+                            PhoneInfoUtils.getHeight(activity).toFloat()
+                        )) / 360.0f * 24.0f
+                    )
+                )
+                .setPrivacyState(false)
+                .setCheckedImgDrawable(activity.getDrawable(R.drawable.checked))
+                .setUncheckedImgDrawable(activity.getDrawable(R.drawable.uncheck))
                 .setVendorPrivacyPrefix("《")
                 .setVendorPrivacySuffix("》")
-                .setAppPrivacyColor(Color.parseColor("#990A0422"), Color.parseColor("#000000"))
-                .setPrivacyState(true)
+                .setAppPrivacyColor(Color.parseColor("#990A0422"), Color.parseColor("#5F60FF"))
                 .create()
         )
         val numView = LayoutInflater.from(activity).inflate(R.layout.layout_quick_login_num, null)
@@ -139,7 +159,7 @@ object LoginUtils {
         )
         val bodyView = LayoutInflater.from(activity).inflate(R.layout.layout_quick_login_body, null)
         bodyView.iv_login4ali_title.setImageResource(
-            if(BaseAppUpdateSetting.isToPromoteVersion) R.mipmap.app_title2
+            if (BaseAppUpdateSetting.isToPromoteVersion) R.mipmap.app_title2
             else R.mipmap.app_title
         )
         RxView.clicks(bodyView.iv_login4ali_back)
@@ -339,6 +359,7 @@ object LoginUtils {
                 if (it != null) {
                     when (it.code) {
                         1 -> {
+                            SPUtils.putValue(SPArgument.IS_CHECK_AGREEMENT, true)
                             SPUtils.putValue(SPArgument.LOGIN_TOKEN, it.data?.token)
                             SPUtils.putValue(SPArgument.PHONE_NUMBER, it.data?.phone)
                             SPUtils.putValue(SPArgument.USER_ID, it.data?.user_id)

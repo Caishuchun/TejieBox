@@ -1,7 +1,6 @@
 package com.fortune.tejiebox.utils
 
 import android.app.Activity
-import com.fortune.tejiebox.constants.SPArgument
 import java.io.IOException
 import java.net.HttpURLConnection
 import java.net.URL

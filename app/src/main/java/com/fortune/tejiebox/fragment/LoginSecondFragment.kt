@@ -163,6 +163,7 @@ class LoginSecondFragment() : Fragment() {
                 if (it != null) {
                     when (it.code) {
                         1 -> {
+                            SPUtils.putValue(SPArgument.IS_CHECK_AGREEMENT, true)
                             SPUtils.putValue(SPArgument.LOGIN_TOKEN, it.data?.token)
                             SPUtils.putValue(SPArgument.PHONE_NUMBER, it.data?.phone)
                             SPUtils.putValue(SPArgument.IS_HAVE_ID, it.data?.id_card)

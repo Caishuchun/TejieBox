@@ -248,6 +248,9 @@ class GameFragment : Fragment() {
                                         mView?.tv_gameFragment_cancel?.let {
                                             it.text = "删除"
                                         }
+                                        mView?.tv_gameFragment_nothing?.let {
+                                            it.visibility = View.VISIBLE
+                                        }
                                     }
                                 }
                             })
@@ -387,6 +390,13 @@ class GameFragment : Fragment() {
                                     countPage = count / limit + if (count % limit == 0) 0 else 1
                                     mData.addAll(it.data.list)
                                     mAdapter?.notifyItemChanged(mData.size - 1)
+                                    mView?.tv_gameFragment_nothing?.let { tv ->
+                                        tv.visibility = View.GONE
+                                    }
+                                } else {
+                                    mView?.tv_gameFragment_nothing?.let { tv ->
+                                        tv.visibility = View.VISIBLE
+                                    }
                                 }
                                 if (currentPage == 1 && countPage > 1) {
                                     currentPage++
@@ -431,6 +441,16 @@ class GameFragment : Fragment() {
                 if (it != null) {
                     when (it.code) {
                         1 -> {
+                            if (it.data.isNotEmpty()) {
+                                mView?.tv_gameFragment_nothing?.let { tv ->
+                                    tv.visibility = View.GONE
+                                }
+                            } else {
+                                mView?.tv_gameFragment_nothing?.let { tv ->
+                                    tv.visibility = View.VISIBLE
+                                }
+                            }
+
                             mData.clear()
                             mData.addAll(it.data)
                             mAdapter?.notifyDataSetChanged()
@@ -471,6 +491,16 @@ class GameFragment : Fragment() {
                 if (it != null) {
                     when (it.code) {
                         1 -> {
+                            if (it.data.isNotEmpty()) {
+                                mView?.tv_gameFragment_nothing?.let { tv ->
+                                    tv.visibility = View.GONE
+                                }
+                            } else {
+                                mView?.tv_gameFragment_nothing?.let { tv ->
+                                    tv.visibility = View.VISIBLE
+                                }
+                            }
+
                             mData.clear()
                             mData.addAll(it.data)
                             mAdapter?.notifyDataSetChanged()

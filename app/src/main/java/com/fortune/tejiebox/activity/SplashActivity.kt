@@ -9,6 +9,7 @@ import android.graphics.Color
 import android.os.Environment
 import com.fortune.tejiebox.R
 import com.fortune.tejiebox.base.BaseActivity
+import com.fortune.tejiebox.base.BaseAppUpdateSetting
 import com.fortune.tejiebox.bean.VersionBean
 import com.fortune.tejiebox.constants.SPArgument
 import com.fortune.tejiebox.http.RetrofitUtils
@@ -59,26 +60,54 @@ class SplashActivity : BaseActivity() {
      * 设置封面背景图片
      */
     private fun toSetSplashBg() {
+        val bitmap = toGetSplashBg()
+        val width = bitmap.width
+        val height = bitmap.height
+//        LogUtils.d("0.0==>bitmap=>width:$width,height:$height")
+        val screenWidth = PhoneInfoUtils.getWidth(this)
+        val screenHeight = PhoneInfoUtils.getHeight(this)
+//        LogUtils.d("0.0==>screen=>width:$screenWidth,height:$screenHeight")
+        val layoutParams = iv_splash_bg.layoutParams
+        layoutParams.width = screenWidth
+        val scaleHeight = (screenWidth.toFloat() / width * height).toInt()
+        layoutParams.height = scaleHeight
+//        LogUtils.d("0.0==>result=>width:$screenWidth,height:$scaleHeight")
+        iv_splash_bg.layoutParams = layoutParams
+        iv_splash_bg.setImageBitmap(bitmap)
+    }
+
+
+    /**
+     * 获取封面背景图片
+     */
+    private fun toGetSplashBg(): Bitmap {
+        var bitmap: Bitmap? = null
         val splashDir = getExternalFilesDir("splash")
         if (splashDir == null || !splashDir.exists() || !splashDir.isDirectory) {
-            return
+            return resource2Bitmap()
         }
         val splashImg = splashDir.listFiles()
         if (splashImg.isEmpty()) {
-            return
+            return resource2Bitmap()
         }
         val imgIndex = (splashImg.indices).random()
-        var bitmap: Bitmap? = null
-        try {
+        return try {
             bitmap = BitmapFactory.decodeFile(splashImg[imgIndex].path)
+            bitmap
         } catch (e: Exception) {
-            return
+            resource2Bitmap()
         }
-        if (bitmap == null) {
-            return
-        }
-        iv_splash_bg.setImageBitmap(bitmap)
     }
+
+    /**
+     * 资源文件转为bitmap
+     */
+    private fun resource2Bitmap() =
+        BitmapFactory.decodeResource(
+            resources,
+            if (BaseAppUpdateSetting.isToPromoteVersion) R.mipmap.bg_splash_tejie
+            else R.mipmap.bg_splash_tejiebox
+        )
 
     /**
      * 删除游戏安装包
@@ -118,11 +147,11 @@ class SplashActivity : BaseActivity() {
      */
     private fun getPermission(count: Int) {
         val permissions = arrayListOf(
-            PermissionItem(
-                Manifest.permission.READ_PHONE_STATE,
-                "手机状态",
-                R.drawable.permission_ic_phone
-            ),
+//            PermissionItem(
+//                Manifest.permission.READ_PHONE_STATE,
+//                "手机状态",
+//                R.drawable.permission_ic_phone
+//            ),
             PermissionItem(
                 Manifest.permission.WRITE_EXTERNAL_STORAGE,
                 "文件管理",

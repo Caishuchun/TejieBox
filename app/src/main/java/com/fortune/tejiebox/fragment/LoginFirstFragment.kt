@@ -18,7 +18,6 @@ import com.fortune.tejiebox.http.RetrofitUtils
 import com.fortune.tejiebox.utils.*
 import com.google.gson.Gson
 import com.jakewharton.rxbinding2.view.RxView
-import com.jakewharton.rxbinding2.widget.RxTextView
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.Disposable
 import io.reactivex.schedulers.Schedulers
@@ -48,7 +47,7 @@ class LoginFirstFragment : Fragment() {
     @SuppressLint("CheckResult")
     private fun initView(view: View) {
         view.iv_login_first_title.setImageResource(
-            if(BaseAppUpdateSetting.isToPromoteVersion) R.mipmap.app_title2
+            if (BaseAppUpdateSetting.isToPromoteVersion) R.mipmap.app_title2
             else R.mipmap.app_title
         )
 
@@ -65,41 +64,62 @@ class LoginFirstFragment : Fragment() {
         RxView.clicks(view.tv_login_first_login)
             .throttleFirst(200, TimeUnit.MILLISECONDS)
             .subscribe {
-                var isChange = false
-                if (oldPhone != et_login_first_phone.text.toString().trim()) {
-                    oldPhone = et_login_first_phone.text.toString().trim()
-                    isChange = true
-                }
-                //如果手机号发生了变化,就需要重新发送短信验证码
-                if (isChange) {
-                    SPUtils.putValue(SPArgument.CODE_TIME, 0L)
-                }
-                val oldTimeMillis = SPUtils.getLong(SPArgument.CODE_TIME, 0L)
-                val currentTimeMillis = SystemClock.uptimeMillis()
-                if (oldTimeMillis == 0L) {
-                    //历史时间没有的话,就要重新发验证码
-                    toGetCode()
-                } else {
-                    when {
-                        currentTimeMillis - oldTimeMillis > 60 * 1000 -> {
-                            //当前时间超过历史时间1分钟,重新发送
-                            toGetCode()
-                        }
-                        currentTimeMillis < oldTimeMillis -> {
-                            //当前时间小于历史时间,说明重新开机过,重新发送短信
-                            toGetCode()
-                        }
-                        else -> {
-                            //直接跳转
-                            EventBus.getDefault().postSticky(
-                                LoginChangePage(
-                                    1,
-                                    "+86",
-                                    et_login_first_phone.text.toString().trim()
+                if (view.cb_login_first?.isChecked == true) {
+                    if (view.et_login_first_phone?.text?.length != 11) {
+                        ToastUtils.show("请输入正确的手机号")
+                        return@subscribe
+                    }
+                    var isChange = false
+                    if (oldPhone != et_login_first_phone.text.toString().trim()) {
+                        oldPhone = et_login_first_phone.text.toString().trim()
+                        isChange = true
+                    }
+                    //如果手机号发生了变化,就需要重新发送短信验证码
+                    if (isChange) {
+                        SPUtils.putValue(SPArgument.CODE_TIME, 0L)
+                    }
+                    val oldTimeMillis = SPUtils.getLong(SPArgument.CODE_TIME, 0L)
+                    val currentTimeMillis = SystemClock.uptimeMillis()
+                    if (oldTimeMillis == 0L) {
+                        //历史时间没有的话,就要重新发验证码
+                        toGetCode()
+                    } else {
+                        when {
+                            currentTimeMillis - oldTimeMillis > 60 * 1000 -> {
+                                //当前时间超过历史时间1分钟,重新发送
+                                toGetCode()
+                            }
+                            currentTimeMillis < oldTimeMillis -> {
+                                //当前时间小于历史时间,说明重新开机过,重新发送短信
+                                toGetCode()
+                            }
+                            else -> {
+                                //直接跳转
+                                EventBus.getDefault().postSticky(
+                                    LoginChangePage(
+                                        1,
+                                        "+86",
+                                        et_login_first_phone.text.toString().trim()
+                                    )
                                 )
-                            )
+                            }
                         }
                     }
+                } else {
+                    DialogUtils.showDefaultDialog(
+                        requireContext(),
+                        "协议政策",
+                        "请先勾选同意《用户协议》和《隐私协议》",
+                        "取消",
+                        "同意",
+                        object : DialogUtils.OnDialogListener {
+                            override fun next() {
+                                view.cb_login_first?.isChecked = true
+                                DialogUtils.dismissLoading()
+                            }
+                        }
+                    )
+                    return@subscribe
                 }
             }
         RxView.clicks(view.tv_login_first_userAgreement)
@@ -118,17 +138,16 @@ class LoginFirstFragment : Fragment() {
             }
 
 
-        RxTextView.textChanges(view.et_login_first_phone)
-            .skipInitialValue()
-            .subscribe {
-                if (it.length == 11) {
-                    val isPhone = OtherUtils.isPhone(it.toString())
-                    view.tv_login_first_login.isEnabled = isPhone
-                } else {
-                    view.tv_login_first_login.isEnabled = false
-                }
-            }
-
+//        RxTextView.textChanges(view.et_login_first_phone)
+//            .skipInitialValue()
+//            .subscribe {
+//                if (it.length == 11) {
+//                    val isPhone = OtherUtils.isPhone(it.toString())
+//                    view.tv_login_first_login.isEnabled = isPhone
+//                } else {
+//                    view.tv_login_first_login.isEnabled = false
+//                }
+//            }
     }
 
     /**
