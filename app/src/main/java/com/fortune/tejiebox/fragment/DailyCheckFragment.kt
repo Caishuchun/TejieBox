@@ -154,18 +154,14 @@ class DailyCheckFragment : Fragment() {
                 scaleAnimation.duration = 500
                 scaleAnimation.repeatMode = ScaleAnimation.REVERSE
                 scaleAnimation.repeatCount = Int.MAX_VALUE
-                if (position == canClickPosition && !isTodayGet
-                ) {
-                    //今天的没有领取的话,就开始布灵布灵的
-                    itemView.iv_item_dailyCheck_type.startAnimation(scaleAnimation)
-                }
 
                 itemView.rl_item_dailyCheck_bg.setBackgroundResource(
                     if (itemData.status == 0) R.drawable.bg_daily_checkable
                     else R.drawable.bg_daily_checked
                 )
+
                 itemView.tv_item_dailyCheck_title.text =
-                    if (itemData.status != 0) if (position == canClickPosition - 1) "今日已签到" else "已签到" else "第${position + 1}天"
+                    if (itemData.status != 0) if (position == canClickPosition - 1) "今日已白嫖" else "已白嫖" else "第${position + 1}天"
 
                 itemView.iv_item_dailyCheck_type.setImageResource(
                     if (itemData.status == 0) R.mipmap.money else R.mipmap.money_ed
@@ -176,6 +172,14 @@ class DailyCheckFragment : Fragment() {
                     if (itemData.status == 0) resources.getColor(R.color.orange_FF9C00)
                     else resources.getColor(R.color.gray_C4C4C4)
                 )
+
+                if (position == canClickPosition && !isTodayGet) {
+                    //今天的没有领取的话,就开始布灵布灵的
+//                if (position == 11) {
+                    itemView.tv_item_dailyCheck_title.text = "今日可白嫖"
+                    itemView.iv_item_dailyCheck_type.startAnimation(scaleAnimation)
+                    itemView.rl_item_dailyCheck_bg.setBackgroundResource(R.drawable.bg_daily_checking)
+                }
 
                 RxView.clicks(itemView.rootView)
                     .throttleFirst(200, TimeUnit.MILLISECONDS)
@@ -217,7 +221,7 @@ class DailyCheckFragment : Fragment() {
                         1 -> {
                             itemView.iv_item_dailyCheck_type.clearAnimation()
                             itemView.setBackgroundResource(R.drawable.bg_daily_checked)
-                            itemView.tv_item_dailyCheck_title.text = "今日已签到"
+                            itemView.tv_item_dailyCheck_title.text = "今日已白嫖"
                             itemView.tv_item_dailyCheck_num.setTextColor(resources.getColor(R.color.gray_C4C4C4))
                             itemView.iv_item_dailyCheck_type.setImageResource(R.mipmap.money_ed)
 

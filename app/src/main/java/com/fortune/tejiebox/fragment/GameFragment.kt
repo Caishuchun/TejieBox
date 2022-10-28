@@ -325,7 +325,7 @@ class GameFragment : Fragment() {
         if (hours < 0.1) {
             hours = 0.1
         }
-        return "在线${hours}小时"
+        return "时长${hours}小时"
     }
 
     /**

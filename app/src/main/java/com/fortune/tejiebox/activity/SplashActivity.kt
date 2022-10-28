@@ -175,8 +175,12 @@ class SplashActivity : BaseActivity() {
 
                 override fun onFinish() {
                     LogUtils.d("HiPermission=>onFinish()")
-                    toMain4CheckVersion()
+                    val isCheckAgreement = SPUtils.getBoolean(SPArgument.IS_CHECK_AGREEMENT, false)
                     toCountDown()
+                    if (BaseAppUpdateSetting.isToPromoteVersion && !isCheckAgreement) {
+                        return
+                    }
+                    toMain4CheckVersion()
                 }
 
                 override fun onDeny(permission: String?, position: Int) {

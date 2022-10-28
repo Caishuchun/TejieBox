@@ -86,8 +86,7 @@
         android:layout_marginBottom="@dimen/dp_5"
         android:background="@drawable/bg_start_btn_big"
         android:gravity="center"
-        android:letterSpacing="0.5"
-        android:text="@string/share"
+        android:text="邀请好友"
         android:textColor="@color/white_FFFFFF"
         android:textSize="@dimen/sp_16" />
 

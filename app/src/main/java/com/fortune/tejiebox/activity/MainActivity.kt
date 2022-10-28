@@ -320,6 +320,10 @@ class MainActivity : BaseActivity() {
          * 当进入APP,检查剪贴板的数据,如果数据对上的话,跳转到相应的游戏详情页
          */
         window.decorView.postDelayed({
+            val isCheckAgreement = SPUtils.getBoolean(SPArgument.IS_CHECK_AGREEMENT, false)
+            if (BaseAppUpdateSetting.isToPromoteVersion && !isCheckAgreement) {
+                return@postDelayed
+            }
             val gameChannelId = ClipboardUtils.getClipboardContent(this)
             if (gameChannelId != "" && gameChannelId.startsWith("tejieBox_game_channelId=")) {
                 val intent = Intent(this, GameDetailActivity::class.java)

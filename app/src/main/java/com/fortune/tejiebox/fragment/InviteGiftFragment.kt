@@ -80,6 +80,7 @@ class InviteGiftFragment : Fragment() {
      */
     @SuppressLint("SetTextI18n")
     private fun getShareList() {
+        canGet = 0
 //        DialogUtils.showBeautifulDialog(requireContext())
         val getShareList = RetrofitUtils.builder().getShareList()
         getShareListObservable = getShareList.subscribeOn(Schedulers.io())
