@@ -9,6 +9,7 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import com.fortune.tejiebox.R
+import com.fortune.tejiebox.activity.Login4AccountActivity
 import com.fortune.tejiebox.activity.LoginActivity
 import com.fortune.tejiebox.activity.WebActivity
 import com.fortune.tejiebox.base.BaseAppUpdateSetting
@@ -46,6 +47,9 @@ class LoginFirstFragment : Fragment() {
 
     @SuppressLint("CheckResult")
     private fun initView(view: View) {
+        if (!BaseAppUpdateSetting.isToPromoteVersion) {
+            view.cb_login_first?.isChecked = true
+        }
         view.iv_login_first_title.setImageResource(
             if (BaseAppUpdateSetting.isToPromoteVersion) R.mipmap.app_title2
             else R.mipmap.app_title
@@ -106,22 +110,23 @@ class LoginFirstFragment : Fragment() {
                         }
                     }
                 } else {
-                    DialogUtils.showDefaultDialog(
+                    DialogUtils.showAgreementDialog(
                         requireContext(),
-                        "协议政策",
-                        "请先勾选同意《用户协议》和《隐私协议》",
-                        "取消",
-                        "同意",
                         object : DialogUtils.OnDialogListener {
                             override fun next() {
                                 view.cb_login_first?.isChecked = true
-                                DialogUtils.dismissLoading()
                             }
                         }
                     )
                     return@subscribe
                 }
             }
+        RxView.clicks(view.tv_login_first_account)
+            .throttleFirst(200, TimeUnit.MILLISECONDS)
+            .subscribe {
+                startActivity(Intent(requireContext(), Login4AccountActivity::class.java))
+            }
+
         RxView.clicks(view.tv_login_first_userAgreement)
             .throttleFirst(200, TimeUnit.MILLISECONDS)
             .subscribe {

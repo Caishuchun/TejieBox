@@ -21,7 +21,6 @@ class LoginActivity : BaseActivity() {
 
         @SuppressLint("StaticFieldLeak")
         lateinit var loginFirstFragment: LoginFirstFragment
-
     }
 
     private var curent = 1

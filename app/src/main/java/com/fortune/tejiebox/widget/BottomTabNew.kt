@@ -57,6 +57,14 @@ class BottomTabNew(context: Context, attrs: AttributeSet) : LinearLayout(context
     }
 
     /**
+     * 展示未读消息数
+     */
+    fun showMsgNum(num: Int = 0) {
+        mView.tv_bottomTab_me_point.text = num.toString()
+        mView.tv_bottomTab_me_point.visibility = if (num == 0) View.GONE else View.VISIBLE
+    }
+
+    /**
      * 白嫖图标是否抖动
      */
     private fun isIconFlip(isShow: Boolean) {

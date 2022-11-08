@@ -9,10 +9,7 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import com.fortune.tejiebox.R
-import com.fortune.tejiebox.activity.ChangePhone1Activity
-import com.fortune.tejiebox.activity.GiftActivity
-import com.fortune.tejiebox.activity.IdCardActivity
-import com.fortune.tejiebox.activity.MainActivity
+import com.fortune.tejiebox.activity.*
 import com.fortune.tejiebox.constants.SPArgument
 import com.fortune.tejiebox.event.IntegralChange
 import com.fortune.tejiebox.event.IsHaveIdChange
@@ -235,6 +232,14 @@ class MineFragment : Fragment() {
                             }
                         )
                     }
+                }
+        }
+
+        mView?.ll_mineFragment_customerService?.let {
+            RxView.clicks(it)
+                .throttleFirst(200, TimeUnit.MILLISECONDS)
+                .subscribe {
+                    startActivity(Intent(requireContext(), CustomerServiceActivity::class.java))
                 }
         }
     }

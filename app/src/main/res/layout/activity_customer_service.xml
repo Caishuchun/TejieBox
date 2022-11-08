@@ -1,0 +1,98 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@mipmap/bg_all"
+    android:focusable="true"
+    android:focusableInTouchMode="true"
+    android:orientation="vertical"
+    tools:context=".activity.CustomerServiceActivity">
+
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/dp_30" />
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/dp_60">
+
+        <ImageView
+            android:id="@+id/iv_customerService_back"
+            android:layout_width="@dimen/dp_60"
+            android:layout_height="@dimen/dp_60"
+            android:layout_centerVertical="true"
+            android:padding="@dimen/dp_16"
+            android:src="@mipmap/back_black" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerInParent="true"
+            android:text="特戒客服"
+            android:textColor="#0A0422"
+            android:textSize="@dimen/sp_18"
+            android:textStyle="bold" />
+    </RelativeLayout>
+
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/dp_1"
+        android:background="@drawable/line_tab_bottom" />
+
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/rv_customerService_info"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1"
+        android:background="#f0f0fa"
+        android:scrollbars="none" />
+
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/dp_1"
+        android:background="@drawable/line_tab_bottom" />
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="#f5f5f5"
+        android:gravity="bottom"
+        android:orientation="horizontal"
+        android:padding="@dimen/dp_10">
+
+        <EditText
+            android:id="@+id/et_customerService_msg"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:background="@drawable/bg_white_card"
+            android:hint="请输入您需要反馈的内容"
+            android:maxHeight="@dimen/dp_100"
+            android:minHeight="@dimen/dp_40"
+            android:padding="@dimen/dp_10"
+            android:textSize="@dimen/sp_14" />
+
+        <ImageView
+            android:id="@+id/iv_customerService_selectPic"
+            android:layout_width="@dimen/dp_40"
+            android:layout_height="@dimen/dp_40"
+            android:padding="@dimen/dp_5"
+            android:src="@mipmap/add_pic" />
+
+        <ImageView
+            android:id="@+id/iv_customerService_send"
+            android:layout_width="@dimen/dp_40"
+            android:layout_height="@dimen/dp_40"
+            android:padding="@dimen/dp_8"
+            android:src="@mipmap/send"
+            android:visibility="gone" />
+
+    </LinearLayout>
+
+    <View
+        android:id="@+id/view_customerService_keybord"
+        android:layout_width="match_parent"
+        android:layout_height="0dp" />
+
+</LinearLayout>

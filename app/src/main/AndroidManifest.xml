@@ -16,25 +16,18 @@
     <uses-permission android:name="android.permission.WAKE_LOCK" />
     <uses-permission android:name="android.permission.FLASHLIGHT" />
     <uses-permission android:name="android.permission.ACCESS_FIND_LOCATION" />
-    <uses-permission android:name="android.permission.CALL_PHONE" />
-    <!-- 震动权限 -->
+    <uses-permission android:name="android.permission.CALL_PHONE" /> <!-- 震动权限 -->
     <uses-permission android:name="android.permission.VIBRATE" />
     <uses-permission android:name="android.permission.SYSTEM_ALERT_WINDOW" />
     <uses-permission android:name="android.permission.SYSTEM_OVERLAY_WINDOW" />
     <uses-permission
         android:name="android.permission.WRITE_SECURE_SETTINGS"
-        tools:ignore="ProtectedPermissions" />
-    <!-- 这个权限用于进行网络定位 -->
-    <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
-    <!-- 这个权限用于访问GPS定位 -->
-    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
-    <!-- 用于访问wifi网络信息，wifi信息会用于进行网络定位 -->
-    <uses-permission android:name="android.permission.ACCESS_WIFI_STATE" />
-    <!-- 获取运营商信息，用于支持提供运营商信息相关的接口 -->
-    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
-    <!-- 这个权限用于获取wifi的获取权限，wifi信息会用来进行网络定位 -->
-    <uses-permission android:name="android.permission.CHANGE_WIFI_STATE" />
-    <!-- 写入扩展存储，向扩展卡写入数据，用于写入离线定位数据 -->
+        tools:ignore="ProtectedPermissions" /> <!-- 这个权限用于进行网络定位 -->
+    <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" /> <!-- 这个权限用于访问GPS定位 -->
+    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" /> <!-- 用于访问wifi网络信息，wifi信息会用于进行网络定位 -->
+    <uses-permission android:name="android.permission.ACCESS_WIFI_STATE" /> <!-- 获取运营商信息，用于支持提供运营商信息相关的接口 -->
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" /> <!-- 这个权限用于获取wifi的获取权限，wifi信息会用来进行网络定位 -->
+    <uses-permission android:name="android.permission.CHANGE_WIFI_STATE" /> <!-- 写入扩展存储，向扩展卡写入数据，用于写入离线定位数据 -->
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
     <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
     <uses-permission android:name="android.permission.REQUEST_INSTALL_PACKAGES" />
@@ -60,6 +53,13 @@
         android:usesCleartextTraffic="true"
         tools:ignore="LockedOrientationActivity,UnusedAttribute"
         tools:replace="android:icon,android:theme,android:name,android:allowBackup">
+        <activity
+            android:name=".activity.Login4AccountActivity"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name=".activity.CustomerServiceActivity"
+            android:screenOrientation="portrait"
+            android:windowSoftInputMode="adjustUnspecified|stateHidden" />
         <activity
             android:name=".activity.ProcessActivity"
             android:process=":unity"
@@ -121,6 +121,7 @@
             android:theme="@style/SplashTheme">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
+
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
@@ -142,21 +143,25 @@
                 android:name="android.support.FILE_PROVIDER_PATHS"
                 android:resource="@xml/file_paths"
                 tools:replace="android:resource" />
-        </provider>
-        <!-- 联通电信授权页 -->
+        </provider> <!-- 联通电信授权页 -->
         <activity
             android:name="com.mobile.auth.gatewayauth.LoginAuthActivity"
             android:configChanges="orientation|keyboardHidden|screenSize"
             android:exported="false"
-            android:launchMode="singleTop" />
-        <!-- 协议页面webview -->
+            android:launchMode="singleTop" /> <!-- 二次弹窗界面 -->
+        <activity
+            android:name="com.mobile.auth.gatewayauth.PrivacyDialogActivity"
+            android:configChanges="orientation|keyboardHidden|screenSize"
+            android:exported="false"
+            android:launchMode="singleTop"
+            android:screenOrientation="behind"
+            android:theme="@style/authsdk_activity_dialog" /> <!-- 协议页面webview -->
         <activity
             android:name="com.mobile.auth.gatewayauth.activity.AuthWebVeiwActivity"
             android:configChanges="orientation|keyboardHidden|screenSize"
             android:exported="false"
             android:launchMode="singleTop"
-            android:screenOrientation="behind" />
-        <!-- 移动授权页 -->
+            android:screenOrientation="behind" /> <!-- 移动授权页 -->
         <activity
             android:name="com.cmic.sso.sdk.activity.LoginAuthActivity"
             android:configChanges="orientation|keyboardHidden|screenSize"

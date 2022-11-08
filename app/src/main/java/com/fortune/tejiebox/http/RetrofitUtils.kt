@@ -58,6 +58,10 @@ object RetrofitUtils {
                     .addHeader("Content-Type", "application/json")
                     .addHeader("Upgrade", "h2c")
                     .addHeader("Accept-Encoding", "identity")
+//                    .addHeader(
+//                        "box-type",
+//                        if (BaseAppUpdateSetting.isToPromoteVersion) "1" else ""
+//                    )
                     .addHeader(
                         "Authorization",
                         "Bearer ${SPUtils.getString(SPArgument.LOGIN_TOKEN)}"

@@ -8,6 +8,7 @@ import android.view.Gravity
 import android.view.LayoutInflater
 import com.fortune.tejiebox.R
 import com.fortune.tejiebox.activity.DialogActivity
+import com.fortune.tejiebox.activity.Login4AccountActivity
 import com.fortune.tejiebox.activity.LoginActivity
 import com.fortune.tejiebox.base.BaseAppUpdateSetting
 import com.fortune.tejiebox.constants.FilesArgument
@@ -17,10 +18,7 @@ import com.fortune.tejiebox.http.HttpUrls
 import com.fortune.tejiebox.http.RetrofitUtils
 import com.google.gson.Gson
 import com.jakewharton.rxbinding2.view.RxView
-import com.mobile.auth.gatewayauth.AuthRegisterViewConfig
-import com.mobile.auth.gatewayauth.AuthUIConfig
-import com.mobile.auth.gatewayauth.PhoneNumberAuthHelper
-import com.mobile.auth.gatewayauth.TokenResultListener
+import com.mobile.auth.gatewayauth.*
 import com.mobile.auth.gatewayauth.model.TokenRet
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.Disposable
@@ -34,12 +32,14 @@ object LoginUtils {
     private var quickLogin4AliObservable: Disposable? = null
     private var helper: PhoneNumberAuthHelper? = null
     private var isFirstCheck = true
+    private var isInit = true
 
     /**
      * 初始化
      */
     @SuppressLint("CheckResult")
     fun init(activity: Activity) {
+        isInit = true
         helper?.clearPreInfo()
         val mTokenResultListener = object : TokenResultListener {
             override fun onTokenSuccess(result: String?) {
@@ -62,6 +62,7 @@ object LoginUtils {
                 toDealAliListener(activity, tokenRet)
             }
         }
+
         helper = PhoneNumberAuthHelper.getInstance(activity, mTokenResultListener)
         helper?.setAuthSDKInfo("m73eA2DbbCaEcgCqkoMaEof9/IYQmkAefyUXbQr+Sl4gY3m4yaE705KHsPl4szssTyKujGp9ctWiGd1np58TH/afciOftT+e4satI7U/qOr1FJPDSXpYDtaMyINWmsN0xA9vVgZ9TmFYVYnWcaBtzZWMs8ua95g5YWW37geyAAOYeu26w/xhIw4vQqJmUT6fEvrDFVTae99djKqXeIAq6div6hof9c0qvOtvJsmRavWAinKkPw9AIy1C/cR8HRc/q8cH+J+yCXIP+G/ED9oyl+Cfrsom0L9sXLl2iXsAUAT10/tbnMMQeQ==")
         helper?.setAuthUIConfig(
@@ -75,44 +76,31 @@ object LoginUtils {
                 .setWebNavColor(Color.parseColor("#FFFFFF"))
                 .setWebNavTextColor(Color.parseColor("#0A0422"))
                 .setWebSupportedJavascript(true)
+                .setNavReturnImgDrawable(activity.getDrawable(R.drawable.back_black))
+                .setNavReturnImgWidth(px2dp(activity, 24f))
+                .setNavReturnImgHeight(px2dp(activity, 24f))
                 //标题
                 .setNavHidden(true)
                 //服务商
-                .setSloganTextSizeDp(14)
+                .setSloganTextSizeDp(px2dp(activity, 14f))
                 .setSloganText(" ")
                 .setSloganTextColor(Color.parseColor("#0A0422"))
                 //掩码
-                .setNumberColor(Color.WHITE)
-                .setNumberSizeDp(16)
+                .setNumberSizeDp(px2dp(activity, 16f))
                 .setNumberLayoutGravity(Gravity.CENTER)
                 .setNumberColor(Color.parseColor("#0A0422"))
                 //一键登录按钮
-                .setLogBtnWidth(
-                    OtherUtils.px2dp(
-                        activity,
-                        (Math.min(
-                            PhoneInfoUtils.getWidth(activity).toFloat(),
-                            PhoneInfoUtils.getHeight(activity).toFloat()
-                        )) / 360.0f * 296.0f
-                    )
-                )
-                .setLogBtnHeight(
-                    OtherUtils.px2dp(
-                        activity,
-                        (Math.min(
-                            PhoneInfoUtils.getWidth(activity).toFloat(),
-                            PhoneInfoUtils.getHeight(activity).toFloat()
-                        )) / 360.0f * 48.0f
-                    )
-                )
+                .setLogBtnWidth(px2dp(activity, 296f))
+                .setLogBtnHeight(px2dp(activity, 48f))
                 .setLogBtnBackgroundPath("bg_btn")
                 .setLogBtnText(activity.getString(R.string.login_quick))
                 .setLogBtnTextColor(Color.parseColor("#FFFFFF"))
-                .setLogBtnTextSizeDp(16)
+                .setLogBtnTextSizeDp(px2dp(activity, 16f))
                 //切换登录方式
+                .setSwitchAccHidden(true)
                 .setSwitchAccText(activity.getString(R.string.login_other_phone))
                 .setSwitchAccTextColor(Color.parseColor("#0A0422"))
-                .setSwitchAccTextSizeDp(14)
+                .setSwitchAccTextSizeDp(px2dp(activity, 14f))
                 //协议
                 .setAppPrivacyOne(
                     activity.getString(R.string.user_agreement),
@@ -124,32 +112,45 @@ object LoginUtils {
                 )
                 .setPrivacyBefore(activity.getString(R.string.login_tips))
                 .setCheckboxHidden(false)
-                .setCheckBoxWidth(
-                    OtherUtils.px2dp(
-                        activity,
-                        (Math.min(
-                            PhoneInfoUtils.getWidth(activity).toFloat(),
-                            PhoneInfoUtils.getHeight(activity).toFloat()
-                        )) / 360.0f * 24.0f
-                    )
-                )
-                .setCheckBoxHeight(
-                    OtherUtils.px2dp(
-                        activity,
-                        (Math.min(
-                            PhoneInfoUtils.getWidth(activity).toFloat(),
-                            PhoneInfoUtils.getHeight(activity).toFloat()
-                        )) / 360.0f * 24.0f
-                    )
-                )
-                .setPrivacyState(false)
+                .setCheckBoxWidth(px2dp(activity, 24f))
+                .setCheckBoxHeight(px2dp(activity, 24f))
+                .setPrivacyState(!BaseAppUpdateSetting.isToPromoteVersion)
                 .setCheckedImgDrawable(activity.getDrawable(R.drawable.checked))
                 .setUncheckedImgDrawable(activity.getDrawable(R.drawable.uncheck))
                 .setVendorPrivacyPrefix("《")
                 .setVendorPrivacySuffix("》")
                 .setAppPrivacyColor(Color.parseColor("#990A0422"), Color.parseColor("#5F60FF"))
+                //协议弹框
+                .setPrivacyAlertIsNeedShow(true)
+                .setPrivacyAlertWidth(px2dp(activity, 300f))
+                .setPrivacyAlertHeight(px2dp(activity, 150f))
+                .setPrivacyAlertBackgroundColor(Color.parseColor("#FFFFFF"))
+                .setPrivacyAlertCornerRadiusArray(
+                    intArrayOf(
+                        px2dp(activity, 10f),
+                        px2dp(activity, 10f),
+                        px2dp(activity, 10f),
+                        px2dp(activity, 10f)
+                    )
+                )
+                .setPrivacyAlertTitleTextSize(px2dp(activity, 16f))
+                .setPrivacyAlertContentTextSize(px2dp(activity, 12f))
+                .setPrivacyAlertBtnTextSize(px2dp(activity, 14f))
+                .setPrivacyAlertBtnBackgroundImgPath("bg_btn")
+                .setPrivacyAlertBtnWidth(px2dp(activity, 100f))
+                .setPrivacyAlertBtnHeigth(px2dp(activity, 30f))
+                .setPrivacyAlertContentAlignment(Gravity.CENTER)
+                .setPrivacyAlertContentHorizontalMargin(px2dp(activity, 10f))
+                .setPrivacyAlertContentVerticalMargin(px2dp(activity, 15f))
+                .setPrivacyAlertBtnTextColor(Color.parseColor("#FFFFFF"))
+                .setPrivacyAlertCloseImgWidth(px2dp(activity, 15f))
+                .setPrivacyAlertCloseImgHeight(px2dp(activity, 15f))
                 .create()
         )
+
+        //适配全面屏
+        helper?.keepAuthPageLandscapeFullSreen(true)
+
         val numView = LayoutInflater.from(activity).inflate(R.layout.layout_quick_login_num, null)
         helper?.addAuthRegistViewConfig(
             "num", AuthRegisterViewConfig.Builder()
@@ -165,8 +166,19 @@ object LoginUtils {
         RxView.clicks(bodyView.iv_login4ali_back)
             .throttleFirst(200, TimeUnit.MILLISECONDS)
             .subscribe {
-                helper?.quitLoginPage()
-                helper?.hideLoginLoading()
+                hideLoadingAndQuitLoginPage()
+            }
+        RxView.clicks(bodyView.tv_login4ali_sms)
+            .throttleFirst(200, TimeUnit.MILLISECONDS)
+            .subscribe {
+                hideLoadingAndQuitLoginPage()
+                toLogin(activity, false)
+            }
+        RxView.clicks(bodyView.tv_login4ali_account)
+            .throttleFirst(200, TimeUnit.MILLISECONDS)
+            .subscribe {
+                hideLoadingAndQuitLoginPage()
+                activity.startActivity(Intent(activity, Login4AccountActivity::class.java))
             }
         helper?.addAuthRegistViewConfig(
             "body", AuthRegisterViewConfig.Builder()
@@ -174,14 +186,27 @@ object LoginUtils {
                 .setRootViewId(AuthRegisterViewConfig.RootViewId.ROOT_VIEW_ID_BODY)
                 .build()
         )
+        //配置完直接检查终端⽹络环境是否⽀持⼀键登录
+        helper?.checkEnvAvailable(PhoneNumberAuthHelper.SERVICE_TYPE_LOGIN)
     }
+
+    /**
+     * px转dp
+     */
+    private fun px2dp(activity: Activity, num: Float) =
+        OtherUtils.px2dp(
+            activity,
+            (PhoneInfoUtils.getWidth(activity).toFloat()
+                .coerceAtMost(PhoneInfoUtils.getHeight(activity).toFloat())) / 360.0f * num
+        )
 
     /**
      * 阿里云一键登录
      */
     @SuppressLint("CheckResult")
     fun toQuickLogin(activity: Activity) {
-        helper?.checkEnvAvailable(PhoneNumberAuthHelper.SERVICE_TYPE_LOGIN)
+        isInit = false
+        helper?.getLoginToken(activity, 1500)
         DialogUtils.showBeautifulDialog(activity)
     }
 
@@ -195,128 +220,149 @@ object LoginUtils {
         LogUtils.d("Ali=>toDealAliListener==code:${tokenRet.code}")
         when (tokenRet.code) {
             "600000" -> {
+                if (isInit) return
                 //获取token成功
                 toRealLogin4Ail(activity, tokenRet.token)
             }
             "600001" -> {
+                if (isInit) return
                 //唤起授权⻚成功
                 DialogUtils.dismissLoading()
             }
             "600002" -> {
+                if (isInit) return
                 //唤起授权⻚失败,建议切换到其他登录⽅式
-                helper?.hideLoginLoading()
-                helper?.quitLoginPage()
+                hideLoadingAndQuitLoginPage()
                 toLogin(activity, true)
             }
             "600004" -> {
+                if (isInit) return
                 //获取运营商配置信息失败,创建⼯单联系⼯程师
-                helper?.hideLoginLoading()
-                helper?.quitLoginPage()
+                hideLoadingAndQuitLoginPage()
                 toLogin(activity, false)
             }
             "600005" -> {
+                if (isInit) return
                 //⼿机终端不安全,切换到其他登录⽅式
-                helper?.hideLoginLoading()
-                helper?.quitLoginPage()
+                hideLoadingAndQuitLoginPage()
                 toLogin(activity, false)
             }
             "600007" -> {
+                if (isInit) return
                 //未检测到sim卡,提示⽤户检查 SIM 卡后重试
-                helper?.hideLoginLoading()
-                helper?.quitLoginPage()
+                hideLoadingAndQuitLoginPage()
                 toLogin(activity, false)
             }
             "600008" -> {
+                if (isInit) return
                 //蜂窝⽹络未开启,提示⽤户开启移动⽹络后重试
-                helper?.hideLoginLoading()
-                helper?.quitLoginPage()
+                hideLoadingAndQuitLoginPage()
                 toLogin(activity, false)
             }
             "600009" -> {
+                if (isInit) return
                 //⽆法判断运营商,创建⼯单联系⼯程师
-                helper?.hideLoginLoading()
-                helper?.quitLoginPage()
+                hideLoadingAndQuitLoginPage()
                 toLogin(activity, false)
             }
             "600010" -> {
+                if (isInit) return
                 //未知异常,创建⼯单联系⼯程师
-                helper?.hideLoginLoading()
-                helper?.quitLoginPage()
+                hideLoadingAndQuitLoginPage()
                 toLogin(activity, false)
             }
             "600011" -> {
+                if (isInit) return
                 //创建⼯单联系⼯程师,切换到其他登录⽅式
-                helper?.hideLoginLoading()
-                helper?.quitLoginPage()
+                hideLoadingAndQuitLoginPage()
                 toLogin(activity, false)
             }
             "600012" -> {
+                if (isInit) return
                 //预取号失败
-                helper?.hideLoginLoading()
-                helper?.quitLoginPage()
+                hideLoadingAndQuitLoginPage()
                 toLogin(activity, true)
             }
             "600013" -> {
+                if (isInit) return
                 //运营商维护升级,该功能不可⽤,创建⼯单联系⼯程师
-                helper?.hideLoginLoading()
-                helper?.quitLoginPage()
+                hideLoadingAndQuitLoginPage()
                 toLogin(activity, false)
             }
             "600014" -> {
+                if (isInit) return
                 //运营商维护升级，该功能已达最⼤调⽤次数,创建⼯单联系⼯程师
-                helper?.hideLoginLoading()
-                helper?.quitLoginPage()
+                hideLoadingAndQuitLoginPage()
                 toLogin(activity, false)
             }
             "600015" -> {
+                if (isInit) return
                 //接⼝超时,切换到其他登录⽅式
-                helper?.hideLoginLoading()
-                helper?.quitLoginPage()
+                hideLoadingAndQuitLoginPage()
                 toLogin(activity, false)
             }
             "600017" -> {
+                if (isInit) return
                 //AppID、Appkey解析失败
-                helper?.hideLoginLoading()
-                helper?.quitLoginPage()
+                hideLoadingAndQuitLoginPage()
                 toLogin(activity, true)
             }
             "600021" -> {
+                if (isInit) return
                 //点击登录时检测到运营商已切换,提示⽤户退出授权⻚，重新登录
-                helper?.hideLoginLoading()
-                helper?.quitLoginPage()
+                hideLoadingAndQuitLoginPage()
                 toLogin(activity, true)
             }
             "600023" -> {
+                if (isInit) return
                 //加载⾃定义控件异常
-                helper?.hideLoginLoading()
-                helper?.quitLoginPage()
+                hideLoadingAndQuitLoginPage()
                 toLogin(activity, true)
             }
             "600024" -> {
                 //终端环境检查⽀持认证
-                helper?.getLoginToken(activity, 1500)
+                helper?.accelerateLoginPage(3000, object : PreLoginResultListener {
+                    override fun onTokenSuccess(p0: String?) {
+                        //预取号成功
+                        LogUtils.d("Ali=>预取号成功:$p0")
+                    }
+
+                    override fun onTokenFailed(p0: String?, p1: String?) {
+                        //预取号失败
+                        LogUtils.d("Ali=>预取号失败")
+                    }
+                })
             }
             "600025" -> {
+                if (isInit) return
                 //终端检测参数错误,检查传⼊参数类型与范围是否正确
-                helper?.hideLoginLoading()
-                helper?.quitLoginPage()
+                hideLoadingAndQuitLoginPage()
                 toLogin(activity, true)
             }
             "600026" -> {
+                if (isInit) return
                 //授权⻚已加载时不允许调⽤加速或预取号接⼝, 检查是否有授权⻚拉起后，去调⽤preLogin 或者accelerateAuthPage的接⼝，该⾏为不 允许
             }
             "700000" -> {
+                if (isInit) return
                 //点击返回，⽤户取消免密登录
-                helper?.hideLoginLoading()
-                helper?.quitLoginPage()
+                hideLoadingAndQuitLoginPage()
             }
             "700001" -> {
+                if (isInit) return
                 //点击切换按钮，⽤户取消免密登录
-                helper?.hideLoginLoading()
-                helper?.quitLoginPage()
+                hideLoadingAndQuitLoginPage()
                 toLogin(activity, false)
             }
         }
+    }
+
+    /**
+     * 隐藏登录加载和退出登录页面
+     */
+    private fun hideLoadingAndQuitLoginPage() {
+        helper?.hideLoginLoading()
+        helper?.quitLoginPage()
     }
 
     /**
@@ -329,7 +375,7 @@ object LoginUtils {
             isFirstCheck = false
             helper?.getLoginToken(activity, 1500)
         } else {
-            isFirstCheck = false
+            isFirstCheck = true
             DialogUtils.dismissLoading()
             LogUtils.d("toLogin..................")
             activity.startActivity(Intent(activity, LoginActivity::class.java))
@@ -344,13 +390,13 @@ object LoginUtils {
         activity: Activity,
         accessCode: String
     ) {
-        val quickLogin4Ali = RetrofitUtils.builder().quickLogin4Ali(accessCode)
         SPUtils.putValue(SPArgument.LOGIN_TOKEN, null)
         SPUtils.putValue(SPArgument.PHONE_NUMBER, null)
         SPUtils.putValue(SPArgument.USER_ID, null)
         SPUtils.putValue(SPArgument.IS_HAVE_ID, 0)
         SPUtils.putValue(SPArgument.ID_NAME, null)
         SPUtils.putValue(SPArgument.ID_NUM, null)
+        val quickLogin4Ali = RetrofitUtils.builder().quickLogin4Ali(accessCode)
         quickLogin4AliObservable = quickLogin4Ali.subscribeOn(Schedulers.io())
             .observeOn(AndroidSchedulers.mainThread())
             .subscribe({
@@ -393,8 +439,7 @@ object LoginUtils {
                                     isHaveRewardInteger
                                 )
                             )
-                            helper?.hideLoginLoading()
-                            helper?.quitLoginPage()
+                            hideLoadingAndQuitLoginPage()
                         }
                         else -> {
                             helper?.hideLoginLoading()

@@ -95,6 +95,49 @@
 
     </LinearLayout>
 
+    <LinearLayout
+        android:id="@+id/ll_mineFragment_customerService"
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/dp_54"
+        android:gravity="center_vertical"
+        android:padding="@dimen/dp_10">
+
+        <ImageView
+            android:layout_width="@dimen/dp_24"
+            android:layout_height="@dimen/dp_24"
+            android:src="@mipmap/customer_service" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="@dimen/dp_10"
+            android:text="联系客服"
+            android:textColor="#0A0422"
+            android:textSize="@dimen/sp_16" />
+
+        <View
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            android:layout_weight="1" />
+
+        <TextView
+            android:id="@+id/tv_mineFragment_customerService"
+            android:layout_width="@dimen/dp_16"
+            android:layout_height="@dimen/dp_16"
+            android:background="@drawable/point_red"
+            android:gravity="center"
+            android:text="2"
+            android:textColor="@color/white_FFFFFF"
+            android:textSize="@dimen/sp_11" />
+
+        <ImageView
+            android:layout_width="@dimen/dp_10"
+            android:layout_height="@dimen/dp_10"
+            android:layout_marginStart="@dimen/dp_5"
+            android:src="@mipmap/icon_next" />
+
+    </LinearLayout>
+
     <View
         android:layout_width="match_parent"
         android:layout_height="@dimen/dp_0_5"
@@ -106,8 +149,8 @@
         android:layout_width="match_parent"
         android:layout_height="@dimen/dp_54"
         android:gravity="center_vertical"
-        android:visibility="gone"
-        android:padding="@dimen/dp_10">
+        android:padding="@dimen/dp_10"
+        android:visibility="gone">
 
         <ImageView
             android:layout_width="@dimen/dp_24"
@@ -150,8 +193,8 @@
         android:layout_width="match_parent"
         android:layout_height="@dimen/dp_0_5"
         android:layout_margin="@dimen/dp_10"
-        android:visibility="gone"
-        android:background="@drawable/line_tab_bottom" />
+        android:background="@drawable/line_tab_bottom"
+        android:visibility="gone" />
 
     <LinearLayout
         android:layout_width="match_parent"

@@ -290,7 +290,6 @@ class MainActivity : BaseActivity() {
                         }
                     )
                 }
-                toGetSplashImgUrl()
             }
         }
 
@@ -336,6 +335,7 @@ class MainActivity : BaseActivity() {
         }, 1000)
 
         toCheckIsNeedUpdateGameInfo()
+        toGetSplashImgUrl()
     }
 
     /**

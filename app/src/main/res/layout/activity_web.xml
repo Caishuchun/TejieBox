@@ -14,20 +14,20 @@
 
         <ImageView
             android:id="@+id/iv_web_back"
-            android:layout_width="@dimen/dp_30"
-            android:layout_height="@dimen/dp_30"
-            android:padding="@dimen/dp_5"
+            android:layout_width="@dimen/dp_60"
+            android:layout_height="@dimen/dp_60"
+            android:padding="@dimen/dp_16"
             android:src="@mipmap/back_black" />
 
         <TextView
             android:id="@+id/tv_web_title"
             android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_centerInParent="true"
-            android:paddingTop="@dimen/dp_24"
-            android:textColor="@color/white_FFFFFF"
-            android:textSize="@dimen/sp_16"
-            android:visibility="gone" />
+            android:layout_height="@dimen/dp_60"
+            android:gravity="center"
+            android:layout_centerHorizontal="true"
+            android:textColor="#0A0422"
+            android:textSize="@dimen/sp_18"
+            android:textStyle="bold"/>
     </RelativeLayout>
 
     <RelativeLayout

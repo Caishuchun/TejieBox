@@ -11,7 +11,6 @@ import com.fortune.tejiebox.base.BaseActivity
 import com.fortune.tejiebox.base.BaseAppUpdateSetting
 import com.fortune.tejiebox.constants.FilesArgument
 import com.fortune.tejiebox.http.HttpUrls
-import com.fortune.tejiebox.utils.DialogUtils
 import com.fortune.tejiebox.utils.StatusBarUtils
 import com.jakewharton.rxbinding2.view.RxView
 import com.umeng.analytics.MobclickAgent
@@ -41,11 +40,11 @@ class WebActivity : BaseActivity() {
         instance = this
         when (intent.getStringExtra(TYPE)) {
             USER_AGREEMENT -> {
-                tv_web_title.text = getString(R.string.user_agreement)
+                tv_web_title.text = getString(R.string.app_name)
                 toLoadUrl((if (BaseAppUpdateSetting.appType) HttpUrls.REAL_URL else HttpUrls.TEST_URL) + FilesArgument.PROTOCOL_SERVICE)
             }
             PRIVACY_AGREEMENT -> {
-                tv_web_title.text = getString(R.string.privacy_agreement)
+                tv_web_title.text = getString(R.string.app_name)
                 toLoadUrl((if (BaseAppUpdateSetting.appType) HttpUrls.REAL_URL else HttpUrls.TEST_URL) + FilesArgument.PROTOCOL_PRIVACY)
             }
             GAME_WEB -> {
@@ -110,9 +109,9 @@ class WebActivity : BaseActivity() {
                 url: String
             ) {
                 super.onPageFinished(view, url)
-                runOnUiThread {
-                    DialogUtils.dismissLoading()
-                }
+//                runOnUiThread {
+//                    DialogUtils.dismissLoading()
+//                }
             }
 
             override fun onReceivedSslError(

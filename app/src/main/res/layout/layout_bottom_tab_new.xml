@@ -96,7 +96,7 @@
             android:orientation="vertical">
 
             <RelativeLayout
-                android:layout_width="@dimen/dp_24"
+                android:layout_width="@dimen/dp_30"
                 android:layout_height="@dimen/dp_24">
 
                 <ImageView
@@ -105,13 +105,17 @@
                     android:layout_height="@dimen/dp_24"
                     android:src="@mipmap/icon_me_unselect" />
 
-                <ImageView
-                    android:id="@+id/iv_bottomTab_me_point"
-                    android:layout_width="@dimen/dp_6"
-                    android:layout_height="@dimen/dp_6"
+                <TextView
+                    android:id="@+id/tv_bottomTab_me_point"
+                    android:layout_width="@dimen/dp_14"
+                    android:layout_height="@dimen/dp_14"
                     android:layout_alignParentEnd="true"
-                    android:src="@drawable/point_red"
-                    android:visibility="gone" />
+                    android:background="@drawable/point_red"
+                    android:gravity="center"
+                    android:text="2"
+                    android:textColor="@color/white_FFFFFF"
+                    android:textSize="@dimen/sp_9"
+                    android:visibility="visible" />
             </RelativeLayout>
 
             <TextView

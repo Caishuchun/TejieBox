@@ -1,0 +1,162 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:background="#f0f0fa"
+    android:orientation="vertical">
+
+    <LinearLayout
+        android:id="@+id/ll_item_customerService_left_msg"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:padding="@dimen/dp_10">
+
+        <com.fortune.tejiebox.widget.RoundImageView
+            android:layout_width="@dimen/dp_40"
+            android:layout_height="@dimen/dp_40"
+            android:src="@mipmap/icon_customer"
+            app:type="circle" />
+
+        <TextView
+            android:id="@+id/tv_item_customerService_left_msg"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginEnd="@dimen/dp_10"
+            android:background="@drawable/bubble_left"
+            android:maxWidth="@dimen/dp_200"
+            android:paddingStart="@dimen/dp_20"
+            android:paddingTop="@dimen/dp_10"
+            android:paddingEnd="@dimen/dp_10"
+            android:paddingBottom="@dimen/dp_10"
+            android:text="您好! 请问有什么可以帮助您! 请反馈遇到的问题,我们将在一个工作日内帮您解答"
+            android:textColor="@color/black_1A241F"
+            android:textSize="@dimen/sp_12"
+            android:textStyle="bold" />
+
+        <TextView
+            android:id="@+id/tv_item_customerService_left_msg_time"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="11:30"
+            android:layout_gravity="center_vertical"
+            android:textColor="@color/black_1A241F"
+            android:textSize="@dimen/sp_10"
+            android:textStyle="bold" />
+    </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/ll_item_customerService_right_msg"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="end"
+        android:orientation="horizontal"
+        android:padding="@dimen/dp_10">
+
+        <TextView
+            android:id="@+id/tv_item_customerService_right_msg_time"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_vertical"
+            android:text="11:30"
+            android:textColor="@color/black_1A241F"
+            android:textSize="@dimen/sp_10"
+            android:textStyle="bold" />
+
+        <TextView
+            android:id="@+id/tv_item_customerService_right_msg"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="@dimen/dp_10"
+            android:background="@drawable/bubble_right"
+            android:maxWidth="@dimen/dp_200"
+            android:paddingStart="@dimen/dp_10"
+            android:paddingTop="@dimen/dp_10"
+            android:paddingEnd="@dimen/dp_20"
+            android:paddingBottom="@dimen/dp_10"
+            android:text="请问怎么进行转区操作"
+            android:textColor="@color/white_FFFFFF"
+            android:textSize="@dimen/sp_12"
+            android:textStyle="bold" />
+
+        <com.fortune.tejiebox.widget.RoundImageView
+            android:layout_width="@dimen/dp_40"
+            android:layout_height="@dimen/dp_40"
+            android:src="@mipmap/icon"
+            app:type="circle" />
+
+    </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/ll_item_customerService_left_img"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:padding="@dimen/dp_10">
+
+        <com.fortune.tejiebox.widget.RoundImageView
+            android:layout_width="@dimen/dp_40"
+            android:layout_height="@dimen/dp_40"
+            android:src="@mipmap/icon_customer"
+            app:type="circle" />
+
+        <com.fortune.tejiebox.widget.RoundImageView
+            android:id="@+id/iv_item_customerService_left_img"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="@dimen/dp_13"
+            android:layout_marginEnd="@dimen/dp_10"
+            android:scaleType="fitXY"
+            app:radius="@dimen/dp_10"
+            app:type="round" />
+
+        <TextView
+            android:id="@+id/tv_item_customerService_left_img_time"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_vertical"
+            android:text="11:30"
+            android:textColor="@color/black_1A241F"
+            android:textSize="@dimen/sp_10"
+            android:textStyle="bold" />
+
+    </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/ll_item_customerService_right_img"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="end"
+        android:orientation="horizontal"
+        android:padding="@dimen/dp_10">
+
+        <TextView
+            android:id="@+id/tv_item_customerService_right_img_time"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_vertical"
+            android:text="11:30"
+            android:textColor="@color/black_1A241F"
+            android:textSize="@dimen/sp_10"
+            android:textStyle="bold" />
+
+        <com.fortune.tejiebox.widget.RoundImageView
+            android:id="@+id/iv_item_customerService_right_img"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="@dimen/dp_10"
+            android:layout_marginEnd="@dimen/dp_13"
+            android:scaleType="fitXY"
+            app:radius="@dimen/dp_10"
+            app:type="round" />
+
+        <com.fortune.tejiebox.widget.RoundImageView
+            android:layout_width="@dimen/dp_40"
+            android:layout_height="@dimen/dp_40"
+            android:src="@mipmap/icon"
+            app:type="circle" />
+
+    </LinearLayout>
+
+</LinearLayout>

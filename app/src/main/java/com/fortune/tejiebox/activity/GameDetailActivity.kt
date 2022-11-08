@@ -45,6 +45,9 @@ import org.greenrobot.eventbus.EventBus
 import java.text.SimpleDateFormat
 import java.util.*
 import java.util.concurrent.TimeUnit
+import android.R.attr.name
+import android.os.Build
+import android.webkit.*
 
 
 class GameDetailActivity : BaseActivity() {
@@ -82,7 +85,116 @@ class GameDetailActivity : BaseActivity() {
         gameId = intent.getIntExtra(GAME_ID, -1)
         gameChannelId = intent.getStringExtra(GAME_CHANNEL_ID)
         initView()
+        initWebView()
         getInfo()
+    }
+
+    /**
+     * 设置WebView
+     */
+    @SuppressLint("SetJavaScriptEnabled")
+    private fun initWebView() {
+        val settings: WebSettings = web_detail.settings
+        // 设置WebView支持JavaScript
+        settings.javaScriptEnabled = true
+        //支持自动适配
+        settings.useWideViewPort = true
+        settings.loadWithOverviewMode = true
+        settings.setSupportZoom(false) //支持放大缩小
+        settings.builtInZoomControls = false //显示缩放按钮
+        settings.blockNetworkImage = true // 把图片加载放在最后来加载渲染
+        settings.allowFileAccess = true // 允许访问文件
+        settings.saveFormData = true
+        settings.setGeolocationEnabled(true)
+        settings.domStorageEnabled = true
+        settings.javaScriptCanOpenWindowsAutomatically = true /// 支持通过JS打开新窗口
+        settings.layoutAlgorithm = WebSettings.LayoutAlgorithm.NARROW_COLUMNS
+        settings.layoutAlgorithm = WebSettings.LayoutAlgorithm.SINGLE_COLUMN
+        //设置不让其跳转浏览器
+        web_detail.webViewClient = object : WebViewClient() {
+            override fun shouldOverrideUrlLoading(view: WebView?, url: String?): Boolean {
+                return false
+            }
+        }
+        // 添加客户端支持
+        web_detail.webChromeClient = WebChromeClient()
+        //不加这个图片显示不出来
+        // mWebView.loadUrl(TEXTURL);
+        //不加这个图片显示不出来
+        if (Build.VERSION.SDK_INT > Build.VERSION_CODES.LOLLIPOP) {
+            web_detail.settings.mixedContentMode = WebSettings.MIXED_CONTENT_ALWAYS_ALLOW
+        }
+        web_detail.settings.blockNetworkImage = false
+        //允许cookie 不然有的网站无法登陆
+        val mCookieManager: CookieManager = CookieManager.getInstance()
+        mCookieManager.setAcceptCookie(true)
+        mCookieManager.setAcceptThirdPartyCookies(web_detail, true)
+//        web_detail.loadUrl(URL)
+        web_detail.isHorizontalScrollBarEnabled = false
+        web_detail.isVerticalScrollBarEnabled = false
+
+        val data = """
+            <html>
+                <head>
+                    <title>这是标题</title>
+                    <meta name="content-type" content="text/html; charset=utf-8">
+                    <meta http-equlv="Content-Type" content="text/html;charset=utf-8">
+                    <style type="text/css">
+                        body{
+                            background-image:url("https://t7.baidu.com/it/u=1956604245,3662848045&fm=193&f=GIF");
+                            width:100%;
+                            height:300dp;
+                        }
+                    </style>
+                </head>
+                <body>
+                    <p>
+                        <h1>明年起 电动车禁止上电梯 电梯停用不公示原因最高罚2万<h1>
+                    </p>
+                    <p>
+                        <h6>发布时间：2016-11-22&nbsp;06：58：22&emsp;来源：郑州晚报</h6>
+                    </p>
+                    <hr>
+                    <p><img src="pic.jpg"></p>
+                    <p>&emsp;&emsp;报社讯 电梯里要安装监控设备，电动车不能上电梯。近日，《郑州市电梯使用安全管理办法》通过并对外公
+                        <br>布，电梯需要安装监控设备并保护有效运行，违者最高可被罚3万元。同时明确乘坐电梯的7种禁止行为，包括电
+                        <br>动车禁止上电梯等。该《办法》字2017年1月1日起施行。郑报融媒记者 董艳竹 李雪</p>
+             
+                    <p>&emsp;&emsp;这7种行为《办法》</p>
+             
+                    <p>
+                        <ol>
+                            <li>乘坐明示处于非正常状态的电梯；</li>
+                            <li>在超过额定载重量时乘坐电梯；</li>
+                            <li>携带自行车（含电动自行车，已折叠的自行车除外）乘坐电梯；</li>
+                            <li>违反电梯安全警示标志操作电梯；</li>
+                            <li>采用扒撬等非正常手段开启电梯层门、轿门；</li>
+                            <li>拆除、破坏电梯的安全注意事项、使用标志、应急救援电话、电梯安全责任投保信息、报警装置、安全
+                                <br>部件及其他附属设施；</li>
+                            <li>其他危机电梯安全运行和他人乘坐安全的行为。</li>
+                        </ol>
+                    </p>
+                    <p>
+                        <h3>使用：电梯需安装监控并有效运行</h3>
+                    </p>
+             
+                    <p>&emsp;&emsp;办法》所称的电梯，包括载人（货）电梯、自动扶梯和自动人行道等。</p>
+             
+                    <p>&emsp;&emsp;对于电梯要不要安装监控一事，《办法》明确，不仅要安装还要保持有效运行。电梯使用单位应当安装电
+                        <br>梯安全运行监控设备，并与市特种设备安全监督管理部门的质量安全监管平台链接，保持起有效运行。
+                    </p>
+                    <p>&emsp;&emsp;住宅小区电梯需要改造、修理、更新的，电梯使用单位和业主委员会应当及时组织落实，业主应当履行资金
+                        <br>筹集义务。
+                    </p>
+                    <p>&emsp;&emsp;其中，已建立住宅专项维修资金的，按照规定在住宅专项维修资金中列支。未建立住宅专项维修资金或者
+                        <br>住宅专项维修资金余额不足的，业主对费用承担有约定的，按照约定承担；没有约定或者约定不明确的，乡镇人
+                        <br>民政府、街道办事处应当协助组织业主筹集落实资金。
+                    </p>
+                </body>
+            <html>
+        """.trimIndent()
+
+        web_detail.loadDataWithBaseURL(null,data, "text/html" , "utf-8", null);
     }
 
     private var currentPicPosition = 0
