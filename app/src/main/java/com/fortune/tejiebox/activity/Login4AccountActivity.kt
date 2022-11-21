@@ -78,6 +78,7 @@ class Login4AccountActivity : BaseActivity() {
 
     override fun onBackPressed() {
         if (currentIndex == 1) {
+            currentIndex = 0
             val beginTransaction = supportFragmentManager.beginTransaction()
             beginTransaction.replace(R.id.fl_login4Account, accountLoginFragment)
             beginTransaction.commitAllowingStateLoss()

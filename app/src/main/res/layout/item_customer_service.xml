@@ -25,7 +25,7 @@
             android:layout_height="wrap_content"
             android:layout_marginEnd="@dimen/dp_10"
             android:background="@drawable/bubble_left"
-            android:maxWidth="@dimen/dp_200"
+            android:maxWidth="@dimen/dp_202"
             android:paddingStart="@dimen/dp_20"
             android:paddingTop="@dimen/dp_10"
             android:paddingEnd="@dimen/dp_10"
@@ -39,8 +39,9 @@
             android:id="@+id/tv_item_customerService_left_msg_time"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="11:30"
             android:layout_gravity="center_vertical"
+            android:gravity="center"
+            android:text="11:30"
             android:textColor="@color/black_1A241F"
             android:textSize="@dimen/sp_10"
             android:textStyle="bold" />
@@ -59,6 +60,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="center_vertical"
+            android:gravity="center"
             android:text="11:30"
             android:textColor="@color/black_1A241F"
             android:textSize="@dimen/sp_10"
@@ -70,7 +72,7 @@
             android:layout_height="wrap_content"
             android:layout_marginStart="@dimen/dp_10"
             android:background="@drawable/bubble_right"
-            android:maxWidth="@dimen/dp_200"
+            android:maxWidth="@dimen/dp_202"
             android:paddingStart="@dimen/dp_10"
             android:paddingTop="@dimen/dp_10"
             android:paddingEnd="@dimen/dp_20"
@@ -101,21 +103,29 @@
             android:src="@mipmap/icon_customer"
             app:type="circle" />
 
-        <com.fortune.tejiebox.widget.RoundImageView
-            android:id="@+id/iv_item_customerService_left_img"
+        <RelativeLayout
+            android:id="@+id/rl_item_customerService_left_img"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginStart="@dimen/dp_13"
-            android:layout_marginEnd="@dimen/dp_10"
-            android:scaleType="fitXY"
-            app:radius="@dimen/dp_10"
-            app:type="round" />
+            android:layout_marginEnd="@dimen/dp_10">
+
+            <com.fortune.tejiebox.widget.RoundImageView
+                android:id="@+id/iv_item_customerService_left_img"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:scaleType="fitXY"
+                app:radius="@dimen/dp_10"
+                app:type="round" />
+
+        </RelativeLayout>
 
         <TextView
             android:id="@+id/tv_item_customerService_left_img_time"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="center_vertical"
+            android:gravity="center"
             android:text="11:30"
             android:textColor="@color/black_1A241F"
             android:textSize="@dimen/sp_10"
@@ -136,20 +146,32 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="center_vertical"
+            android:gravity="center"
             android:text="11:30"
             android:textColor="@color/black_1A241F"
             android:textSize="@dimen/sp_10"
             android:textStyle="bold" />
 
-        <com.fortune.tejiebox.widget.RoundImageView
-            android:id="@+id/iv_item_customerService_right_img"
+        <RelativeLayout
+            android:id="@+id/rl_item_customerService_right_img"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginStart="@dimen/dp_10"
-            android:layout_marginEnd="@dimen/dp_13"
-            android:scaleType="fitXY"
-            app:radius="@dimen/dp_10"
-            app:type="round" />
+            android:layout_marginStart="@dimen/dp_13"
+            android:layout_marginEnd="@dimen/dp_10">
+
+            <com.fortune.tejiebox.widget.RoundImageView
+                android:id="@+id/iv_item_customerService_right_img"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:scaleType="fitXY"
+                app:radius="@dimen/dp_10"
+                app:type="round" />
+
+            <com.fortune.tejiebox.widget.UploadImgProgressBar
+                android:id="@+id/upload_item_customerService_right_img"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent" />
+        </RelativeLayout>
 
         <com.fortune.tejiebox.widget.RoundImageView
             android:layout_width="@dimen/dp_40"

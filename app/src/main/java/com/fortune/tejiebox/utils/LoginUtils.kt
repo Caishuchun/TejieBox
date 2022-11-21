@@ -419,7 +419,9 @@ object LoginUtils {
                             var isHaveRewardInteger = false
                             if (it.data?.first_login == 1) {
                                 // 首次注册的推广统计
-                                PromoteUtils.promote(activity)
+                                if (BaseAppUpdateSetting.isToPromoteVersion) {
+                                    PromoteUtils.promote(activity)
+                                }
                                 // 首次注册且有奖励积分的
                                 if (it.data?.integral != null && it.data?.integral!! > 0) {
                                     isHaveRewardInteger = true

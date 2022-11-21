@@ -12,6 +12,7 @@ import com.fortune.tejiebox.R
 import com.fortune.tejiebox.activity.DialogActivity
 import com.fortune.tejiebox.activity.LoginActivity
 import com.fortune.tejiebox.activity.MainActivity
+import com.fortune.tejiebox.base.BaseAppUpdateSetting
 import com.fortune.tejiebox.constants.SPArgument
 import com.fortune.tejiebox.event.LoginChangePage
 import com.fortune.tejiebox.event.LoginStatusChange
@@ -177,7 +178,9 @@ class LoginSecondFragment() : Fragment() {
                             var isHaveRewardInteger = false
                             if (it.data?.first_login == 1) {
                                 // 首次注册的推广统计
-                                PromoteUtils.promote(requireActivity())
+                                if (BaseAppUpdateSetting.isToPromoteVersion) {
+                                    PromoteUtils.promote(requireActivity())
+                                }
                                 // 首次注册且有奖励积分的
                                 if (it.data?.integral != null && it.data?.integral!! > 0) {
                                     isHaveRewardInteger = true

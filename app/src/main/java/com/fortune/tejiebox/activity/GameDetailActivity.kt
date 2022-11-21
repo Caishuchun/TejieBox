@@ -134,67 +134,328 @@ class GameDetailActivity : BaseActivity() {
         web_detail.isVerticalScrollBarEnabled = false
 
         val data = """
-            <html>
-                <head>
-                    <title>这是标题</title>
-                    <meta name="content-type" content="text/html; charset=utf-8">
-                    <meta http-equlv="Content-Type" content="text/html;charset=utf-8">
-                    <style type="text/css">
-                        body{
-                            background-image:url("https://t7.baidu.com/it/u=1956604245,3662848045&fm=193&f=GIF");
-                            width:100%;
-                            height:300dp;
-                        }
-                    </style>
-                </head>
-                <body>
-                    <p>
-                        <h1>明年起 电动车禁止上电梯 电梯停用不公示原因最高罚2万<h1>
-                    </p>
-                    <p>
-                        <h6>发布时间：2016-11-22&nbsp;06：58：22&emsp;来源：郑州晚报</h6>
-                    </p>
-                    <hr>
-                    <p><img src="pic.jpg"></p>
-                    <p>&emsp;&emsp;报社讯 电梯里要安装监控设备，电动车不能上电梯。近日，《郑州市电梯使用安全管理办法》通过并对外公
-                        <br>布，电梯需要安装监控设备并保护有效运行，违者最高可被罚3万元。同时明确乘坐电梯的7种禁止行为，包括电
-                        <br>动车禁止上电梯等。该《办法》字2017年1月1日起施行。郑报融媒记者 董艳竹 李雪</p>
-             
-                    <p>&emsp;&emsp;这7种行为《办法》</p>
-             
-                    <p>
-                        <ol>
-                            <li>乘坐明示处于非正常状态的电梯；</li>
-                            <li>在超过额定载重量时乘坐电梯；</li>
-                            <li>携带自行车（含电动自行车，已折叠的自行车除外）乘坐电梯；</li>
-                            <li>违反电梯安全警示标志操作电梯；</li>
-                            <li>采用扒撬等非正常手段开启电梯层门、轿门；</li>
-                            <li>拆除、破坏电梯的安全注意事项、使用标志、应急救援电话、电梯安全责任投保信息、报警装置、安全
-                                <br>部件及其他附属设施；</li>
-                            <li>其他危机电梯安全运行和他人乘坐安全的行为。</li>
-                        </ol>
-                    </p>
-                    <p>
-                        <h3>使用：电梯需安装监控并有效运行</h3>
-                    </p>
-             
-                    <p>&emsp;&emsp;办法》所称的电梯，包括载人（货）电梯、自动扶梯和自动人行道等。</p>
-             
-                    <p>&emsp;&emsp;对于电梯要不要安装监控一事，《办法》明确，不仅要安装还要保持有效运行。电梯使用单位应当安装电
-                        <br>梯安全运行监控设备，并与市特种设备安全监督管理部门的质量安全监管平台链接，保持起有效运行。
-                    </p>
-                    <p>&emsp;&emsp;住宅小区电梯需要改造、修理、更新的，电梯使用单位和业主委员会应当及时组织落实，业主应当履行资金
-                        <br>筹集义务。
-                    </p>
-                    <p>&emsp;&emsp;其中，已建立住宅专项维修资金的，按照规定在住宅专项维修资金中列支。未建立住宅专项维修资金或者
-                        <br>住宅专项维修资金余额不足的，业主对费用承担有约定的，按照约定承担；没有约定或者约定不明确的，乡镇人
-                        <br>民政府、街道办事处应当协助组织业主筹集落实资金。
-                    </p>
-                </body>
-            <html>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title> 
+    
+    <link rel="stylesheet" href="css/base.css">
+
+    <style type="text/css">
+		body,p,h1,h2,h3,h4,h5,h6,ul,ol,dl,dt,dd,li {
+			margin: 0;
+			padding: 0;
+			list-style: none;
+			font-size: 14px;
+			font-family: 宋体;
+			color: #000000;
+		}
+
+		body {
+			background-color: #241E18;
+			text-align: center;
+		}
+
+		a {
+			color: #000000; 
+			text-decoration: none;
+		}
+
+		/*a:hover {
+			color: red;
+			text-decoration: underline;
+		}*/
+
+		i,s,em {
+			font-style: normal;
+			text-decoration: none;
+		}
+
+		input,img {
+			vertical-align: middle;
+			border: 0 none;
+			outline-style: none;
+			padding: 0;
+			margin: 0;
+		}
+
+		/*清除浮动*/
+		.clearfix:after {
+			content: "";
+			height: 0;
+			line-height: 0;
+			display: block;
+			clear: both;
+			visibility: hidden;
+		}
+
+		.clearfix {
+			zoom: 1;
+		}
+
+		/*版心*/
+		.w {
+			width: 1190px;
+			margin: 0 auto;
+		}
+        .header {
+            width: 100%; 
+            height: 146px; 
+            background-color: #010101; 
+            position: relative;
+        }
+        .game_info {
+            height: 100px; 
+            margin-left: 30px; 
+            margin-top: 23px; 
+            margin-bottom: 23px; 
+            display: flex; 
+            flex-direction: row; 
+            float: left
+        }
+        .game_avart {
+            height: 100%; 
+            width: 100px; 
+            background-color: #6E6568;
+        }
+        .game_details {
+            margin-left: 30px; 
+            text-align: left; 
+            display: flex; 
+            flex-direction: column; 
+            justify-content: space-between;
+        }
+        .game_details_item {
+            color: gold;
+        }
+        .name {
+            font-size: 28px; 
+        }
+        .subname {
+            font-size: 16px; 
+        }
+        .introduce {
+            font-size: 16px; 
+        }
+        .download_btn_header {
+            width:192px;
+            height:74px;
+            background-image: url(resource/download_btn_top.png);
+            position: absolute;
+            top: 50%;
+            right: 30px;
+            margin-top: -37px;
+        }
+        /* width: 192px; height: 74px; background-image: url(resource/download_btn_top.png); */
+        .banner {
+            height: 937px; 
+            background: url("https://t7.baidu.com/it/u=1595072465,3644073269&fm=193&f=GIF") no-repeat;
+        }
+
+        .login_gift {
+            height: 450px; 
+            background: url(resource/login_gift_bg.png) no-repeat;
+        }
+        .login_gift_title {
+            margin-top: 87px;
+        }
+        .login_gift_list {
+            height: 174px; 
+            margin-left: 82px; 
+            margin-right: 82px; 
+            margin-top: 8px; 
+            display: flex; 
+            flex-direction: row; 
+            justify-content: space-between;
+        }
+        .login_gift_btn {
+            width: 220px; 
+            height: 55px; 
+            background-image: 
+            url(resource/login_gift_btn.png); 
+            background-color: rgba(0, 0, 0, 0); 
+            border-style: none; 
+            margin-top: 22px; 
+            margin-bottom: 85px;
+        }
+
+        .luck_draw {
+            text-align: center; 
+            margin-bottom: 54px;
+        }
+        .jackpot {
+            height: 438px; 
+            background: url(resource/luck_draw_bg.png) no-repeat center; 
+            margin-top: 40px;
+        }
+        .jackpot_list {
+            height: 250px; 
+            display: grid; 
+            grid-gap: 52px 30px; 
+            grid-template: repeat(2, 1fr)/repeat(4, 1fr); 
+            padding-top: 47px; 
+            padding-left: 60px; 
+            padding-right: 60px;
+        }
+        .jackpot_item {
+            display: grid;
+            place-items: center;
+            background: url(resource/jackpot_item.png);
+            background-size: cover;
+        }
+        .luck_draw_btn {
+            width: 220px; 
+            height: 55px; 
+            background-image: url(resource/login_gift_btn.png); 
+            background-color: rgba(0, 0, 0, 0); 
+            border-style: none; 
+            margin-top: 44px;
+        }
+
+        .strategy {
+            text-align: center;
+        }
+        .strategy_content {
+            height: 444px; 
+            background: url(resource/strategy_bg.png) no-repeat center; 
+            margin-top: 40px;
+            font-size: 25px;
+            text-align: left;
+            padding-top: 85px;
+            padding-left: 55px;
+            padding-right: 55px;
+            padding-bottom: 85px;
+        }
+        .load_btn_bottom {
+            width: 254px; 
+            height: 94px; 
+            background-image: url(resource/load_btn_bottom.png); 
+            background-color: rgba(0, 0, 0, 0); 
+            border-style: none; 
+            margin-top: 30px; 
+            margin-bottom: 53px;
+        }
+    </style>
+</head>
+<body>
+    <!-- 顶部 -->
+    <div class="header">
+       <!-- 游戏介绍 -->
+       <div class="game_info">
+            <!-- 游戏图标  -->
+            <img class="game_avart" src="">
+            <div class="game_details">
+                <span class="game_details_item name">传奇手游</span>
+                <span class="game_details_item subname">(爆率全开刀刀暴击)</span>
+                <span class="game_details_item introduce">装备永久回收小怪爆终极</span>
+            </div>
+            <!-- 游戏信息 -->
+       </div>
+       <button class="download_btn_header">
+
+    </button>
+    </div>
+    
+    <!-- 游戏banner -->
+    <div class="banner">
+        
+       
+    </div>
+
+    <!-- 领取登录福利 -->
+    <div class="login_gift">
+         <!-- 标题 -->
+        <img class="login_gift_title" src="resource/login_gift_title.png">
+        <!-- 登录福利列表 -->
+        <div class="login_gift_list">
+            <div class="login_gift_item">
+                <img src="resource/gift_4.png">
+                <div>5000积分</div>
+            </div>
+            <div class="login_gift_item">
+                <img src="resource/gift_2.png">
+                <div>狂暴神技</div>
+            </div>
+            <div class="login_gift_item">
+                <img src="resource/gift_3.png">
+                <div>琥珀套装</div>
+            </div>
+            <div class="login_gift_item">
+                <img src="resource/gift_1.png">
+                <div>四格神器</div>
+            </div>
+        </div>
+        <!-- 领取按钮 -->
+        <button class="login_gift_btn">
+
+        </button>
+    </div>
+
+    <!-- 抽奖 -->
+    <div class="luck_draw">
+        <!-- 标题 -->
+        <img src="resource/luck_draw_title.png">
+        <!-- 奖池 -->
+        <div class="jackpot">
+            <!-- 奖池列表 -->
+            <div class="jackpot_list">
+                <div class="jackpot_item">
+                    <img src="resource/jackpot_1.png">
+                </div>
+                <div class="jackpot_item">
+                    <img src="resource/jackpot_2.png">
+                </div>
+                <div class="jackpot_item">
+                    <img src="resource/jackpot_3.png">
+                </div>
+                <div class="jackpot_item">
+                    <img src="resource/jackpot_4.png">
+                </div>
+                <div class="jackpot_item">
+                    <img src="resource/jackpot_5.png">
+                </div>
+                <div class="jackpot_item">
+                    <img src="resource/jackpot_6.png">
+                </div>
+                <div class="jackpot_item">
+                    <img src="resource/jackpot_7.png">
+                </div>
+                <div class="jackpot_item">
+                    <img src="resource/jackpot_8.png">
+                </div>
+            </div>
+            <!-- 抽奖按钮 -->
+            <button class="luck_draw_btn">
+
+            </button>
+        </div>
+        
+        
+        
+    </div>
+
+    <!-- 攻略 -->
+    <div class="strategy">
+        <!-- 标题 -->
+        <img src="resource/strategy_title.png">
+        <!-- 攻略内容 -->
+        <div class="strategy_content">
+            吃饭睡觉打豆豆
+        </div>
+    </div>
+
+    <!-- 底部下载按钮 -->
+    <button class="load_btn_bottom">
+
+    </button>
+</body>
+</html>
         """.trimIndent()
 
-        web_detail.loadDataWithBaseURL(null,data, "text/html" , "utf-8", null);
+        web_detail.loadDataWithBaseURL(null, data, "text/html", "utf-8", null);
     }
 
     private var currentPicPosition = 0
