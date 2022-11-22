@@ -19,12 +19,16 @@ import com.jakewharton.rxbinding2.view.RxView
 import com.jakewharton.rxbinding2.widget.RxTextView
 import com.luck.picture.lib.basic.PictureSelector
 import com.luck.picture.lib.config.SelectMimeType
+import com.luck.picture.lib.engine.CompressFileEngine
 import com.luck.picture.lib.entity.LocalMedia
 import com.luck.picture.lib.interfaces.OnResultCallbackListener
 import com.luck.picture.lib.style.*
 import com.umeng.analytics.MobclickAgent
 import kotlinx.android.synthetic.main.activity_customer_service.*
 import kotlinx.android.synthetic.main.item_customer_service.view.*
+import top.zibin.luban.Luban
+import top.zibin.luban.OnNewCompressListener
+import java.io.File
 import java.text.SimpleDateFormat
 import java.util.concurrent.TimeUnit
 
@@ -107,6 +111,7 @@ class CustomerServiceActivity : BaseActivity() {
         } else {
             //有数据
             mData.clear()
+            mCustomerServiceDao.clear()
             mData.addAll(info)
         }
 
@@ -142,9 +147,6 @@ class CustomerServiceActivity : BaseActivity() {
                                 formatImgSize(itemData.imgW.toInt(), itemData.imgH.toInt())[1]
                             itemView.rl_item_customerService_left_img.layoutParams = layoutParams
 
-                            itemView.upload_item_customerService_right_img.setRadius(
-                                PhoneInfoUtils.getWidth(this) / 360f * 10
-                            )
 
                             Glide.with(this)
                                 .load(itemData.chat_img_url)
@@ -179,8 +181,6 @@ class CustomerServiceActivity : BaseActivity() {
                             layoutParams.height =
                                 formatImgSize(itemData.imgW.toInt(), itemData.imgH.toInt())[1]
                             itemView.rl_item_customerService_right_img.layoutParams = layoutParams
-
-                            itemView.upload_item_customerService_right_img.setProgress(0.1f)
 
                             Glide.with(this)
                                 .load(itemData.chat_img_url)
@@ -281,6 +281,24 @@ class CustomerServiceActivity : BaseActivity() {
             .setMaxSelectNum(9)
             .setSelectorUIStyle(style)
             .setImageEngine(GlideEngine.createGlideEngine())
+            .setCompressEngine(CompressFileEngine { context, source, call ->
+                Luban.with(context).load(source).ignoreBy(100)
+                    .setCompressListener(object : OnNewCompressListener {
+                        override fun onStart() {
+                        }
+
+                        override fun onSuccess(source: String?, compressFile: File?) {
+                            if (call != null && compressFile != null) {
+                                call.onCallback(source, compressFile.absolutePath)
+                            }
+                        }
+
+                        override fun onError(source: String?, e: Throwable?) {
+                            call?.onCallback(source, null)
+                        }
+
+                    }).launch()
+            })
             .forResult(object : OnResultCallbackListener<LocalMedia> {
                 override fun onResult(result: ArrayList<LocalMedia>?) {
                     if (result?.isNotEmpty() == true) {

@@ -19,7 +19,7 @@ class CustomerServiceInfo(
     @ColumnInfo(name = "chat_type") val chat_type: Int,
 
     //文本信息
-    @ColumnInfo(name = "chat_content") val chat_content: String?,
+    @ColumnInfo(name = "chat_content") var chat_content: String?,
 
     //图片Url
     @ColumnInfo(name = "chat_img_url") val chat_img_url: String?,

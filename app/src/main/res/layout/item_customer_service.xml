@@ -166,11 +166,6 @@
                 android:scaleType="fitXY"
                 app:radius="@dimen/dp_10"
                 app:type="round" />
-
-            <com.fortune.tejiebox.widget.UploadImgProgressBar
-                android:id="@+id/upload_item_customerService_right_img"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent" />
         </RelativeLayout>
 
         <com.fortune.tejiebox.widget.RoundImageView

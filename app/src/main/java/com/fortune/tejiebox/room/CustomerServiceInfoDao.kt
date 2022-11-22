@@ -16,8 +16,8 @@ interface CustomerServiceInfoDao {
     /**
      * 查询最新数据
      */
-    @Query("SELECT * FROM (SELECT * FROM customer_service_table ORDER BY id DESC LIMIT :maxNum) tempTable ORDER BY id")
-    fun getInfo(maxNum: Int = 15): List<CustomerServiceInfo>
+    @Query("SELECT * FROM (SELECT * FROM customer_service_table ORDER BY id DESC LIMIT :maxNum * :page) tempTable ORDER BY id")
+    fun getInfo(page: Int = 1, maxNum: Int = 15): List<CustomerServiceInfo>
 
     /**
      * 添加数据
