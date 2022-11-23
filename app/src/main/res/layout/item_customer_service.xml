@@ -32,8 +32,7 @@
             android:paddingBottom="@dimen/dp_10"
             android:text="您好! 请问有什么可以帮助您! 请反馈遇到的问题,我们将在一个工作日内帮您解答"
             android:textColor="@color/black_1A241F"
-            android:textSize="@dimen/sp_12"
-            android:textStyle="bold" />
+            android:textSize="@dimen/sp_14" />
 
         <TextView
             android:id="@+id/tv_item_customerService_left_msg_time"
@@ -43,8 +42,7 @@
             android:gravity="center"
             android:text="11:30"
             android:textColor="@color/black_1A241F"
-            android:textSize="@dimen/sp_10"
-            android:textStyle="bold" />
+            android:textSize="@dimen/sp_10"/>
     </LinearLayout>
 
     <LinearLayout
@@ -63,8 +61,7 @@
             android:gravity="center"
             android:text="11:30"
             android:textColor="@color/black_1A241F"
-            android:textSize="@dimen/sp_10"
-            android:textStyle="bold" />
+            android:textSize="@dimen/sp_10"/>
 
         <TextView
             android:id="@+id/tv_item_customerService_right_msg"
@@ -79,8 +76,7 @@
             android:paddingBottom="@dimen/dp_10"
             android:text="请问怎么进行转区操作"
             android:textColor="@color/white_FFFFFF"
-            android:textSize="@dimen/sp_12"
-            android:textStyle="bold" />
+            android:textSize="@dimen/sp_14"/>
 
         <com.fortune.tejiebox.widget.RoundImageView
             android:layout_width="@dimen/dp_40"
@@ -128,8 +124,7 @@
             android:gravity="center"
             android:text="11:30"
             android:textColor="@color/black_1A241F"
-            android:textSize="@dimen/sp_10"
-            android:textStyle="bold" />
+            android:textSize="@dimen/sp_10"/>
 
     </LinearLayout>
 
@@ -149,8 +144,7 @@
             android:gravity="center"
             android:text="11:30"
             android:textColor="@color/black_1A241F"
-            android:textSize="@dimen/sp_10"
-            android:textStyle="bold" />
+            android:textSize="@dimen/sp_10"/>
 
         <RelativeLayout
             android:id="@+id/rl_item_customerService_right_img"

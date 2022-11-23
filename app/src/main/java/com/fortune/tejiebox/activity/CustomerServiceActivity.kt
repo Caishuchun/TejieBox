@@ -95,6 +95,7 @@ class CustomerServiceActivity : BaseActivity() {
         //获取最近聊天数据
         val dataBase = CustomerServiceInfoDataBase.getDataBase(this.applicationContext)
         mCustomerServiceDao = dataBase.customerServiceInfoDao()
+//        mCustomerServiceDao.clear()
 
         val info = mCustomerServiceDao.getInfo()
         if (info.isEmpty()) {
@@ -111,7 +112,6 @@ class CustomerServiceActivity : BaseActivity() {
         } else {
             //有数据
             mData.clear()
-            mCustomerServiceDao.clear()
             mData.addAll(info)
         }
 
