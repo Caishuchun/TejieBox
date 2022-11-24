@@ -6,8 +6,10 @@ import android.widget.LinearLayout
 import com.bumptech.glide.Glide
 import com.fortune.tejiebox.GlideEngine
 import com.fortune.tejiebox.R
-import com.fortune.tejiebox.adapter.BaseAdapterWithPosition
+import com.fortune.tejiebox.adapter.BaseAdapterWithPosition4CustomerService
 import com.fortune.tejiebox.base.BaseActivity
+import com.fortune.tejiebox.http.RetrofitProgressUploadListener
+import com.fortune.tejiebox.http.RetrofitUploadProgressUtil
 import com.fortune.tejiebox.room.CustomerServiceInfo
 import com.fortune.tejiebox.room.CustomerServiceInfoDao
 import com.fortune.tejiebox.room.CustomerServiceInfoDataBase
@@ -26,9 +28,13 @@ import com.luck.picture.lib.style.*
 import com.umeng.analytics.MobclickAgent
 import kotlinx.android.synthetic.main.activity_customer_service.*
 import kotlinx.android.synthetic.main.item_customer_service.view.*
+import okhttp3.MediaType
+import okhttp3.MultipartBody
+import okhttp3.RequestBody
 import top.zibin.luban.Luban
 import top.zibin.luban.OnNewCompressListener
 import java.io.File
+import java.net.URLEncoder
 import java.text.SimpleDateFormat
 import java.util.concurrent.TimeUnit
 
@@ -42,7 +48,7 @@ class CustomerServiceActivity : BaseActivity() {
         private lateinit var mCustomerServiceDao: CustomerServiceInfoDao
     }
 
-    private var mAdapter: BaseAdapterWithPosition<CustomerServiceInfo>? = null
+    private var mAdapter: BaseAdapterWithPosition4CustomerService<CustomerServiceInfo>? = null
     private var mData = mutableListOf<CustomerServiceInfo>()
 
     private var picIndex = 0 //上传图片时,图片index
@@ -115,10 +121,10 @@ class CustomerServiceActivity : BaseActivity() {
             mData.addAll(info)
         }
 
-        mAdapter = BaseAdapterWithPosition.Builder<CustomerServiceInfo>()
+        mAdapter = BaseAdapterWithPosition4CustomerService.Builder<CustomerServiceInfo>()
             .setLayoutId(R.layout.item_customer_service)
             .setData(mData)
-            .addBindView { itemView, itemData, position ->
+            .addBindView { itemView, itemData, position, payloads ->
                 when (itemData.form) {
                     0 -> {
                         //客服方消息
@@ -187,6 +193,11 @@ class CustomerServiceActivity : BaseActivity() {
                                 .into(itemView.iv_item_customerService_right_img)
                             itemView.tv_item_customerService_right_img_time.text =
                                 formatChatTime(itemData.chat_time)
+
+                            if (payloads.isNotEmpty()) {
+                                itemView.tv_item_customerService_right_img_tips.text =
+                                    payloads[0].toString()
+                            }
                         }
                     }
                 }
@@ -256,7 +267,6 @@ class CustomerServiceActivity : BaseActivity() {
         )
         mData.add(customerServiceInfo)
         mCustomerServiceDao.addInfo(customerServiceInfo)
-        mAdapter?.notifyItemChanged(mData.size - 1)
         rv_customerService_info?.scrollToPosition(mData.size - 1)
     }
 
@@ -318,6 +328,26 @@ class CustomerServiceActivity : BaseActivity() {
     private fun toSendPic(result: ArrayList<LocalMedia>) {
         if (picIndex < result.size) {
             //可以上传图片
+//            val file = File(result[picIndex].compressPath)
+//            val body = RequestBody.create(
+//                MediaType.parse("multipart/form-data"), file
+//            )
+//            val progressRequestBody = RetrofitUploadProgressUtil.getProgressRequestBody(body,
+//                object : RetrofitProgressUploadListener {
+//                    override fun progress(progress: Int) {
+//
+//                    }
+//
+//                    override fun speedAndTimeLeft(speed: String, timeLeft: String) {
+//                    }
+//                })
+//            val createFormData = MultipartBody.Part.createFormData(
+//                "file",
+//                URLEncoder.encode(file.name, "UTF-8"),
+//                progressRequestBody
+//            )
+//            val uploadPicture = RetrofitUtils.builder().uploadPicture(createFormData)
+
             val customerServiceInfo = CustomerServiceInfo(
                 System.currentTimeMillis().toInt(),
                 1, 2, null,
@@ -331,6 +361,7 @@ class CustomerServiceActivity : BaseActivity() {
             mAdapter?.notifyItemChanged(mData.size - 1)
             rv_customerService_info?.scrollToPosition(mData.size - 1)
 
+            updateImgProgress(1)
             picIndex++
             toSendPic(result)
         } else {
@@ -339,6 +370,15 @@ class CustomerServiceActivity : BaseActivity() {
         }
     }
 
+    /**
+     * 上传图片的进度
+     */
+    @SuppressLint("CheckResult", "SetTextI18n")
+    private fun updateImgProgress(position: Int) {
+        runOnUiThread {
+            mAdapter?.notifyItemChanged(position, arrayListOf(position))
+        }
+    }
 
     /**
      * 初始化软键盘监听

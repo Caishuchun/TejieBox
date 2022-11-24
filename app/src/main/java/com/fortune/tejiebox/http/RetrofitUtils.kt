@@ -8,6 +8,7 @@ import com.fortune.tejiebox.myapp.MyApp
 import com.fortune.tejiebox.utils.LogUtils
 import com.fortune.tejiebox.utils.SPUtils
 import io.reactivex.Flowable
+import okhttp3.MultipartBody
 import okhttp3.OkHttpClient
 import okhttp3.logging.HttpLoggingInterceptor
 import retrofit2.Retrofit
@@ -360,5 +361,14 @@ object RetrofitUtils {
         fun getSplashUrl(
             @Query("version", encoded = true) version: Int? = null
         ): Flowable<SplashUrlBean>
+
+        /**
+         * 上传图片
+         */
+        @Multipart
+        @POST(HttpUrls.UPLOAD_PICTURE)
+        fun uploadPicture(
+            @Part file: MultipartBody.Part
+        ): Flowable<BaseBean>
     }
 }

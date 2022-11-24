@@ -42,7 +42,7 @@
             android:gravity="center"
             android:text="11:30"
             android:textColor="@color/black_1A241F"
-            android:textSize="@dimen/sp_10"/>
+            android:textSize="@dimen/sp_10" />
     </LinearLayout>
 
     <LinearLayout
@@ -61,7 +61,7 @@
             android:gravity="center"
             android:text="11:30"
             android:textColor="@color/black_1A241F"
-            android:textSize="@dimen/sp_10"/>
+            android:textSize="@dimen/sp_10" />
 
         <TextView
             android:id="@+id/tv_item_customerService_right_msg"
@@ -76,7 +76,7 @@
             android:paddingBottom="@dimen/dp_10"
             android:text="请问怎么进行转区操作"
             android:textColor="@color/white_FFFFFF"
-            android:textSize="@dimen/sp_14"/>
+            android:textSize="@dimen/sp_14" />
 
         <com.fortune.tejiebox.widget.RoundImageView
             android:layout_width="@dimen/dp_40"
@@ -124,7 +124,7 @@
             android:gravity="center"
             android:text="11:30"
             android:textColor="@color/black_1A241F"
-            android:textSize="@dimen/sp_10"/>
+            android:textSize="@dimen/sp_10" />
 
     </LinearLayout>
 
@@ -144,7 +144,7 @@
             android:gravity="center"
             android:text="11:30"
             android:textColor="@color/black_1A241F"
-            android:textSize="@dimen/sp_10"/>
+            android:textSize="@dimen/sp_10" />
 
         <RelativeLayout
             android:id="@+id/rl_item_customerService_right_img"
@@ -160,6 +160,15 @@
                 android:scaleType="fitXY"
                 app:radius="@dimen/dp_10"
                 app:type="round" />
+
+            <TextView
+                android:id="@+id/tv_item_customerService_right_img_tips"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="111"
+                android:layout_centerInParent="true"
+                android:textColor="@color/red_FB6767"
+                android:textSize="@dimen/sp_18" />
         </RelativeLayout>
 
         <com.fortune.tejiebox.widget.RoundImageView

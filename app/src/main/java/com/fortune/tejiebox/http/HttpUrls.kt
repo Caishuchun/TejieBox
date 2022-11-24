@@ -107,4 +107,7 @@ object HttpUrls {
 
     //获取封面图片
     const val SPLASH_URL = "/android/v2.game/carousel"
+
+    //上传图片_客服聊天
+    const val UPLOAD_PICTURE = ""
 }
