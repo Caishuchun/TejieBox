@@ -35,7 +35,7 @@ class BaseAdapterWithPosition4CustomerService<T> private constructor() :
         payloads: MutableList<Any>
     ) {
         holder.setIsRecyclable(false)
-        addBindView!!.invoke(holder.itemView, mDataList!![position], position,payloads)
+        addBindView!!.invoke(holder.itemView, mDataList!![position], position, payloads)
     }
 
     inner class BaseViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView)
@@ -65,5 +65,6 @@ class BaseAdapterWithPosition4CustomerService<T> private constructor() :
     }
 
     override fun onBindViewHolder(holder: BaseViewHolder, position: Int) {
+        onBindViewHolder(holder, position, arrayListOf(1))
     }
 }

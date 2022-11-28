@@ -95,6 +95,18 @@ class GameFragment : Fragment() {
         return mView
     }
 
+    override fun onHiddenChanged(hidden: Boolean) {
+        super.onHiddenChanged(hidden)
+        if (hidden) {
+            //如果该fragment隐藏了
+            if (type == 1 || type == 2) {
+                //如果是收藏界面和在玩界面
+                isShake = false
+                mAdapter?.notifyDataSetChanged()
+            }
+        }
+    }
+
     /**
      * 初始化布局
      */
@@ -133,6 +145,18 @@ class GameFragment : Fragment() {
                 .subscribe {
                     isShake = false
                     mAdapter?.notifyDataSetChanged()
+                }
+        }
+
+        mView?.view_gameFragment_space?.let {
+            RxView.clicks(it)
+                .throttleFirst(200, TimeUnit.MILLISECONDS)
+                .subscribe {
+                    if (isShake && (type == 1 || type == 2)) {
+                        //如果是在玩和收藏界面抖动
+                        isShake = false
+                        mAdapter?.notifyDataSetChanged()
+                    }
                 }
         }
 

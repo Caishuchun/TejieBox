@@ -39,27 +39,47 @@
         android:layout_marginTop="@dimen/dp_90"
         android:layout_marginEnd="@dimen/dp_32"
         android:background="@drawable/bg_phone_enter"
+        android:digits="0123456789abcdefghigklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ"
         android:hint="请输入登录账号"
+        android:inputType="textVisiblePassword"
+        android:maxLength="17"
         android:maxLines="1"
         android:padding="@dimen/dp_10"
         android:textColor="#0A0422"
         android:textColorHint="#CAC9CE"
         android:textSize="@dimen/sp_16" />
 
-    <EditText
-        android:id="@+id/et_account_login_pass"
+    <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="@dimen/dp_48"
         android:layout_marginStart="@dimen/dp_32"
         android:layout_marginTop="@dimen/dp_10"
         android:layout_marginEnd="@dimen/dp_32"
         android:background="@drawable/bg_phone_enter"
-        android:hint="请输入登录密码"
-        android:maxLines="1"
-        android:padding="@dimen/dp_10"
-        android:textColor="#0A0422"
-        android:textColorHint="#CAC9CE"
-        android:textSize="@dimen/sp_16" />
+        android:orientation="horizontal">
+
+        <EditText
+            android:id="@+id/et_account_login_pass"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:background="@null"
+            android:hint="请输入登录密码"
+            android:inputType="textPassword"
+            android:maxLength="17"
+            android:maxLines="1"
+            android:padding="@dimen/dp_10"
+            android:textColor="#0A0422"
+            android:textColorHint="#CAC9CE"
+            android:textSize="@dimen/sp_16" />
+
+        <ImageView
+            android:id="@+id/iv_account_login_pass"
+            android:layout_width="@dimen/dp_48"
+            android:layout_height="@dimen/dp_48"
+            android:padding="@dimen/dp_12"
+            android:src="@mipmap/pass_show" />
+    </LinearLayout>
 
     <TextView
         android:id="@+id/tv_account_login_login"

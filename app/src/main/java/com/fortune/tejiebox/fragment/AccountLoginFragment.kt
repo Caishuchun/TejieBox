@@ -2,6 +2,8 @@ package com.fortune.tejiebox.fragment
 
 import android.content.Intent
 import android.os.Bundle
+import android.text.method.HideReturnsTransformationMethod
+import android.text.method.PasswordTransformationMethod
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -13,6 +15,7 @@ import com.fortune.tejiebox.base.BaseAppUpdateSetting
 import com.fortune.tejiebox.utils.DialogUtils
 import com.fortune.tejiebox.utils.ToastUtils
 import com.jakewharton.rxbinding2.view.RxView
+import com.jakewharton.rxbinding2.widget.RxTextView
 import kotlinx.android.synthetic.main.fragment_account_login.view.*
 import kotlinx.android.synthetic.main.fragment_login_normal.view.*
 import java.util.concurrent.TimeUnit
@@ -24,6 +27,7 @@ class AccountLoginFragment : Fragment() {
     }
 
     private var mView: View? = null
+    private var loginPassIsShow = false
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -38,6 +42,7 @@ class AccountLoginFragment : Fragment() {
         if (!BaseAppUpdateSetting.isToPromoteVersion) {
             mView?.cb_account_login?.isChecked = true
         }
+
         mView?.iv_account_login_back?.let {
             RxView.clicks(it)
                 .throttleFirst(200, TimeUnit.MILLISECONDS)
@@ -48,6 +53,47 @@ class AccountLoginFragment : Fragment() {
 
         mView?.iv_account_login_title?.let {
             it.setImageResource(if (BaseAppUpdateSetting.isToPromoteVersion) R.mipmap.app_title2 else R.mipmap.app_title)
+        }
+
+        mView?.et_account_login_account?.let { et ->
+            RxTextView.textChanges(et)
+                .skipInitialValue()
+                .subscribe {
+                    if (it.length > 16) {
+                        ToastUtils.show("登录账号不得超过16位字符")
+                        et.setText(it.substring(0, it.length - 1))
+                        et.setSelection(it.length - 1)
+                    }
+                }
+        }
+
+        mView?.et_account_login_pass?.let { et ->
+            RxTextView.textChanges(et)
+                .skipInitialValue()
+                .subscribe {
+                    if (it.length > 16) {
+                        ToastUtils.show("登录密码不得超过16位字符")
+                        et.setText(it.substring(0, it.length - 1))
+                        et.setSelection(it.length - 1)
+                    }
+                }
+        }
+
+        mView?.iv_account_login_pass?.let { iv ->
+            RxView.clicks(iv)
+                .throttleFirst(200, TimeUnit.MILLISECONDS)
+                .subscribe {
+                    loginPassIsShow = !loginPassIsShow
+                    mView?.et_account_login_pass?.let {
+                        it.transformationMethod = if (loginPassIsShow) {
+                            HideReturnsTransformationMethod.getInstance()
+                        } else {
+                            PasswordTransformationMethod.getInstance()
+                        }
+                        it.setSelection(it.length())
+                    }
+                    iv.setImageResource(if (!loginPassIsShow) R.mipmap.pass_show else R.mipmap.pass_unshow)
+                }
         }
 
         mView?.tv_account_login_login?.let {
@@ -104,10 +150,16 @@ class AccountLoginFragment : Fragment() {
     private fun toCheckLogin() {
         val account = mView?.et_account_login_account?.text.toString().trim()
         val pass = mView?.et_account_login_pass?.text.toString().trim()
-        if (account.length > 5 && pass.length > 5) {
-            toLogin(account, pass)
-        } else {
-            ToastUtils.show("登录账号或登录密码错误,请重新输入")
+        when {
+            account.length < 8 -> {
+                ToastUtils.show("登录账号长度不足8位字符")
+            }
+            pass.length < 8 -> {
+                ToastUtils.show("登录密码长度不足8位字符")
+            }
+            else -> {
+                toLogin(account, pass)
+            }
         }
     }
 

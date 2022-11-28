@@ -8,11 +8,10 @@ import com.fortune.tejiebox.GlideEngine
 import com.fortune.tejiebox.R
 import com.fortune.tejiebox.adapter.BaseAdapterWithPosition4CustomerService
 import com.fortune.tejiebox.base.BaseActivity
-import com.fortune.tejiebox.http.RetrofitProgressUploadListener
-import com.fortune.tejiebox.http.RetrofitUploadProgressUtil
 import com.fortune.tejiebox.room.CustomerServiceInfo
 import com.fortune.tejiebox.room.CustomerServiceInfoDao
 import com.fortune.tejiebox.room.CustomerServiceInfoDataBase
+import com.fortune.tejiebox.utils.LogUtils
 import com.fortune.tejiebox.utils.PhoneInfoUtils
 import com.fortune.tejiebox.utils.SoftKeyBoardListener
 import com.fortune.tejiebox.utils.StatusBarUtils
@@ -26,15 +25,12 @@ import com.luck.picture.lib.entity.LocalMedia
 import com.luck.picture.lib.interfaces.OnResultCallbackListener
 import com.luck.picture.lib.style.*
 import com.umeng.analytics.MobclickAgent
+import io.reactivex.Observable
 import kotlinx.android.synthetic.main.activity_customer_service.*
 import kotlinx.android.synthetic.main.item_customer_service.view.*
-import okhttp3.MediaType
-import okhttp3.MultipartBody
-import okhttp3.RequestBody
 import top.zibin.luban.Luban
 import top.zibin.luban.OnNewCompressListener
 import java.io.File
-import java.net.URLEncoder
 import java.text.SimpleDateFormat
 import java.util.concurrent.TimeUnit
 
@@ -108,7 +104,7 @@ class CustomerServiceActivity : BaseActivity() {
             //没有数据,添加开始提示
             val customerServiceInfo = CustomerServiceInfo(
                 System.currentTimeMillis().toInt(), 0, 1,
-                "您好, 请问有什么可以帮助您! 请反馈遇到的问题,我们将在一个工作日内解答。",
+                "您好, 请问有什么可以帮助您! 请反馈遇到的问题, 我们将在一个工作日内解答。",
                 null, null, null,
                 System.currentTimeMillis(),
                 1
@@ -195,6 +191,7 @@ class CustomerServiceActivity : BaseActivity() {
                                 formatChatTime(itemData.chat_time)
 
                             if (payloads.isNotEmpty()) {
+                                LogUtils.d("==========$payloads")
                                 itemView.tv_item_customerService_right_img_tips.text =
                                     payloads[0].toString()
                             }
@@ -358,10 +355,8 @@ class CustomerServiceActivity : BaseActivity() {
             )
             mData.add(customerServiceInfo)
             mCustomerServiceDao.addInfo(customerServiceInfo)
-            mAdapter?.notifyItemChanged(mData.size - 1)
-            rv_customerService_info?.scrollToPosition(mData.size - 1)
+            updateImgProgress(mData.size - 1)
 
-            updateImgProgress(1)
             picIndex++
             toSendPic(result)
         } else {
@@ -375,8 +370,14 @@ class CustomerServiceActivity : BaseActivity() {
      */
     @SuppressLint("CheckResult", "SetTextI18n")
     private fun updateImgProgress(position: Int) {
-        runOnUiThread {
-            mAdapter?.notifyItemChanged(position, arrayListOf(position))
+        Observable.interval(0, 1, TimeUnit.SECONDS).subscribe {
+            runOnUiThread {
+                val arrayListOf = arrayListOf(1)
+                arrayListOf[0] = it.toInt()
+                LogUtils.d("==========${arrayListOf[0]}")
+                mAdapter?.notifyItemChanged(position, arrayListOf)
+                rv_customerService_info?.scrollToPosition(mData.size - 1)
+            }
         }
     }
 
