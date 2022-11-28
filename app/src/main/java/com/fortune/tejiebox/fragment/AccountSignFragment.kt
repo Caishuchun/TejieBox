@@ -155,6 +155,5 @@ class AccountSignFragment : Fragment() {
      * 注册
      */
     private fun toSign(account: String, pass: String) {
-
     }
 }
