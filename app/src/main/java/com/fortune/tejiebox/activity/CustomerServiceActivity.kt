@@ -192,8 +192,29 @@ class CustomerServiceActivity : BaseActivity() {
 
                             if (payloads.isNotEmpty()) {
                                 LogUtils.d("==========$payloads")
-                                itemView.tv_item_customerService_right_img_tips.text =
-                                    payloads[0].toString()
+                                if ((payloads[payloads.size - 1] as Int) < 100) {
+                                    itemView.progress_item_customerService_right_img.visibility =
+                                        View.VISIBLE
+                                    val layoutParams4Progress =
+                                        itemView.progress_item_customerService_right_img.layoutParams
+                                    layoutParams4Progress.width = layoutParams.width
+                                    layoutParams4Progress.height = layoutParams.height
+                                    itemView.progress_item_customerService_right_img.layoutParams =
+                                        layoutParams4Progress
+
+                                    itemView.progress_item_customerService_right_img.setBaseSizeNum(
+                                        PhoneInfoUtils.getWidth(this) / 360f
+                                    )
+                                    itemView.progress_item_customerService_right_img.setProgress(
+                                        payloads[payloads.size - 1] as Int
+                                    )
+                                } else {
+                                    itemView.progress_item_customerService_right_img.visibility =
+                                        View.GONE
+                                }
+                            } else {
+                                itemView.progress_item_customerService_right_img.visibility =
+                                    View.GONE
                             }
                         }
                     }
@@ -372,10 +393,7 @@ class CustomerServiceActivity : BaseActivity() {
     private fun updateImgProgress(position: Int) {
         Observable.interval(0, 1, TimeUnit.SECONDS).subscribe {
             runOnUiThread {
-                val arrayListOf = arrayListOf(1)
-                arrayListOf[0] = it.toInt()
-                LogUtils.d("==========${arrayListOf[0]}")
-                mAdapter?.notifyItemChanged(position, arrayListOf)
+                mAdapter?.notifyItemChanged(position, it.toInt() * 5)
                 rv_customerService_info?.scrollToPosition(mData.size - 1)
             }
         }
