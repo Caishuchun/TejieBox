@@ -11,15 +11,13 @@ import androidx.fragment.app.Fragment
 import com.fortune.tejiebox.R
 import com.fortune.tejiebox.activity.*
 import com.fortune.tejiebox.constants.SPArgument
-import com.fortune.tejiebox.event.IntegralChange
-import com.fortune.tejiebox.event.IsHaveIdChange
-import com.fortune.tejiebox.event.LoginStatusChange
-import com.fortune.tejiebox.event.RedPointChange
+import com.fortune.tejiebox.event.*
 import com.fortune.tejiebox.http.RetrofitUtils
 import com.fortune.tejiebox.myapp.MyApp
 import com.fortune.tejiebox.utils.*
 import com.google.gson.Gson
 import com.jakewharton.rxbinding2.view.RxView
+import io.reactivex.Observable
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.Disposable
 import io.reactivex.schedulers.Schedulers
@@ -96,7 +94,21 @@ class MineFragment : Fragment() {
         mView?.tv_mineFragment_phone?.let {
             if (MyApp.getInstance().isHaveToken()) {
                 val phone = SPUtils.getString(SPArgument.PHONE_NUMBER)
-                it.text = "${phone?.substring(0, 3)}****${phone?.substring(7)}"
+                val account = SPUtils.getString(SPArgument.LOGIN_ACCOUNT)
+                when {
+                    phone.isNullOrBlank() -> {
+                        it.text = "未绑定手机号"
+                        it.setTextColor(Color.parseColor("#FF982E"))
+                    }
+                    account.isNullOrBlank() -> {
+                        it.text = "未绑定账号"
+                        it.setTextColor(Color.parseColor("#FF982E"))
+                    }
+                    else -> {
+                        it.text = "已绑定"
+                        it.setTextColor(Color.parseColor("#5F60FF"))
+                    }
+                }
             } else {
                 it.text = "未登录"
             }
@@ -146,7 +158,7 @@ class MineFragment : Fragment() {
                         requireActivity().startActivity(
                             Intent(
                                 requireContext(),
-                                ChangePhone1Activity::class.java
+                                AccountSafeActivity::class.java
                             )
                         )
                     } else {
@@ -252,8 +264,22 @@ class MineFragment : Fragment() {
         }
         mView?.tv_mineFragment_phone?.let {
             if (loginStatusChange.isLogin) {
-                val phone = loginStatusChange.phone
-                it.text = "${phone?.substring(0, 3)}****${phone?.substring(7)}"
+                val phone = SPUtils.getString(SPArgument.PHONE_NUMBER)
+                val account = SPUtils.getString(SPArgument.LOGIN_ACCOUNT)
+                when {
+                    phone.isNullOrBlank() -> {
+                        it.text = "未绑定手机号"
+                        it.setTextColor(Color.parseColor("#FF982E"))
+                    }
+                    account.isNullOrBlank() -> {
+                        it.text = "未绑定账号"
+                        it.setTextColor(Color.parseColor("#FF982E"))
+                    }
+                    else -> {
+                        it.text = "已绑定"
+                        it.setTextColor(Color.parseColor("#5F60FF"))
+                    }
+                }
             } else {
                 it.text = "未登录"
             }
@@ -281,6 +307,25 @@ class MineFragment : Fragment() {
                 it.text = "0元"
             }
         }
+    }
+
+    /**
+     * 展示客服未读消息数
+     */
+    @SuppressLint("CheckResult")
+    @Subscribe(sticky = true, threadMode = ThreadMode.MAIN)
+    fun changeShowNum(showNumChange: ShowNumChange) {
+        Observable.timer(100, TimeUnit.MILLISECONDS)
+            .subscribeOn(Schedulers.io())
+            .observeOn(AndroidSchedulers.mainThread())
+            .subscribe {
+                if (showNumChange.num > 0) {
+                    mView?.tv_mineFragment_customerService?.visibility = View.VISIBLE
+                    mView?.tv_mineFragment_customerService?.text = "${showNumChange.num}"
+                } else {
+                    mView?.tv_mineFragment_customerService?.visibility = View.GONE
+                }
+            }
     }
 
     /**

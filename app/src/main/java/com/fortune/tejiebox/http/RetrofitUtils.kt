@@ -363,12 +363,79 @@ object RetrofitUtils {
         ): Flowable<SplashUrlBean>
 
         /**
+         * 账号检查
+         */
+        @FormUrlEncoded
+        @POST(HttpUrls.CHECK_ACCOUNT)
+        fun checkAccount(
+            @Field("account", encoded = true) account: String
+        ): Flowable<BaseBean>
+
+        /**
+         * 账号注册
+         */
+        @FormUrlEncoded
+        @POST(HttpUrls.ACCOUNT_SIGN)
+        fun accountSign(
+            @Field("account", encoded = true) account: String,
+            @Field("password", encoded = true) password: String
+        ): Flowable<LoginBean>
+
+        /**
+         * 账号注册
+         */
+        @FormUrlEncoded
+        @POST(HttpUrls.ACCOUNT_LOGIN)
+        fun accountLogin(
+            @Field("account", encoded = true) account: String,
+            @Field("password", encoded = true) password: String
+        ): Flowable<LoginBean>
+
+        /**
          * 上传图片
          */
         @Multipart
         @POST(HttpUrls.UPLOAD_PICTURE)
         fun uploadPicture(
             @Part file: MultipartBody.Part
+        ): Flowable<UploadPictureBean>
+
+        /**
+         * 发送消息
+         */
+        @FormUrlEncoded
+        @POST(HttpUrls.SEND_MSG)
+        fun sendMsg(
+            @Field("content", encoded = true) content: String,
+            @Field("type", encoded = true) type: Int,
+            @Field("image_width", encoded = true) image_width: Int?,
+            @Field("image_height", encoded = true) image_height: Int?,
+        ): Flowable<BaseBean>
+
+        /**
+         * 获取客服回复消息
+         */
+        @GET(HttpUrls.GET_MSG)
+        fun getMsg(): Flowable<ReCustomerBean>
+
+        /**
+         * 绑定账号
+         */
+        @FormUrlEncoded
+        @POST(HttpUrls.BIND_ACCOUNT)
+        fun bingAccount(
+            @Field("account", encoded = true) account: String,
+            @Field("password", encoded = true) password: String
+        ): Flowable<BaseBean>
+
+        /**
+         * 绑定手机号
+         */
+        @FormUrlEncoded
+        @POST(HttpUrls.BIND_PHONE)
+        fun bingPhone(
+            @Field("phone", encoded = true) phone: String,
+            @Field("code", encoded = true) code: String
         ): Flowable<BaseBean>
     }
 }

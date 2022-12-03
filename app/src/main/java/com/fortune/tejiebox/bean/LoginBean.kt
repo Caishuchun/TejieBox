@@ -14,6 +14,7 @@ class LoginBean {
         var card_name: String? = null
         var car_num: String? = null
         var integral: Int? = null
+        var account: String? = null
     }
 }
 

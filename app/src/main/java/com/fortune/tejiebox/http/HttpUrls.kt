@@ -108,6 +108,27 @@ object HttpUrls {
     //获取封面图片
     const val SPLASH_URL = "/android/v2.game/carousel"
 
+    //注册账号检查
+    const val CHECK_ACCOUNT = "/android/v2.accountLogin/accountValidate"
+
+    //账号注册
+    const val ACCOUNT_SIGN = "/android/v2.accountLogin/register"
+
+    //账号登录
+    const val ACCOUNT_LOGIN = "/android/v2.accountLogin/login"
+
+    //绑定账号
+    const val BIND_ACCOUNT = "/android/v2.user/bindAccount"
+
+    //绑定手机号
+    const val BIND_PHONE = "/android/v2.user/bindPhone"
+
     //上传图片_客服聊天
-    const val UPLOAD_PICTURE = ""
+    const val UPLOAD_PICTURE = "/android/v2.chats/upload"
+
+    //发送消息
+    const val SEND_MSG = "/android/v2.chats/send"
+
+    //获取客服消息
+    const val GET_MSG = "/android/v2.chats/user"
 }

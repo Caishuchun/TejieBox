@@ -8,13 +8,14 @@ import com.fortune.tejiebox.GlideEngine
 import com.fortune.tejiebox.R
 import com.fortune.tejiebox.adapter.BaseAdapterWithPosition4CustomerService
 import com.fortune.tejiebox.base.BaseActivity
+import com.fortune.tejiebox.event.ShowNumChange
+import com.fortune.tejiebox.http.RetrofitProgressUploadListener
+import com.fortune.tejiebox.http.RetrofitUploadProgressUtil
+import com.fortune.tejiebox.http.RetrofitUtils
 import com.fortune.tejiebox.room.CustomerServiceInfo
 import com.fortune.tejiebox.room.CustomerServiceInfoDao
 import com.fortune.tejiebox.room.CustomerServiceInfoDataBase
-import com.fortune.tejiebox.utils.LogUtils
-import com.fortune.tejiebox.utils.PhoneInfoUtils
-import com.fortune.tejiebox.utils.SoftKeyBoardListener
-import com.fortune.tejiebox.utils.StatusBarUtils
+import com.fortune.tejiebox.utils.*
 import com.fortune.tejiebox.widget.SafeLinearLayoutManager
 import com.jakewharton.rxbinding2.view.RxView
 import com.jakewharton.rxbinding2.widget.RxTextView
@@ -25,12 +26,19 @@ import com.luck.picture.lib.entity.LocalMedia
 import com.luck.picture.lib.interfaces.OnResultCallbackListener
 import com.luck.picture.lib.style.*
 import com.umeng.analytics.MobclickAgent
-import io.reactivex.Observable
+import io.reactivex.android.schedulers.AndroidSchedulers
+import io.reactivex.disposables.Disposable
+import io.reactivex.schedulers.Schedulers
 import kotlinx.android.synthetic.main.activity_customer_service.*
 import kotlinx.android.synthetic.main.item_customer_service.view.*
+import okhttp3.MediaType
+import okhttp3.MultipartBody
+import okhttp3.RequestBody
+import org.greenrobot.eventbus.EventBus
 import top.zibin.luban.Luban
 import top.zibin.luban.OnNewCompressListener
 import java.io.File
+import java.net.URLEncoder
 import java.text.SimpleDateFormat
 import java.util.concurrent.TimeUnit
 
@@ -49,6 +57,8 @@ class CustomerServiceActivity : BaseActivity() {
 
     private var picIndex = 0 //上传图片时,图片index
 
+    private var uploadPictureObservable: Disposable? = null
+    private var sendMsgObservable: Disposable? = null
 
     override fun getLayoutId(): Int = R.layout.activity_customer_service
 
@@ -114,7 +124,14 @@ class CustomerServiceActivity : BaseActivity() {
         } else {
             //有数据
             mData.clear()
-            mData.addAll(info)
+            for (data in info) {
+                if (data.is_read == 0) {
+                    data.is_read = 1
+                    mCustomerServiceDao.update(data)
+                }
+                mData.add(data)
+            }
+            EventBus.getDefault().postSticky(ShowNumChange(0))
         }
 
         mAdapter = BaseAdapterWithPosition4CustomerService.Builder<CustomerServiceInfo>()
@@ -274,18 +291,43 @@ class CustomerServiceActivity : BaseActivity() {
 
     /**
      * 发送信息
+     * @param type 1文本  2图片
      */
-    private fun toSendMsg(msg: String) {
-        et_customerService_msg.setText("")
-        val customerServiceInfo = CustomerServiceInfo(
-            System.currentTimeMillis().toInt(),
-            1, 1, msg,
-            null, null, null,
-            System.currentTimeMillis(), 1
-        )
-        mData.add(customerServiceInfo)
-        mCustomerServiceDao.addInfo(customerServiceInfo)
-        rv_customerService_info?.scrollToPosition(mData.size - 1)
+    private fun toSendMsg(
+        msg: String,
+        type: Int = 1,
+        customerServiceInfo4Pic: CustomerServiceInfo? = null,
+        image_width: Int? = null,
+        image_height: Int? = null
+    ) {
+        val sendMsg = RetrofitUtils.builder().sendMsg(msg, type, image_width, image_height)
+        sendMsgObservable = sendMsg.subscribeOn(Schedulers.io())
+            .observeOn(AndroidSchedulers.mainThread())
+            .subscribe({
+                when (it.code) {
+                    1 -> {
+                        if (type == 2) {
+                            mCustomerServiceDao.addInfo(customerServiceInfo4Pic!!)
+                        } else {
+                            et_customerService_msg.setText("")
+                            val customerServiceInfo = CustomerServiceInfo(
+                                System.currentTimeMillis().toInt(),
+                                1, 1, msg,
+                                null, null, null,
+                                System.currentTimeMillis(), 1
+                            )
+                            mData.add(customerServiceInfo)
+                            mCustomerServiceDao.addInfo(customerServiceInfo)
+                            rv_customerService_info?.scrollToPosition(mData.size - 1)
+                        }
+                    }
+                    else -> {
+                        ToastUtils.show(it.msg)
+                    }
+                }
+            }, {
+                ToastUtils.show(it.message)
+            })
     }
 
     /**
@@ -345,41 +387,60 @@ class CustomerServiceActivity : BaseActivity() {
      */
     private fun toSendPic(result: ArrayList<LocalMedia>) {
         if (picIndex < result.size) {
-            //可以上传图片
-//            val file = File(result[picIndex].compressPath)
-//            val body = RequestBody.create(
-//                MediaType.parse("multipart/form-data"), file
-//            )
-//            val progressRequestBody = RetrofitUploadProgressUtil.getProgressRequestBody(body,
-//                object : RetrofitProgressUploadListener {
-//                    override fun progress(progress: Int) {
-//
-//                    }
-//
-//                    override fun speedAndTimeLeft(speed: String, timeLeft: String) {
-//                    }
-//                })
-//            val createFormData = MultipartBody.Part.createFormData(
-//                "file",
-//                URLEncoder.encode(file.name, "UTF-8"),
-//                progressRequestBody
-//            )
-//            val uploadPicture = RetrofitUtils.builder().uploadPicture(createFormData)
-
             val customerServiceInfo = CustomerServiceInfo(
                 System.currentTimeMillis().toInt(),
                 1, 2, null,
                 result[picIndex].compressPath,
-                result[picIndex].width.toDouble(),
-                result[picIndex].height.toDouble(),
+                result[picIndex].width,
+                result[picIndex].height,
                 System.currentTimeMillis(), 1
             )
             mData.add(customerServiceInfo)
-            mCustomerServiceDao.addInfo(customerServiceInfo)
-            updateImgProgress(mData.size - 1)
+            updateImgProgress(mData.size - 1, 0)
+            //可以上传图片
+            val file = File(result[picIndex].compressPath)
+            val body = RequestBody.create(
+                MediaType.parse("multipart/form-data"), file
+            )
+            val progressRequestBody = RetrofitUploadProgressUtil.getProgressRequestBody(body,
+                object : RetrofitProgressUploadListener {
+                    override fun progress(progress: Int) {
+                        updateImgProgress(mData.size - 1, progress)
+                    }
 
-            picIndex++
-            toSendPic(result)
+                    override fun speedAndTimeLeft(speed: String, timeLeft: String) {
+                    }
+                })
+            val createFormData = MultipartBody.Part.createFormData(
+                "file",
+                URLEncoder.encode(file.name, "UTF-8"),
+                progressRequestBody
+            )
+            val uploadPicture = RetrofitUtils.builder().uploadPicture(createFormData)
+            uploadPictureObservable = uploadPicture.subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe({
+                    when (it.code) {
+                        1 -> {
+                            updateImgProgress(mData.size - 1, 100)
+                            customerServiceInfo.chat_img_url = it.data.url
+                            toSendMsg(
+                                it.data.path,
+                                2,
+                                customerServiceInfo,
+                                result[picIndex].width,
+                                result[picIndex].height
+                            )
+                        }
+                        else -> {
+                            ToastUtils.show("发送图片异常,请稍后重试! ")
+                        }
+                    }
+                    picIndex++
+                    toSendPic(result)
+                }, {
+                    ToastUtils.show(it.message)
+                })
         } else {
             //图片上传结束
             picIndex = 0
@@ -390,12 +451,10 @@ class CustomerServiceActivity : BaseActivity() {
      * 上传图片的进度
      */
     @SuppressLint("CheckResult", "SetTextI18n")
-    private fun updateImgProgress(position: Int) {
-        Observable.interval(0, 1, TimeUnit.SECONDS).subscribe {
-            runOnUiThread {
-                mAdapter?.notifyItemChanged(position, it.toInt() * 5)
-                rv_customerService_info?.scrollToPosition(mData.size - 1)
-            }
+    private fun updateImgProgress(position: Int, progress: Int) {
+        runOnUiThread {
+            mAdapter?.notifyItemChanged(position, progress)
+            rv_customerService_info?.scrollToPosition(mData.size - 1)
         }
     }
 
@@ -443,6 +502,11 @@ class CustomerServiceActivity : BaseActivity() {
     }
 
     override fun destroy() {
+        uploadPictureObservable?.dispose()
+        uploadPictureObservable = null
+
+        sendMsgObservable?.dispose()
+        sendMsgObservable = null
     }
 
     override fun onResume() {
@@ -454,12 +518,4 @@ class CustomerServiceActivity : BaseActivity() {
         super.onPause()
         MobclickAgent.onPause(this)
     }
-
-    data class MsgInfo(
-        val msg: String?,
-        val type: Int,
-        val picPath: String?,
-        val picWidth: Int?,
-        val picHeight: Int?
-    )
 }

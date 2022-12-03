@@ -17,7 +17,7 @@ object BaseAppUpdateSetting {
      * @param true 正式区
      * @param false 测试区
      */
-    const val appType = true
+    const val appType = false
 
     /**
      * 网络请求标志, 热更包版本

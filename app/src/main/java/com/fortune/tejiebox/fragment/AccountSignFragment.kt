@@ -1,5 +1,6 @@
 package com.fortune.tejiebox.fragment
 
+import android.annotation.SuppressLint
 import android.os.Bundle
 import android.text.method.HideReturnsTransformationMethod
 import android.text.method.PasswordTransformationMethod
@@ -8,12 +9,22 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import com.fortune.tejiebox.R
+import com.fortune.tejiebox.activity.DialogActivity
 import com.fortune.tejiebox.activity.Login4AccountActivity
+import com.fortune.tejiebox.activity.LoginActivity
 import com.fortune.tejiebox.base.BaseAppUpdateSetting
-import com.fortune.tejiebox.utils.ToastUtils
+import com.fortune.tejiebox.constants.SPArgument
+import com.fortune.tejiebox.event.LoginStatusChange
+import com.fortune.tejiebox.http.RetrofitUtils
+import com.fortune.tejiebox.utils.*
+import com.google.gson.Gson
 import com.jakewharton.rxbinding2.view.RxView
 import com.jakewharton.rxbinding2.widget.RxTextView
+import io.reactivex.android.schedulers.AndroidSchedulers
+import io.reactivex.disposables.Disposable
+import io.reactivex.schedulers.Schedulers
 import kotlinx.android.synthetic.main.fragment_account_sign.view.*
+import org.greenrobot.eventbus.EventBus
 import java.util.concurrent.TimeUnit
 
 class AccountSignFragment : Fragment() {
@@ -27,6 +38,9 @@ class AccountSignFragment : Fragment() {
     private var signPassIsShow = false
     private var reSignPassIsShow = false
 
+    private var checkAccountObservable: Disposable? = null
+    private var accountSignObservable: Disposable? = null
+
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
@@ -36,6 +50,7 @@ class AccountSignFragment : Fragment() {
         return mView
     }
 
+    @SuppressLint("CheckResult", "SetTextI18n")
     private fun initView() {
         mView?.iv_account_sign_back?.let {
             RxView.clicks(it)
@@ -50,35 +65,152 @@ class AccountSignFragment : Fragment() {
                 .skipInitialValue()
                 .subscribe {
                     if (it.length > 16) {
-                        ToastUtils.show("注册账号不得超过16位字符")
-                        et.setText(it.substring(0, it.length - 1))
-                        et.setSelection(it.length - 1)
+                        mView?.tv_account_sing_account_tips?.let { tv ->
+                            tv.visibility = View.VISIBLE
+                            tv.text = "* 注册账号不得超过16位字符"
+                            tv.setTextColor(resources.getColor(R.color.red_F03D3D))
+                        }
+                    } else {
+                        mView?.tv_account_sing_account_tips?.visibility = View.INVISIBLE
                     }
                 }
+            et.setOnFocusChangeListener { v, hasFocus ->
+                if (et.text.isNotEmpty()) {
+                    if (!hasFocus) {
+                        when {
+                            et.text.length < 8 -> {
+                                mView?.tv_account_sing_account_tips?.let { tv ->
+                                    tv.visibility = View.VISIBLE
+                                    tv.text = "* 注册账号不得少于8位字符"
+                                    tv.setTextColor(resources.getColor(R.color.red_F03D3D))
+                                }
+                            }
+                            !checkAccountIsOk(et.text.toString()) -> {
+                                mView?.tv_account_sing_account_tips?.let { tv ->
+                                    tv.visibility = View.VISIBLE
+                                    tv.text = "* 注册账号过于简单,需8-16位数字加字母组合"
+                                    tv.setTextColor(resources.getColor(R.color.red_F03D3D))
+                                }
+                            }
+                            checkAccountIsOk(et.text.toString()) -> {
+                                toCheckAccountCanSign(et.text.toString())
+                            }
+                            et.text.length > 16 -> {
+                                mView?.tv_account_sing_account_tips?.let { tv ->
+                                    tv.visibility = View.VISIBLE
+                                    tv.text = "* 注册账号不得超过16位字符"
+                                    tv.setTextColor(resources.getColor(R.color.red_F03D3D))
+                                }
+                            }
+                        }
+                    }
+                }
+            }
         }
 
         mView?.et_account_sign_pass?.let { et ->
             RxTextView.textChanges(et)
                 .skipInitialValue()
                 .subscribe {
-                    if (it.length > 16) {
-                        ToastUtils.show("注册密码不得超过16位字符")
-                        et.setText(it.substring(0, it.length - 1))
-                        et.setSelection(it.length - 1)
+                    when {
+                        it.length in 8..16 -> {
+                            mView?.tv_account_sing_pass_tips?.let { tv ->
+                                tv.visibility = View.VISIBLE
+                                tv.text = "√ 密码可用"
+                                tv.setTextColor(resources.getColor(R.color.green_2EC8AC))
+                            }
+                        }
+                        it.length > 16 -> {
+                            mView?.tv_account_sing_pass_tips?.let { tv ->
+                                tv.visibility = View.VISIBLE
+                                tv.text = "* 注册密码不得超过16位字符"
+                                tv.setTextColor(resources.getColor(R.color.red_F03D3D))
+                            }
+                        }
+                        else -> {
+                            mView?.tv_account_sing_pass_tips?.visibility = View.INVISIBLE
+                        }
                     }
                 }
+            et.setOnFocusChangeListener { v, hasFocus ->
+                if (et.text.isNotEmpty()) {
+                    if (!hasFocus) {
+                        when {
+                            et.text.length < 8 -> {
+                                mView?.tv_account_sing_pass_tips?.let { tv ->
+                                    tv.visibility = View.VISIBLE
+                                    tv.text = "* 注册密码不得少于8位字符"
+                                    tv.setTextColor(resources.getColor(R.color.red_F03D3D))
+                                }
+                            }
+                            et.text.length > 16 -> {
+                                mView?.tv_account_sing_pass_tips?.let { tv ->
+                                    tv.visibility = View.VISIBLE
+                                    tv.text = "* 注册密码不得超过16位字符"
+                                    tv.setTextColor(resources.getColor(R.color.red_F03D3D))
+                                }
+                            }
+                            else -> {
+                                mView?.tv_account_sing_pass_tips?.let { tv ->
+                                    tv.visibility = View.VISIBLE
+                                    tv.text = "√ 密码可用"
+                                    tv.setTextColor(resources.getColor(R.color.green_2EC8AC))
+                                }
+                            }
+                        }
+                    }
+                }
+            }
         }
 
         mView?.et_account_sign_rePass?.let { et ->
             RxTextView.textChanges(et)
                 .skipInitialValue()
                 .subscribe {
-                    if (it.length > 16) {
-                        ToastUtils.show("确认密码不得超过16位字符")
-                        et.setText(it.substring(0, it.length - 1))
-                        et.setSelection(it.length - 1)
+                    when {
+                        it.length < 8 -> {
+                            mView?.tv_account_sing_rePass_tips?.visibility = View.INVISIBLE
+                        }
+                        it.toString() == mView?.et_account_sign_pass?.text.toString() -> {
+                            mView?.tv_account_sing_rePass_tips?.let { tv ->
+                                tv.visibility = View.VISIBLE
+                                tv.text = "√ 两次输入密码一致"
+                                tv.setTextColor(resources.getColor(R.color.green_2EC8AC))
+                            }
+                        }
+                        it.toString() != mView?.et_account_sign_pass?.text.toString() -> {
+                            mView?.tv_account_sing_rePass_tips?.let { tv ->
+                                tv.visibility = View.VISIBLE
+                                tv.text = "* 两次输入的密码不一致"
+                                tv.setTextColor(resources.getColor(R.color.red_F03D3D))
+                            }
+                        }
+                        it.length > 16 -> {
+                            mView?.tv_account_sing_rePass_tips?.let { tv ->
+                                tv.visibility = View.VISIBLE
+                                tv.text = "* 注册密码不得超过16位字符"
+                                tv.setTextColor(resources.getColor(R.color.red_F03D3D))
+                            }
+                        }
                     }
                 }
+            et.setOnFocusChangeListener { v, hasFocus ->
+                if (et.text.isNotEmpty()) {
+                    if (!hasFocus) {
+                        mView?.tv_account_sing_rePass_tips?.let { tv ->
+                            if (et.text.toString() != mView?.et_account_sign_pass?.text.toString()) {
+                                tv.visibility = View.VISIBLE
+                                tv.text = "* 两次输入的密码不一致"
+                                tv.setTextColor(resources.getColor(R.color.red_F03D3D))
+                            } else {
+                                tv.visibility = View.VISIBLE
+                                tv.text = "√ 两次输入密码一致"
+                                tv.setTextColor(resources.getColor(R.color.green_2EC8AC))
+                            }
+                        }
+                    }
+                }
+            }
         }
 
         mView?.iv_account_sign_pass?.let { iv ->
@@ -129,25 +261,111 @@ class AccountSignFragment : Fragment() {
     }
 
     /**
+     * 检查该账号是否已注册
+     */
+    private fun toCheckAccountCanSign(account: String) {
+        val checkAccount = RetrofitUtils.builder().checkAccount(account)
+        checkAccountObservable = checkAccount
+            .subscribeOn(Schedulers.io())
+            .observeOn(AndroidSchedulers.mainThread())
+            .subscribe({
+                LogUtils.d("${javaClass.simpleName}==>${Gson().toJson(it)}")
+                when (it.code) {
+                    1 -> {
+                        mView?.tv_account_sing_account_tips?.let { tv ->
+                            tv.visibility = View.VISIBLE
+                            tv.text = "√ 注册账号未被使用,可注册"
+                            tv.setTextColor(resources.getColor(R.color.green_2EC8AC))
+                        }
+                    }
+                    2 -> {
+                        mView?.tv_account_sing_account_tips?.let { tv ->
+                            tv.visibility = View.VISIBLE
+                            tv.text = "* 该账号已被注册,请重新输入"
+                            tv.setTextColor(resources.getColor(R.color.red_F03D3D))
+                        }
+                    }
+                    else -> {
+
+                    }
+                }
+            }, {})
+    }
+
+    /**
+     * 检查账号是否合规
+     */
+    private fun checkAccountIsOk(account: String): Boolean {
+        val digits4Number = "0123456789"
+        val digits4Letter = "abcdefghigklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ"
+        //纯数字,纯字母都不行
+        val regex = "^(?![0-9]+\$)(?![a-zA-Z]+\$)[0-9A-Za-z]{8,10}\$".toRegex()
+        val matches = regex.matches(account)
+        if (!matches) {
+            return false
+        }
+        if (account[0] in digits4Letter) {
+            //如果首个字符是字母,截取剩下的账号
+            val newAccount = account.substring(1)
+            //判断之后的字符是否是纯数字
+            var isAllNumber = true
+            for (char in newAccount) {
+                if (char !in digits4Number) {
+                    isAllNumber = false
+                }
+            }
+            //如果之后字符为纯数字
+            if (isAllNumber) {
+                //1. 如果数字是从0或者1递增,则不可用
+                var isOk = true
+                var startNum = newAccount[0]
+                if (startNum == '0' || startNum == '1') {
+                    for (char in newAccount.substring(1)) {
+                        startNum = (startNum + 1) as Char
+                        if (startNum == char) {
+                            isOk = false
+                        } else {
+                            isOk = true
+                            break
+                        }
+                    }
+                }
+                if (!isOk) {
+                    return false
+                }
+                //2. 如果数字都一样,则不可用
+                startNum = newAccount[0]
+                for (char in newAccount.substring(1)) {
+                    if (startNum == char) {
+                        isOk = false
+                    } else {
+                        isOk = true
+                        break
+                    }
+                }
+                return isOk
+            }
+        }
+        return true
+    }
+
+    /**
      * 注册检查
      */
     private fun toSignCheck() {
+        val accountIsOk =
+            mView?.tv_account_sing_account_tips?.text.toString().trim().startsWith("√")
+                    && mView?.tv_account_sing_account_tips?.visibility == View.VISIBLE
+        val passIsOk = mView?.tv_account_sing_pass_tips?.text.toString().trim()
+            .startsWith("√") && mView?.tv_account_sing_pass_tips?.visibility == View.VISIBLE
+        val rePassIsOk = mView?.tv_account_sing_rePass_tips?.text.toString().trim()
+            .startsWith("√") && mView?.tv_account_sing_rePass_tips?.visibility == View.VISIBLE
         val account = mView?.et_account_sign_account?.text.toString().trim()
         val pass = mView?.et_account_sign_pass?.text.toString().trim()
-        val rePass = mView?.et_account_sign_rePass?.text.toString().trim()
-        when {
-            account.length < 8 -> {
-                ToastUtils.show("注册账号长度不足8位字符")
-            }
-            pass.length < 8 -> {
-                ToastUtils.show("注册密码长度不足8位字符")
-            }
-            rePass != pass -> {
-                ToastUtils.show("两次输入的注册密码不一致")
-            }
-            else -> {
-                toSign(account, pass)
-            }
+        if (accountIsOk && passIsOk && rePassIsOk) {
+            toSign(account, pass)
+        } else {
+            ToastUtils.show("请检查账号密码是否合规后再进行注册!")
         }
     }
 
@@ -155,5 +373,87 @@ class AccountSignFragment : Fragment() {
      * 注册
      */
     private fun toSign(account: String, pass: String) {
+        SPUtils.putValue(SPArgument.LOGIN_TOKEN, null)
+        SPUtils.putValue(SPArgument.PHONE_NUMBER, null)
+        SPUtils.putValue(SPArgument.LOGIN_ACCOUNT, null)
+        SPUtils.putValue(SPArgument.USER_ID, null)
+        SPUtils.putValue(SPArgument.IS_HAVE_ID, 0)
+        SPUtils.putValue(SPArgument.ID_NAME, null)
+        SPUtils.putValue(SPArgument.ID_NUM, null)
+        DialogUtils.showBeautifulDialog(requireContext())
+        val accountSign = RetrofitUtils.builder().accountSign(account, pass)
+        accountSignObservable = accountSign.subscribeOn(Schedulers.io())
+            .observeOn(AndroidSchedulers.mainThread())
+            .subscribe({
+                DialogUtils.dismissLoading()
+                LogUtils.d("success=>${Gson().toJson(it)}")
+                when (it.code) {
+                    1 -> {
+                        SPUtils.putValue(SPArgument.IS_CHECK_AGREEMENT, true)
+                        SPUtils.putValue(SPArgument.LOGIN_TOKEN, it.data?.token)
+                        SPUtils.putValue(SPArgument.PHONE_NUMBER, it.data?.phone)
+                        SPUtils.putValue(SPArgument.LOGIN_ACCOUNT, it.data?.account)
+                        SPUtils.putValue(SPArgument.USER_ID, it.data?.user_id)
+                        SPUtils.putValue(SPArgument.IS_HAVE_ID, it.data?.id_card)
+                        if (it.data?.id_card == 1) {
+                            SPUtils.putValue(SPArgument.ID_NAME, it.data?.card_name)
+                            SPUtils.putValue(SPArgument.ID_NUM, it.data?.car_num)
+                        }
+
+                        // 是否有奖励积分可以弹框
+                        var isHaveRewardInteger = false
+                        if (it.data?.first_login == 1) {
+                            // 首次注册的推广统计
+                            if (BaseAppUpdateSetting.isToPromoteVersion) {
+                                PromoteUtils.promote(requireActivity())
+                            }
+                            // 首次注册且有奖励积分的
+                            if (it.data?.integral != null && it.data?.integral!! > 0) {
+                                isHaveRewardInteger = true
+                                DialogActivity.showGetIntegral(
+                                    requireActivity(),
+                                    it.data?.integral!!,
+                                    true,
+                                    null
+                                )
+                            }
+                        }
+
+                        EventBus.getDefault().postSticky(
+                            LoginStatusChange(
+                                true,
+                                it.data?.phone,
+                                it.data?.account,
+                                isHaveRewardInteger
+                            )
+                        )
+
+                        toFinishAllLogin()
+                    }
+                    else -> {
+                        ToastUtils.show(it.msg)
+                    }
+                }
+            }, {
+                DialogUtils.dismissLoading()
+                LogUtils.d("fail=>${it.message.toString()}")
+                ToastUtils.show(HttpExceptionUtils.getExceptionMsg(requireContext(), it))
+            })
+    }
+
+    /**
+     * 关闭所有登录相关
+     */
+    private fun toFinishAllLogin() {
+        LoginActivity.getInstance()?.finish()
+        requireActivity().finish()
+    }
+
+    override fun onDestroy() {
+        super.onDestroy()
+        checkAccountObservable?.dispose()
+        checkAccountObservable = null
+        accountSignObservable?.dispose()
+        accountSignObservable = null
     }
 }

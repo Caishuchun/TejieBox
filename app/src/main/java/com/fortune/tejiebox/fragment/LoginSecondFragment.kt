@@ -152,6 +152,7 @@ class LoginSecondFragment() : Fragment() {
         val login = RetrofitUtils.builder().login(phone!!, code.toInt())
         SPUtils.putValue(SPArgument.LOGIN_TOKEN, null)
         SPUtils.putValue(SPArgument.PHONE_NUMBER, null)
+        SPUtils.putValue(SPArgument.LOGIN_ACCOUNT, null)
         SPUtils.putValue(SPArgument.USER_ID, null)
         SPUtils.putValue(SPArgument.IS_HAVE_ID, 0)
         SPUtils.putValue(SPArgument.ID_NAME, null)
@@ -167,6 +168,7 @@ class LoginSecondFragment() : Fragment() {
                             SPUtils.putValue(SPArgument.IS_CHECK_AGREEMENT, true)
                             SPUtils.putValue(SPArgument.LOGIN_TOKEN, it.data?.token)
                             SPUtils.putValue(SPArgument.PHONE_NUMBER, it.data?.phone)
+                            SPUtils.putValue(SPArgument.LOGIN_ACCOUNT, it.data?.account)
                             SPUtils.putValue(SPArgument.IS_HAVE_ID, it.data?.id_card)
                             SPUtils.putValue(SPArgument.USER_ID, it.data?.user_id)
                             if (it.data?.id_card == 1) {
@@ -196,6 +198,7 @@ class LoginSecondFragment() : Fragment() {
                                 LoginStatusChange(
                                     true,
                                     it.data?.phone,
+                                    it.data?.account,
                                     isHaveRewardInteger
                                 )
                             )

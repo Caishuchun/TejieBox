@@ -54,6 +54,11 @@
         tools:ignore="LockedOrientationActivity,UnusedAttribute"
         tools:replace="android:icon,android:theme,android:name,android:allowBackup">
         <activity
+            android:name=".activity.AccountSafeActivity"
+            android:exported="true"
+            android:label="@string/title_activity_account_safe"
+            android:theme="@style/NormalTheme.NoActionBar" />
+        <activity
             android:name=".activity.Login4AccountActivity"
             android:screenOrientation="portrait" />
         <activity

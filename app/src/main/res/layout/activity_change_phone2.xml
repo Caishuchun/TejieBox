@@ -13,17 +13,18 @@
 
     <RelativeLayout
         android:layout_width="match_parent"
-        android:layout_height="@dimen/dp_60">
+        android:layout_height="@dimen/dp_48">
 
         <ImageView
             android:id="@+id/iv_changePhone2_back"
-            android:layout_width="@dimen/dp_60"
-            android:layout_height="@dimen/dp_60"
+            android:layout_width="@dimen/dp_48"
+            android:layout_height="@dimen/dp_48"
             android:layout_centerVertical="true"
-            android:padding="@dimen/dp_16"
+            android:padding="@dimen/dp_10"
             android:src="@mipmap/back_black" />
 
         <TextView
+            android:id="@+id/tv_changePhone2_title"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_centerInParent="true"

@@ -25,6 +25,8 @@ import com.fortune.tejiebox.fragment.*
 import com.fortune.tejiebox.http.RetrofitUtils
 import com.fortune.tejiebox.listener.OnBottomBarItemSelectListener
 import com.fortune.tejiebox.myapp.MyApp
+import com.fortune.tejiebox.room.CustomerServiceInfo
+import com.fortune.tejiebox.room.CustomerServiceInfoDataBase
 import com.fortune.tejiebox.utils.*
 import com.fortune.tejiebox.utils.ActivityManager
 import com.jakewharton.rxbinding2.view.RxView
@@ -63,6 +65,7 @@ class MainActivity : BaseActivity() {
 
     private var splashUrlList = mutableListOf<String>()
     private var getSplashUrlObservable: Disposable? = null
+    private var getReCustomerInfoObservable: Disposable? = null
 
     companion object {
         @SuppressLint("StaticFieldLeak")
@@ -169,6 +172,10 @@ class MainActivity : BaseActivity() {
                 toCheckCanGetIntegral()
             }
         }, 1000)
+        //如果登录了获取一下客服回复消息
+        if (MyApp.getInstance().isHaveToken()) {
+            toGetCustomerServiceInfo()
+        }
     }
 
     /**
@@ -503,6 +510,7 @@ class MainActivity : BaseActivity() {
      */
     @Subscribe(sticky = true, threadMode = ThreadMode.MAIN)
     fun login(loginStatusChange: LoginStatusChange) {
+        tab_main.showMsgNum(0)
         if (loginStatusChange == null) {
             return
         }
@@ -529,12 +537,62 @@ class MainActivity : BaseActivity() {
                     toChangeFragment(3)
                 }
             }
+            toGetCustomerServiceInfo()
         } else {
+            tab_main.showMsgNum(0)
             EventBus.getDefault().post(LikeDataChange(""))
             EventBus.getDefault().post(PlayingDataChange(""))
             tab_main.setCurrentItem(0)
             toChangeFragment(0)
         }
+    }
+
+    @Subscribe(sticky = true, threadMode = ThreadMode.MAIN)
+    fun changeShowNum(showNumChange: ShowNumChange) {
+        tab_main.showMsgNum(showNumChange.num)
+    }
+
+    /**
+     * 获取客服回复信息
+     */
+    private fun toGetCustomerServiceInfo() {
+        val getMsg = RetrofitUtils.builder().getMsg()
+        getReCustomerInfoObservable = getMsg.subscribeOn(Schedulers.io())
+            .observeOn(AndroidSchedulers.mainThread())
+            .subscribe({
+                when (it.code) {
+                    1 -> {
+                        val dataBase = CustomerServiceInfoDataBase.getDataBase(this)
+                        val customerServiceInfoDao = dataBase.customerServiceInfoDao()
+                        if (it.data.isNotEmpty()) {
+                            for (data in it.data) {
+                                val customerServiceInfo = CustomerServiceInfo(
+                                    data.id, 0, data.type,
+                                    if (data.type == 1) data.content else null,
+                                    if (data.type == 2) data.content else null,
+                                    data.img_width, data.img_height,
+                                    System.currentTimeMillis(),
+                                    0
+                                )
+                                customerServiceInfoDao.addInfo(customerServiceInfo)
+                            }
+                        }
+                        val all = customerServiceInfoDao.all
+                        var notRead = 0
+                        for (info in all) {
+                            if (info.is_read == 0) {
+                                notRead++
+                            }
+                        }
+                        tab_main.showMsgNum(notRead)
+                        EventBus.getDefault().postSticky(ShowNumChange(notRead))
+                    }
+                    -1 -> {
+                        ToastUtils.show(it.msg)
+                        ActivityManager.toSplashActivity(this)
+                    }
+                }
+            }, {})
     }
 
     /**
@@ -640,6 +698,15 @@ class MainActivity : BaseActivity() {
         updateGameTimeInfoObservable?.dispose()
         updateGameTimeInfoObservable = null
         VersionDialog.dismiss()
+
+        canGetIntegralObservable?.dispose()
+        canGetIntegralObservable = null
+
+        getSplashUrlObservable?.dispose()
+        getSplashUrlObservable = null
+
+        getReCustomerInfoObservable?.dispose()
+        getReCustomerInfoObservable = null
     }
 
     override fun onTaskResume(task: DownloadTask?) {

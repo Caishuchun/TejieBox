@@ -22,13 +22,13 @@ class CustomerServiceInfo(
     @ColumnInfo(name = "chat_content") var chat_content: String?,
 
     //图片Url
-    @ColumnInfo(name = "chat_img_url") val chat_img_url: String?,
+    @ColumnInfo(name = "chat_img_url") var chat_img_url: String?,
 
     //图片宽
-    @ColumnInfo(name = "imgW") val imgW: Double?,
+    @ColumnInfo(name = "imgW") val imgW: Int?,
 
     //图片高度
-    @ColumnInfo(name = "imgH") val imgH: Double?,
+    @ColumnInfo(name = "imgH") val imgH: Int?,
 
     //时间戳
     @ColumnInfo(name = "chat_time") val chat_time: Long,

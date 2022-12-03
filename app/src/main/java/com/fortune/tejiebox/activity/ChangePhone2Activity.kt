@@ -25,6 +25,7 @@ class ChangePhone2Activity : BaseActivity() {
 
     private var sendCodeObservable: Disposable? = null
     private var changePhoneObservable: Disposable? = null
+    private var bindPhoneObservable: Disposable? = null
     private var lastTime = 59
     private var currentPhone = ""
 
@@ -34,14 +35,21 @@ class ChangePhone2Activity : BaseActivity() {
         private fun isInstance() = this::instance.isInitialized
         fun getInstance() = if (isInstance()) instance else null
         const val PHONE = "phone"
+
+        const val IS_BIND = "isBind"
     }
 
+    private var isBind = false
     override fun getLayoutId() = R.layout.activity_change_phone2
 
     override fun doSomething() {
         StatusBarUtils.setTextDark(this, true)
         instance = this
         currentPhone = intent.getStringExtra(PHONE)!!
+        isBind = intent.getBooleanExtra(IS_BIND, false)
+        if (isBind) {
+            tv_changePhone2_title.text = "绑定手机号"
+        }
         initView()
         val oldTimeMillis = SPUtils.getLong(SPArgument.CODE_TIME_4_CHANGE_PHONE, 0L)
         val currentTimeMillis = SystemClock.uptimeMillis()
@@ -81,9 +89,46 @@ class ChangePhone2Activity : BaseActivity() {
             .subscribe {
                 changeCodeBg(it.toString())
                 if (it.length == 6) {
-                    toChangePhone(it.toString())
+                    if (isBind) toBindPhone(it.toString())
+                    else toChangePhone(it.toString())
                 }
             }
+    }
+
+    /**
+     * 绑定手机号
+     */
+    private fun toBindPhone(code: String) {
+        DialogUtils.showBeautifulDialog(this)
+        val bingPhone = RetrofitUtils.builder().bingPhone(currentPhone, code)
+        bindPhoneObservable = bingPhone.subscribeOn(Schedulers.io())
+            .observeOn(AndroidSchedulers.mainThread())
+            .subscribe({
+                DialogUtils.dismissLoading()
+                LogUtils.d("${javaClass.simpleName}=success=>${Gson().toJson(it)}")
+                if (it != null) {
+                    when (it.code) {
+                        1 -> {
+                            ToastUtils.show("绑定手机号成功!")
+                            SPUtils.putValue(SPArgument.PHONE_NUMBER, currentPhone)
+                            finish()
+                        }
+                        -1 -> {
+                            ToastUtils.show(it.msg)
+                            ActivityManager.toSplashActivity(this)
+                        }
+                        else -> {
+                            ToastUtils.show(it.msg)
+                        }
+                    }
+                } else {
+                    ToastUtils.show(getString(R.string.network_fail_to_responseDate))
+                }
+            }, {
+                DialogUtils.dismissLoading()
+                LogUtils.d("${javaClass.simpleName}=fail=>${it.message.toString()}")
+                ToastUtils.show(HttpExceptionUtils.getExceptionMsg(this, it))
+            })
     }
 
     /**
@@ -126,7 +171,7 @@ class ChangePhone2Activity : BaseActivity() {
      */
     private fun toSplash() {
         SPUtils.putValue(SPArgument.LOGIN_TOKEN, null)
-        SPUtils.putValue(SPArgument.PHONE_NUMBER,null)
+        SPUtils.putValue(SPArgument.PHONE_NUMBER, null)
         SPUtils.putValue(SPArgument.USER_ID, null)
         SPUtils.putValue(SPArgument.IS_HAVE_ID, 0)
         SPUtils.putValue(SPArgument.ID_NAME, null)
@@ -221,7 +266,9 @@ class ChangePhone2Activity : BaseActivity() {
      */
     private fun sendCode() {
         DialogUtils.showBeautifulDialog(this)
-        val sendCode4changePhone = RetrofitUtils.builder().sendCode4changePhone(currentPhone)
+        val sendCode4changePhone =
+            if (isBind) RetrofitUtils.builder().sendCode(currentPhone)
+            else RetrofitUtils.builder().sendCode4changePhone(currentPhone)
         sendCodeObservable = sendCode4changePhone
             .subscribeOn(Schedulers.io())
             .observeOn(AndroidSchedulers.mainThread())
@@ -283,6 +330,9 @@ class ChangePhone2Activity : BaseActivity() {
         timer = null
         changePhoneObservable = null
         sendCodeObservable = null
+
+        bindPhoneObservable?.dispose()
+        bindPhoneObservable = null
     }
 
     override fun onResume() {

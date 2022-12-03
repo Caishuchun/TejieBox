@@ -392,6 +392,7 @@ object LoginUtils {
     ) {
         SPUtils.putValue(SPArgument.LOGIN_TOKEN, null)
         SPUtils.putValue(SPArgument.PHONE_NUMBER, null)
+        SPUtils.putValue(SPArgument.LOGIN_ACCOUNT, null)
         SPUtils.putValue(SPArgument.USER_ID, null)
         SPUtils.putValue(SPArgument.IS_HAVE_ID, 0)
         SPUtils.putValue(SPArgument.ID_NAME, null)
@@ -408,6 +409,7 @@ object LoginUtils {
                             SPUtils.putValue(SPArgument.IS_CHECK_AGREEMENT, true)
                             SPUtils.putValue(SPArgument.LOGIN_TOKEN, it.data?.token)
                             SPUtils.putValue(SPArgument.PHONE_NUMBER, it.data?.phone)
+                            SPUtils.putValue(SPArgument.LOGIN_ACCOUNT, it.data?.account)
                             SPUtils.putValue(SPArgument.USER_ID, it.data?.user_id)
                             SPUtils.putValue(SPArgument.IS_HAVE_ID, it.data?.id_card)
                             if (it.data?.id_card == 1) {
@@ -438,6 +440,7 @@ object LoginUtils {
                                 LoginStatusChange(
                                     true,
                                     it.data?.phone,
+                                    it.data?.account,
                                     isHaveRewardInteger
                                 )
                             )

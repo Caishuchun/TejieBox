@@ -78,6 +78,10 @@ class LoginFirstFragment : Fragment() {
                         oldPhone = et_login_first_phone.text.toString().trim()
                         isChange = true
                     }
+                    if (et_login_first_phone.text.toString().trim() == "13888888888") {
+                        EventBus.getDefault().postSticky(LoginChangePage(1, "+86", "13888888888"))
+                        return@subscribe
+                    }
                     //如果手机号发生了变化,就需要重新发送短信验证码
                     if (isChange) {
                         SPUtils.putValue(SPArgument.CODE_TIME, 0L)

@@ -85,7 +85,7 @@
             android:gravity="end"
             android:text="未认证"
             android:textColor="#FF982E"
-            android:textSize="@dimen/sp_14" />
+            android:textSize="@dimen/sp_12" />
 
         <ImageView
             android:layout_width="@dimen/dp_10"
@@ -128,7 +128,8 @@
             android:gravity="center"
             android:text="2"
             android:textColor="@color/white_FFFFFF"
-            android:textSize="@dimen/sp_11" />
+            android:textSize="@dimen/sp_11"
+            android:visibility="gone" />
 
         <ImageView
             android:layout_width="@dimen/dp_10"

@@ -55,11 +55,11 @@ object ActivityManager {
      * 退到起始页面
      */
     fun toSplashActivity(activity: Activity) {
-        EventBus.getDefault().postSticky(LoginStatusChange(false, null))
+        EventBus.getDefault().postSticky(LoginStatusChange(false, null, null))
         VersionBean.clear()
         val channel = SPUtils.getString(SPArgument.UM_CHANNEL_ID, null)
         SPUtils.clear()
-        SPUtils.putValue(SPArgument.UM_CHANNEL_ID,channel)
+        SPUtils.putValue(SPArgument.UM_CHANNEL_ID, channel)
         SearchHisDataBase.getDataBase(activity).searchHisDao().deleteAll()
         val glideCacheUtil = GlideCacheUtil()
         glideCacheUtil.clearImageAllCache(activity)
@@ -76,11 +76,11 @@ object ActivityManager {
         VersionBean.clear()
         val channel = SPUtils.getString(SPArgument.UM_CHANNEL_ID, null)
         SPUtils.clear()
-        SPUtils.putValue(SPArgument.UM_CHANNEL_ID,channel)
+        SPUtils.putValue(SPArgument.UM_CHANNEL_ID, channel)
         SearchHisDataBase.getDataBase(activity).searchHisDao().deleteAll()
         val glideCacheUtil = GlideCacheUtil()
         glideCacheUtil.clearImageAllCache(activity)
-        EventBus.getDefault().postSticky(LoginStatusChange(false, null))
+        EventBus.getDefault().postSticky(LoginStatusChange(false, null, null))
     }
 
     /**

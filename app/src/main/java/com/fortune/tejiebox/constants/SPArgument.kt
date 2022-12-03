@@ -6,7 +6,7 @@ package com.fortune.tejiebox.constants
 
 object SPArgument {
     const val LOGIN_TOKEN = "login_token" //登录token
-    const val PHONE_NUMBER = "phone_number" //登录token
+    const val PHONE_NUMBER = "phone_number" //登录手机号
     const val CODE_TIME = "code_time" //获得短信验证码的时间戳
     const val CODE_TIME_4_CHANGE_PHONE = "code_time_4_change_phone" //获得短信验证码的时间戳
     const val IS_LOGIN = "is_login" //是否在登录状态
@@ -26,4 +26,5 @@ object SPArgument {
     const val UM_CHANNEL_ID = "umChannelID" //友盟ChannelID
 
     const val IS_CHECK_AGREEMENT = "isCheckAgreement" //是否已经同意协议
+    const val LOGIN_ACCOUNT = "login_account" //登录账号
 }

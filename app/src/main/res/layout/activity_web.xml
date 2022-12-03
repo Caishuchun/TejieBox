@@ -3,8 +3,8 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:orientation="vertical"
     android:background="@mipmap/bg_all"
+    android:orientation="vertical"
     tools:context=".activity.WebActivity">
 
     <RelativeLayout
@@ -14,20 +14,20 @@
 
         <ImageView
             android:id="@+id/iv_web_back"
-            android:layout_width="@dimen/dp_60"
-            android:layout_height="@dimen/dp_60"
-            android:padding="@dimen/dp_16"
+            android:layout_width="@dimen/dp_48"
+            android:layout_height="@dimen/dp_48"
+            android:padding="@dimen/dp_10"
             android:src="@mipmap/back_black" />
 
         <TextView
             android:id="@+id/tv_web_title"
             android:layout_width="wrap_content"
-            android:layout_height="@dimen/dp_60"
-            android:gravity="center"
+            android:layout_height="@dimen/dp_48"
             android:layout_centerHorizontal="true"
+            android:gravity="center"
             android:textColor="#0A0422"
             android:textSize="@dimen/sp_18"
-            android:textStyle="bold"/>
+            android:textStyle="bold" />
     </RelativeLayout>
 
     <RelativeLayout

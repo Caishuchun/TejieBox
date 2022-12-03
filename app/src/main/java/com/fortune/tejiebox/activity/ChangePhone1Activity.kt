@@ -3,6 +3,7 @@ package com.fortune.tejiebox.activity
 import android.annotation.SuppressLint
 import android.content.Intent
 import android.os.SystemClock
+import android.view.View
 import com.fortune.tejiebox.R
 import com.fortune.tejiebox.base.BaseActivity
 import com.fortune.tejiebox.constants.SPArgument
@@ -25,8 +26,11 @@ class ChangePhone1Activity : BaseActivity() {
         private lateinit var instance: ChangePhone1Activity
         private fun isInstance() = this::instance.isInitialized
         fun getInstance() = if (isInstance()) instance else null
+
+        const val IS_BIND = "isBind"
     }
 
+    private var isBind = false
     private var savePhone = ""
 
     override fun getLayoutId() = R.layout.activity_change_phone1
@@ -35,9 +39,18 @@ class ChangePhone1Activity : BaseActivity() {
     override fun doSomething() {
         StatusBarUtils.setTextDark(this, true)
         instance = this
+        isBind = intent.getBooleanExtra(IS_BIND, false)
 
-        val phone = SPUtils.getString(SPArgument.PHONE_NUMBER)!!
-        tv_changePhone1_currentPhone.text = "+86 ${phone.substring(0, 3)}****${phone.substring(7)}"
+        if (isBind) {
+            tv_changePhone1_title.text = "绑定手机号"
+            tv_changePhone1_tips.text = "与注册账号进行绑定,下次可使用该手机号或账号进行登录"
+            ll_changePhone1_currentPhone.visibility = View.INVISIBLE
+            et_changePhone1_phone.hint = "输入需要绑定的手机号"
+        } else {
+            val phone = SPUtils.getString(SPArgument.PHONE_NUMBER)!!
+            tv_changePhone1_currentPhone.text =
+                "+86 ${phone.substring(0, 3)}****${phone.substring(7)}"
+        }
 
         RxView.clicks(iv_changePhone1_back)
             .throttleFirst(200, TimeUnit.MILLISECONDS)
@@ -93,7 +106,9 @@ class ChangePhone1Activity : BaseActivity() {
      */
     private fun sendCode(phone: String) {
         DialogUtils.showBeautifulDialog(this)
-        val sendCode4changePhone = RetrofitUtils.builder().sendCode4changePhone(phone)
+        val sendCode4changePhone =
+            if (isBind) RetrofitUtils.builder().sendCode(phone)
+            else RetrofitUtils.builder().sendCode4changePhone(phone)
         sendCodeObservable = sendCode4changePhone
             .subscribeOn(Schedulers.io())
             .observeOn(AndroidSchedulers.mainThread())
