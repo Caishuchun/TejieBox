@@ -10,6 +10,7 @@ import com.fortune.tejiebox.utils.SPUtils
 import com.fortune.tejiebox.utils.StatusBarUtils
 import com.fortune.tejiebox.utils.ToastUtils
 import com.jakewharton.rxbinding2.view.RxView
+import com.umeng.analytics.MobclickAgent
 import kotlinx.android.synthetic.main.activity_account_safe.*
 import java.util.concurrent.TimeUnit
 
@@ -60,7 +61,7 @@ class AccountSafeActivity : BaseActivity() {
             RxView.clicks(ll_accountSafe_account)
                 .throttleFirst(200, TimeUnit.MILLISECONDS)
                 .subscribe {
-                    ToastUtils.show("去绑定手机号")
+                    startActivity(Intent(this, AccountBindActivity::class.java))
                 }
         } else {
             tv_accountSafe_account.text = "${account.substring(0, 3)}****${account.substring(7)}"
@@ -76,6 +77,33 @@ class AccountSafeActivity : BaseActivity() {
                     startActivity(Intent(this, ChangePhone1Activity::class.java))
                 }
             }
+    }
+
+    @SuppressLint("SetTextI18n")
+    override fun onResume() {
+        super.onResume()
+        MobclickAgent.onResume(this)
+        val phone = SPUtils.getString(SPArgument.PHONE_NUMBER, null)
+        if (phone.isNullOrBlank()) {
+            tv_accountSafe_phone.text = "未绑定"
+            tv_accountSafe_phone.setTextColor(Color.parseColor("#FF982E"))
+        } else {
+            tv_accountSafe_phone.text = "${phone.substring(0, 3)}****${phone.substring(7)}"
+            tv_accountSafe_phone.setTextColor(Color.parseColor("#5F60FF"))
+        }
+        val account = SPUtils.getString(SPArgument.LOGIN_ACCOUNT, null)
+        if (account.isNullOrBlank()) {
+            tv_accountSafe_account.text = "未绑定"
+            tv_accountSafe_account.setTextColor(Color.parseColor("#FF982E"))
+        } else {
+            tv_accountSafe_account.text = "${account.substring(0, 3)}****${account.substring(7)}"
+            tv_accountSafe_account.setTextColor(Color.parseColor("#5F60FF"))
+        }
+    }
+
+    override fun onPause() {
+        super.onPause()
+        MobclickAgent.onPause(this)
     }
 
     override fun destroy() {

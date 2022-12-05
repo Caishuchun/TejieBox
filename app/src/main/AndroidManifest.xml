@@ -54,6 +54,9 @@
         tools:ignore="LockedOrientationActivity,UnusedAttribute"
         tools:replace="android:icon,android:theme,android:name,android:allowBackup">
         <activity
+            android:name=".activity.AccountBindActivity"
+            android:exported="true" />
+        <activity
             android:name=".activity.AccountSafeActivity"
             android:exported="true"
             android:label="@string/title_activity_account_safe"

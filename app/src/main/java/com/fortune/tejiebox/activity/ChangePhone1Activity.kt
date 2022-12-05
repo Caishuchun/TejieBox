@@ -43,7 +43,7 @@ class ChangePhone1Activity : BaseActivity() {
 
         if (isBind) {
             tv_changePhone1_title.text = "绑定手机号"
-            tv_changePhone1_tips.text = "与注册账号进行绑定,下次可使用该手机号或账号进行登录"
+            tv_changePhone1_tips.text = "与注册账号进行绑定,下次可使用该手机号进行登录"
             ll_changePhone1_currentPhone.visibility = View.INVISIBLE
             et_changePhone1_phone.hint = "输入需要绑定的手机号"
         } else {
@@ -148,6 +148,9 @@ class ChangePhone1Activity : BaseActivity() {
      */
     private fun toNext(phone: String) {
         val intent = Intent(this, ChangePhone2Activity::class.java)
+        if (isBind) {
+            intent.putExtra(ChangePhone2Activity.IS_BIND, true)
+        }
         intent.putExtra(ChangePhone2Activity.PHONE, phone)
         startActivity(intent)
     }

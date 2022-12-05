@@ -4,6 +4,7 @@ import android.annotation.SuppressLint
 import android.content.Intent
 import android.net.Uri
 import android.os.Environment
+import android.view.View
 import androidx.viewpager.widget.ViewPager
 import com.fortune.tejiebox.R
 import com.fortune.tejiebox.adapter.ShowPicAdapter
@@ -57,7 +58,11 @@ class ShowPicActivity : BaseActivity() {
                 saveImg()
             }
 
-        tv_showPic_title.text = "${currentPosition + 1}/${picList.size}"
+        if (picList.size == 1) {
+            tv_showPic_title.visibility = View.INVISIBLE
+        } else {
+            tv_showPic_title.text = "${currentPosition + 1}/${picList.size}"
+        }
         val adapter = ShowPicAdapter(this, picList)
         vp_showPic.adapter = adapter
         vp_showPic.currentItem = currentPosition

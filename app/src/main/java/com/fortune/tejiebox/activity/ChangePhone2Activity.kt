@@ -111,6 +111,8 @@ class ChangePhone2Activity : BaseActivity() {
                         1 -> {
                             ToastUtils.show("绑定手机号成功!")
                             SPUtils.putValue(SPArgument.PHONE_NUMBER, currentPhone)
+                            SPUtils.putValue(SPArgument.CODE_TIME_4_CHANGE_PHONE, 0L)
+                            ChangePhone1Activity.getInstance()?.finish()
                             finish()
                         }
                         -1 -> {
@@ -146,6 +148,7 @@ class ChangePhone2Activity : BaseActivity() {
                     when (it.code) {
                         1 -> {
                             ToastUtils.show(getString(R.string.change_phone_success))
+                            SPUtils.putValue(SPArgument.CODE_TIME_4_CHANGE_PHONE, 0L)
                             toSplash()
                         }
                         -1 -> {

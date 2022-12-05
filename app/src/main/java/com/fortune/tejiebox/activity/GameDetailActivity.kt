@@ -479,7 +479,28 @@ class GameDetailActivity : BaseActivity() {
             .throttleFirst(200, TimeUnit.MILLISECONDS)
             .subscribe {
                 if (MyApp.getInstance().isHaveToken()) {
-                    toStartGame()
+                    val phone = SPUtils.getString(SPArgument.PHONE_NUMBER, null)
+                    if (phone.isNullOrBlank()) {
+                        DialogUtils.showDefaultDialog(
+                            this,
+                            "未绑定手机号",
+                            "需要绑定手机号才能开始游戏",
+                            "暂不绑定",
+                            "立即绑定",
+                            object : DialogUtils.OnDialogListener {
+                                override fun next() {
+                                    startActivity(
+                                        Intent(
+                                            this@GameDetailActivity,
+                                            AccountSafeActivity::class.java
+                                        )
+                                    )
+                                }
+                            }
+                        )
+                    } else {
+                        toStartGame()
+                    }
                 } else {
                     LoginUtils.toQuickLogin(this)
                 }

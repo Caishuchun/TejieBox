@@ -10,6 +10,8 @@ data class ReCustomerBean(
         val content: String,
         val type: Int,
         val img_height: Int?,
-        val img_width: Int?
+        val img_width: Int?,
+        val create_time: String,
+        val create_stamp: Long,
     )
 }

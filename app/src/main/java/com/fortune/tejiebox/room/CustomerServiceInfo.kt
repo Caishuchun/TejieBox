@@ -10,7 +10,7 @@ import androidx.room.PrimaryKey
 @Entity(tableName = "customer_service_table")
 class CustomerServiceInfo(
     //消息id
-    @ColumnInfo(name = "chat_id") val chat_id: Int,
+    @ColumnInfo(name = "chat_id") var chat_id: Int,
 
     //内容来源 0-客服 1-用户
     @ColumnInfo(name = "form") val form: Int,
@@ -36,6 +36,6 @@ class CustomerServiceInfo(
     //是否是已读消息 0-未读 1-已读
     @ColumnInfo(name = "is_read") var is_read: Int,
 
-    @PrimaryKey(autoGenerate = false)
-    @ColumnInfo(name = "id") val id: Long = System.currentTimeMillis()
+    @PrimaryKey(autoGenerate = true)
+    @ColumnInfo(name = "id") val id: Int? = null
 )

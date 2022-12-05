@@ -1,6 +1,7 @@
 package com.fortune.tejiebox.activity
 
 import android.annotation.SuppressLint
+import android.content.Intent
 import android.view.View
 import android.widget.LinearLayout
 import com.bumptech.glide.Glide
@@ -113,7 +114,7 @@ class CustomerServiceActivity : BaseActivity() {
         if (info.isEmpty()) {
             //没有数据,添加开始提示
             val customerServiceInfo = CustomerServiceInfo(
-                System.currentTimeMillis().toInt(), 0, 1,
+                -1, 0, 1,
                 "您好, 请问有什么可以帮助您! 请反馈遇到的问题, 我们将在一个工作日内解答。",
                 null, null, null,
                 System.currentTimeMillis(),
@@ -166,12 +167,24 @@ class CustomerServiceActivity : BaseActivity() {
                                 formatImgSize(itemData.imgW.toInt(), itemData.imgH.toInt())[1]
                             itemView.rl_item_customerService_left_img.layoutParams = layoutParams
 
-
                             Glide.with(this)
                                 .load(itemData.chat_img_url)
                                 .into(itemView.iv_item_customerService_left_img)
-                            itemView.tv_item_customerService_left_msg_time.text =
+
+                            itemView.tv_item_customerService_left_img_time.text =
                                 formatChatTime(itemData.chat_time)
+
+                            RxView.clicks(itemView.rootView)
+                                .throttleFirst(200, TimeUnit.MILLISECONDS)
+                                .subscribe {
+                                    val intent = Intent(this, ShowPicActivity::class.java)
+                                    intent.putExtra(ShowPicActivity.POSITION, 0)
+                                    intent.putStringArrayListExtra(
+                                        ShowPicActivity.LIST,
+                                        arrayListOf(itemData.chat_img_url)
+                                    )
+                                    startActivity(intent)
+                                }
                         }
                     }
                     1 -> {
@@ -233,6 +246,18 @@ class CustomerServiceActivity : BaseActivity() {
                                 itemView.progress_item_customerService_right_img.visibility =
                                     View.GONE
                             }
+
+                            RxView.clicks(itemView.rootView)
+                                .throttleFirst(200, TimeUnit.MILLISECONDS)
+                                .subscribe {
+                                    val intent = Intent(this, ShowPicActivity::class.java)
+                                    intent.putExtra(ShowPicActivity.POSITION, 0)
+                                    intent.putStringArrayListExtra(
+                                        ShowPicActivity.LIST,
+                                        arrayListOf(itemData.chat_img_url)
+                                    )
+                                    startActivity(intent)
+                                }
                         }
                     }
                 }
@@ -307,11 +332,13 @@ class CustomerServiceActivity : BaseActivity() {
                 when (it.code) {
                     1 -> {
                         if (type == 2) {
+                            customerServiceInfo4Pic?.chat_id = it.data.chat_id
                             mCustomerServiceDao.addInfo(customerServiceInfo4Pic!!)
+                            rv_customerService_info?.scrollToPosition(mData.size - 1)
                         } else {
                             et_customerService_msg.setText("")
                             val customerServiceInfo = CustomerServiceInfo(
-                                System.currentTimeMillis().toInt(),
+                                it.data.chat_id,
                                 1, 1, msg,
                                 null, null, null,
                                 System.currentTimeMillis(), 1
@@ -388,8 +415,7 @@ class CustomerServiceActivity : BaseActivity() {
     private fun toSendPic(result: ArrayList<LocalMedia>) {
         if (picIndex < result.size) {
             val customerServiceInfo = CustomerServiceInfo(
-                System.currentTimeMillis().toInt(),
-                1, 2, null,
+                0, 1, 2, null,
                 result[picIndex].compressPath,
                 result[picIndex].width,
                 result[picIndex].height,

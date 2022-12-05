@@ -1,12 +1,14 @@
 package com.fortune.tejiebox.fragment
 
 import android.annotation.SuppressLint
+import android.content.Intent
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import com.fortune.tejiebox.R
+import com.fortune.tejiebox.activity.AccountSafeActivity
 import com.fortune.tejiebox.activity.DialogActivity
 import com.fortune.tejiebox.activity.GiftActivity
 import com.fortune.tejiebox.adapter.BaseAdapterWithPosition
@@ -48,6 +50,7 @@ class InviteGiftFragment : Fragment() {
 
     private var canGet = 0 //有多少个可以领取的
     private var isCreateGet = true
+    private var wantToShare = false //想要去分享
 
     private var mData = mutableListOf<GetShareListBean.DataBean.ListBean>()
 
@@ -157,7 +160,29 @@ class InviteGiftFragment : Fragment() {
             RxView.clicks(it)
                 .throttleFirst(200, TimeUnit.MILLISECONDS)
                 .subscribe {
-                    toGetShareUrl()
+                    val phone = SPUtils.getString(SPArgument.PHONE_NUMBER, null)
+                    if (phone.isNullOrBlank() && !wantToShare) {
+                        DialogUtils.showDefaultDialog(
+                            requireContext(),
+                            "未绑定手机号",
+                            "需要绑定手机号后邀请用户才能领取邀请大礼",
+                            "不绑定,要分享",
+                            "立即绑定",
+                            object : DialogUtils.OnDialogListener {
+                                override fun next() {
+                                    startActivity(
+                                        Intent(
+                                            requireContext(),
+                                            AccountSafeActivity::class.java
+                                        )
+                                    )
+                                }
+                            }
+                        )
+                        wantToShare = true
+                    } else {
+                        toGetShareUrl()
+                    }
                 }
         }
 

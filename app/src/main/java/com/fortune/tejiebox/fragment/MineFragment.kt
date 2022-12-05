@@ -9,17 +9,19 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import com.fortune.tejiebox.R
-import com.fortune.tejiebox.activity.*
+import com.fortune.tejiebox.activity.AccountSafeActivity
+import com.fortune.tejiebox.activity.CustomerServiceActivity
+import com.fortune.tejiebox.activity.IdCardActivity
+import com.fortune.tejiebox.activity.MainActivity
 import com.fortune.tejiebox.constants.SPArgument
-import com.fortune.tejiebox.event.*
-import com.fortune.tejiebox.http.RetrofitUtils
+import com.fortune.tejiebox.event.IsHaveIdChange
+import com.fortune.tejiebox.event.LoginStatusChange
+import com.fortune.tejiebox.event.ShowNumChange
 import com.fortune.tejiebox.myapp.MyApp
 import com.fortune.tejiebox.utils.*
-import com.google.gson.Gson
 import com.jakewharton.rxbinding2.view.RxView
 import io.reactivex.Observable
 import io.reactivex.android.schedulers.AndroidSchedulers
-import io.reactivex.disposables.Disposable
 import io.reactivex.schedulers.Schedulers
 import kotlinx.android.synthetic.main.fragment_mine.view.*
 import org.greenrobot.eventbus.EventBus
@@ -30,7 +32,6 @@ import java.util.concurrent.TimeUnit
 class MineFragment : Fragment() {
 
     private var mView: View? = null
-    private var getIntegralObservable: Disposable? = null
 
     companion object {
         @JvmStatic
@@ -48,45 +49,7 @@ class MineFragment : Fragment() {
     ): View? {
         mView = inflater.inflate(R.layout.fragment_mine, container, false)
         initView()
-        if (MyApp.getInstance().isHaveToken()) {
-            getIntegral()
-        }
         return mView
-    }
-
-    /**
-     * 获取现有积分
-     */
-    @SuppressLint("SetTextI18n")
-    private fun getIntegral(needDialog: Boolean = true) {
-        mView?.tv_mineFragment_integral?.let {
-            it.text = "0元"
-        }
-        val getIntegral = RetrofitUtils.builder().getIntegral()
-        getIntegralObservable = getIntegral.subscribeOn(Schedulers.io())
-            .observeOn(AndroidSchedulers.mainThread())
-            .subscribe(
-                {
-                    LogUtils.d(Gson().toJson(it))
-                    when (it.code) {
-                        1 -> {
-                            SPUtils.putValue(SPArgument.INTEGRAL, it.data.integral)
-                            mView?.tv_mineFragment_integral?.let { tv ->
-                                tv.text = "${it.data.integral / 10}元"
-                            }
-                        }
-                        -1 -> {
-                            ToastUtils.show(it.msg)
-                            ActivityManager.toSplashActivity(requireActivity())
-                        }
-                        else -> {
-                            ToastUtils.show(it.msg)
-                        }
-                    }
-                }, {
-                    LogUtils.d("${javaClass.simpleName}=fail=>${it.message.toString()}")
-                    ToastUtils.show(HttpExceptionUtils.getExceptionMsg(requireContext(), it))
-                })
     }
 
     @SuppressLint("SetTextI18n")
@@ -179,26 +142,6 @@ class MineFragment : Fragment() {
                         val intent = Intent(requireContext(), IdCardActivity::class.java)
                         intent.putExtra(IdCardActivity.FROM, isHaveId)
                         requireActivity().startActivity(intent)
-                    } else {
-                        LoginUtils.toQuickLogin(requireActivity())
-                    }
-                }
-        }
-
-        mView?.ll_mineFragment_integral?.let {
-            RxView.clicks(it)
-                .throttleFirst(
-                    200,
-                    TimeUnit.MILLISECONDS
-                )
-                .subscribe {
-                    if (MyApp.getInstance().isHaveToken()) {
-                        requireActivity().startActivity(
-                            Intent(
-                                requireContext(),
-                                GiftActivity::class.java
-                            )
-                        )
                     } else {
                         LoginUtils.toQuickLogin(requireActivity())
                     }
@@ -300,13 +243,13 @@ class MineFragment : Fragment() {
             }
         }
 
-        if (loginStatusChange.isLogin) {
-            getIntegral()
-        } else {
-            mView?.tv_mineFragment_integral?.let {
-                it.text = "0元"
-            }
-        }
+//        if (loginStatusChange.isLogin) {
+//            getIntegral()
+//        } else {
+//            mView?.tv_mineFragment_integral?.let {
+//                it.text = "0元"
+//            }
+//        }
     }
 
     /**
@@ -329,28 +272,6 @@ class MineFragment : Fragment() {
     }
 
     /**
-     * 随时修改当前积分
-     */
-    @SuppressLint("SetTextI18n")
-    @Subscribe(sticky = true, threadMode = ThreadMode.MAIN)
-    fun changeIntegral(integralChange: IntegralChange) {
-        if (integralChange == null) {
-            return
-        }
-        if (integralChange.integral == -1) {
-            if (MyApp.getInstance().isHaveToken()) {
-                getIntegral(false)
-            }
-        }
-        if (integralChange.integral >= 0) {
-            SPUtils.putValue(SPArgument.INTEGRAL, integralChange.integral)
-            mView?.tv_mineFragment_integral?.let {
-                it.text = "${integralChange.integral / 10}元"
-            }
-        }
-    }
-
-    /**
      * 是否实名认证过了
      */
     @Subscribe(sticky = true, threadMode = ThreadMode.MAIN)
@@ -369,35 +290,62 @@ class MineFragment : Fragment() {
         }
     }
 
-    /**
-     * 是否显示小红点
-     */
-    @Subscribe(sticky = true, threadMode = ThreadMode.MAIN)
-    fun isShowRedPoint(redPointChange: RedPointChange) {
-        if (redPointChange == null) {
-            return
+    override fun onHiddenChanged(hidden: Boolean) {
+        super.onHiddenChanged(hidden)
+        if (!hidden) {
+            mView?.tv_mineFragment_phone?.let {
+                if (MyApp.getInstance().isHaveToken()) {
+                    val phone = SPUtils.getString(SPArgument.PHONE_NUMBER)
+                    val account = SPUtils.getString(SPArgument.LOGIN_ACCOUNT)
+                    when {
+                        phone.isNullOrBlank() -> {
+                            it.text = "未绑定手机号"
+                            it.setTextColor(Color.parseColor("#FF982E"))
+                        }
+                        account.isNullOrBlank() -> {
+                            it.text = "未绑定账号"
+                            it.setTextColor(Color.parseColor("#FF982E"))
+                        }
+                        else -> {
+                            it.text = "已绑定"
+                            it.setTextColor(Color.parseColor("#5F60FF"))
+                        }
+                    }
+                } else {
+                    it.text = "未登录"
+                }
+            }
         }
-        if (redPointChange.isShow) {
-            Thread {
-                Thread.sleep(200)
-                requireActivity().runOnUiThread {
-                    mView?.iv_mineFragment_point?.visibility = View.VISIBLE
+    }
+
+    override fun onResume() {
+        super.onResume()
+        mView?.tv_mineFragment_phone?.let {
+            if (MyApp.getInstance().isHaveToken()) {
+                val phone = SPUtils.getString(SPArgument.PHONE_NUMBER)
+                val account = SPUtils.getString(SPArgument.LOGIN_ACCOUNT)
+                when {
+                    phone.isNullOrBlank() -> {
+                        it.text = "未绑定手机号"
+                        it.setTextColor(Color.parseColor("#FF982E"))
+                    }
+                    account.isNullOrBlank() -> {
+                        it.text = "未绑定账号"
+                        it.setTextColor(Color.parseColor("#FF982E"))
+                    }
+                    else -> {
+                        it.text = "已绑定"
+                        it.setTextColor(Color.parseColor("#5F60FF"))
+                    }
                 }
-            }.start()
-        } else {
-            Thread {
-                Thread.sleep(200)
-                requireActivity().runOnUiThread {
-                    mView?.iv_mineFragment_point?.visibility = View.GONE
-                }
-            }.start()
+            } else {
+                it.text = "未登录"
+            }
         }
     }
 
     override fun onDestroy() {
         super.onDestroy()
         EventBus.getDefault().unregister(this)
-        getIntegralObservable?.dispose()
-        getIntegralObservable = null
     }
 }

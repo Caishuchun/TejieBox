@@ -1,58 +1,51 @@
-package com.fortune.tejiebox.fragment
+package com.fortune.tejiebox.activity
 
 import android.annotation.SuppressLint
-import android.os.Bundle
 import android.text.method.HideReturnsTransformationMethod
 import android.text.method.PasswordTransformationMethod
-import android.view.LayoutInflater
 import android.view.View
-import android.view.ViewGroup
-import androidx.fragment.app.Fragment
 import com.fortune.tejiebox.R
-import com.fortune.tejiebox.activity.DialogActivity
-import com.fortune.tejiebox.activity.Login4AccountActivity
-import com.fortune.tejiebox.activity.LoginActivity
-import com.fortune.tejiebox.base.BaseAppUpdateSetting
+import com.fortune.tejiebox.base.BaseActivity
 import com.fortune.tejiebox.constants.SPArgument
-import com.fortune.tejiebox.event.LoginStatusChange
 import com.fortune.tejiebox.http.RetrofitUtils
 import com.fortune.tejiebox.utils.*
 import com.google.gson.Gson
 import com.jakewharton.rxbinding2.view.RxView
 import com.jakewharton.rxbinding2.widget.RxTextView
+import com.umeng.analytics.MobclickAgent
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.Disposable
 import io.reactivex.schedulers.Schedulers
-import kotlinx.android.synthetic.main.fragment_account_sign.view.*
-import org.greenrobot.eventbus.EventBus
+import kotlinx.android.synthetic.main.activity_account_bind.*
 import java.util.concurrent.TimeUnit
 
-class AccountSignFragment : Fragment() {
+class AccountBindActivity : BaseActivity() {
 
-    companion object {
-        @JvmStatic
-        fun newInstance() = AccountSignFragment()
-    }
-
-    private var mView: View? = null
     private var signPassIsShow = false
     private var reSignPassIsShow = false
 
     private var checkAccountObservable: Disposable? = null
-    private var accountSignObservable: Disposable? = null
+    private var accountBindObservable: Disposable? = null
 
-    override fun onCreateView(
-        inflater: LayoutInflater, container: ViewGroup?,
-        savedInstanceState: Bundle?
-    ): View? {
-        mView = inflater.inflate(R.layout.fragment_account_sign, container, false)
+    companion object {
+        @SuppressLint("StaticFieldLeak")
+        private lateinit var instance: AccountBindActivity
+        private fun isInstance() = this::instance.isInitialized
+        fun getInstance() = if (isInstance()) instance else null
+    }
+
+    override fun getLayoutId() = R.layout.activity_account_bind
+
+    override fun doSomething() {
+        instance = this
+        StatusBarUtils.setTextDark(this, true)
+
         initView()
-        return mView
     }
 
     @SuppressLint("CheckResult", "SetTextI18n")
     private fun initView() {
-        mView?.iv_account_sign_back?.let {
+        iv_accountBind_back?.let {
             RxView.clicks(it)
                 .throttleFirst(200, TimeUnit.MILLISECONDS)
                 .subscribe {
@@ -60,18 +53,18 @@ class AccountSignFragment : Fragment() {
                 }
         }
 
-        mView?.et_account_sign_account?.let { et ->
+        et_accountBind_account?.let { et ->
             RxTextView.textChanges(et)
                 .skipInitialValue()
                 .subscribe {
                     if (it.length > 16) {
-                        mView?.tv_account_sign_account_tips?.let { tv ->
+                        tv_accountBind_account_tips?.let { tv ->
                             tv.visibility = View.VISIBLE
-                            tv.text = "* 注册账号不得超过16位字符"
+                            tv.text = "* 绑定账号不得超过16位字符"
                             tv.setTextColor(resources.getColor(R.color.red_F03D3D))
                         }
                     } else {
-                        mView?.tv_account_sign_account_tips?.visibility = View.INVISIBLE
+                        tv_accountBind_account_tips?.visibility = View.INVISIBLE
                     }
                 }
             et.setOnFocusChangeListener { v, hasFocus ->
@@ -79,26 +72,26 @@ class AccountSignFragment : Fragment() {
                     if (!hasFocus) {
                         when {
                             et.text.length < 8 -> {
-                                mView?.tv_account_sign_account_tips?.let { tv ->
+                                tv_accountBind_account_tips?.let { tv ->
                                     tv.visibility = View.VISIBLE
-                                    tv.text = "* 注册账号不得少于8位字符"
+                                    tv.text = "* 绑定账号不得少于8位字符"
                                     tv.setTextColor(resources.getColor(R.color.red_F03D3D))
                                 }
                             }
                             !checkAccountIsOk(et.text.toString()) -> {
-                                mView?.tv_account_sign_account_tips?.let { tv ->
+                                tv_accountBind_account_tips?.let { tv ->
                                     tv.visibility = View.VISIBLE
-                                    tv.text = "* 注册账号过于简单,需8-16位数字加字母组合"
+                                    tv.text = "* 绑定账号过于简单,需8-16位数字加字母组合"
                                     tv.setTextColor(resources.getColor(R.color.red_F03D3D))
                                 }
                             }
                             checkAccountIsOk(et.text.toString()) -> {
-                                toCheckAccountCanSign(et.text.toString())
+                                toCheckAccountCanBind(et.text.toString())
                             }
                             et.text.length > 16 -> {
-                                mView?.tv_account_sign_account_tips?.let { tv ->
+                                tv_accountBind_account_tips?.let { tv ->
                                     tv.visibility = View.VISIBLE
-                                    tv.text = "* 注册账号不得超过16位字符"
+                                    tv.text = "* 绑定账号不得超过16位字符"
                                     tv.setTextColor(resources.getColor(R.color.red_F03D3D))
                                 }
                             }
@@ -108,27 +101,27 @@ class AccountSignFragment : Fragment() {
             }
         }
 
-        mView?.et_account_sign_pass?.let { et ->
+        et_accountBind_pass?.let { et ->
             RxTextView.textChanges(et)
                 .skipInitialValue()
                 .subscribe {
                     when {
                         it.length in 8..16 -> {
-                            mView?.tv_account_sign_pass_tips?.let { tv ->
+                            tv_accountBind_pass_tips?.let { tv ->
                                 tv.visibility = View.VISIBLE
                                 tv.text = "√ 密码可用"
                                 tv.setTextColor(resources.getColor(R.color.green_2EC8AC))
                             }
                         }
                         it.length > 16 -> {
-                            mView?.tv_account_sign_pass_tips?.let { tv ->
+                            tv_accountBind_pass_tips?.let { tv ->
                                 tv.visibility = View.VISIBLE
-                                tv.text = "* 注册密码不得超过16位字符"
+                                tv.text = "* 密码不得超过16位字符"
                                 tv.setTextColor(resources.getColor(R.color.red_F03D3D))
                             }
                         }
                         else -> {
-                            mView?.tv_account_sign_pass_tips?.visibility = View.INVISIBLE
+                            tv_accountBind_pass_tips?.visibility = View.INVISIBLE
                         }
                     }
                 }
@@ -137,21 +130,21 @@ class AccountSignFragment : Fragment() {
                     if (!hasFocus) {
                         when {
                             et.text.length < 8 -> {
-                                mView?.tv_account_sign_pass_tips?.let { tv ->
+                                tv_accountBind_pass_tips?.let { tv ->
                                     tv.visibility = View.VISIBLE
-                                    tv.text = "* 注册密码不得少于8位字符"
+                                    tv.text = "* 密码不得少于8位字符"
                                     tv.setTextColor(resources.getColor(R.color.red_F03D3D))
                                 }
                             }
                             et.text.length > 16 -> {
-                                mView?.tv_account_sign_pass_tips?.let { tv ->
+                                tv_accountBind_pass_tips?.let { tv ->
                                     tv.visibility = View.VISIBLE
-                                    tv.text = "* 注册密码不得超过16位字符"
+                                    tv.text = "* 密码不得超过16位字符"
                                     tv.setTextColor(resources.getColor(R.color.red_F03D3D))
                                 }
                             }
                             else -> {
-                                mView?.tv_account_sign_pass_tips?.let { tv ->
+                                tv_accountBind_pass_tips?.let { tv ->
                                     tv.visibility = View.VISIBLE
                                     tv.text = "√ 密码可用"
                                     tv.setTextColor(resources.getColor(R.color.green_2EC8AC))
@@ -163,32 +156,32 @@ class AccountSignFragment : Fragment() {
             }
         }
 
-        mView?.et_account_sign_rePass?.let { et ->
+        et_accountBind_rePass?.let { et ->
             RxTextView.textChanges(et)
                 .skipInitialValue()
                 .subscribe {
                     when {
                         it.length < 8 -> {
-                            mView?.tv_account_sign_rePass_tips?.visibility = View.INVISIBLE
+                            tv_accountBind_rePass_tips?.visibility = View.INVISIBLE
                         }
-                        it.toString() == mView?.et_account_sign_pass?.text.toString() -> {
-                            mView?.tv_account_sign_rePass_tips?.let { tv ->
+                        it.toString() == et_accountBind_pass?.text.toString() -> {
+                            tv_accountBind_rePass_tips?.let { tv ->
                                 tv.visibility = View.VISIBLE
                                 tv.text = "√ 两次输入密码一致"
                                 tv.setTextColor(resources.getColor(R.color.green_2EC8AC))
                             }
                         }
-                        it.toString() != mView?.et_account_sign_pass?.text.toString() -> {
-                            mView?.tv_account_sign_rePass_tips?.let { tv ->
+                        it.toString() != et_accountBind_pass?.text.toString() -> {
+                            tv_accountBind_rePass_tips?.let { tv ->
                                 tv.visibility = View.VISIBLE
                                 tv.text = "* 两次输入的密码不一致"
                                 tv.setTextColor(resources.getColor(R.color.red_F03D3D))
                             }
                         }
                         it.length > 16 -> {
-                            mView?.tv_account_sign_rePass_tips?.let { tv ->
+                            tv_accountBind_rePass_tips?.let { tv ->
                                 tv.visibility = View.VISIBLE
-                                tv.text = "* 注册密码不得超过16位字符"
+                                tv.text = "* 密码不得超过16位字符"
                                 tv.setTextColor(resources.getColor(R.color.red_F03D3D))
                             }
                         }
@@ -197,8 +190,8 @@ class AccountSignFragment : Fragment() {
             et.setOnFocusChangeListener { v, hasFocus ->
                 if (et.text.isNotEmpty()) {
                     if (!hasFocus) {
-                        mView?.tv_account_sign_rePass_tips?.let { tv ->
-                            if (et.text.toString() != mView?.et_account_sign_pass?.text.toString()) {
+                        tv_accountBind_rePass_tips?.let { tv ->
+                            if (et.text.toString() != et_accountBind_pass?.text.toString()) {
                                 tv.visibility = View.VISIBLE
                                 tv.text = "* 两次输入的密码不一致"
                                 tv.setTextColor(resources.getColor(R.color.red_F03D3D))
@@ -213,12 +206,12 @@ class AccountSignFragment : Fragment() {
             }
         }
 
-        mView?.iv_account_sign_pass?.let { iv ->
+        iv_accountBind_pass?.let { iv ->
             RxView.clicks(iv)
                 .throttleFirst(200, TimeUnit.MILLISECONDS)
                 .subscribe {
                     signPassIsShow = !signPassIsShow
-                    mView?.et_account_sign_pass?.let {
+                    et_accountBind_pass?.let {
                         it.transformationMethod = if (signPassIsShow) {
                             HideReturnsTransformationMethod.getInstance()
                         } else {
@@ -230,12 +223,12 @@ class AccountSignFragment : Fragment() {
                 }
         }
 
-        mView?.iv_account_sign_rePass?.let { iv ->
+        iv_accountBind_rePass?.let { iv ->
             RxView.clicks(iv)
                 .throttleFirst(200, TimeUnit.MILLISECONDS)
                 .subscribe {
                     reSignPassIsShow = !reSignPassIsShow
-                    mView?.et_account_sign_rePass?.let {
+                    et_accountBind_rePass?.let {
                         it.transformationMethod = if (reSignPassIsShow) {
                             HideReturnsTransformationMethod.getInstance()
                         } else {
@@ -247,23 +240,20 @@ class AccountSignFragment : Fragment() {
                 }
         }
 
-        mView?.iv_account_sign_title?.let {
-            it.setImageResource(if (BaseAppUpdateSetting.isToPromoteVersion) R.mipmap.app_title2 else R.mipmap.app_title)
-        }
-
-        mView?.tv_account_sign_login?.let {
+        tv_accountBind_bind?.let {
             RxView.clicks(it)
                 .throttleFirst(200, TimeUnit.MILLISECONDS)
                 .subscribe {
-                    toSignCheck()
+                    toBindCheck()
                 }
         }
     }
 
+
     /**
      * 检查该账号是否已注册
      */
-    private fun toCheckAccountCanSign(account: String) {
+    private fun toCheckAccountCanBind(account: String) {
         val checkAccount = RetrofitUtils.builder().checkAccount(account)
         checkAccountObservable = checkAccount
             .subscribeOn(Schedulers.io())
@@ -272,14 +262,14 @@ class AccountSignFragment : Fragment() {
                 LogUtils.d("${javaClass.simpleName}==>${Gson().toJson(it)}")
                 when (it.code) {
                     1 -> {
-                        mView?.tv_account_sign_account_tips?.let { tv ->
+                        tv_accountBind_account_tips?.let { tv ->
                             tv.visibility = View.VISIBLE
                             tv.text = "√ 注册账号未被使用,可注册"
                             tv.setTextColor(resources.getColor(R.color.green_2EC8AC))
                         }
                     }
                     2 -> {
-                        mView?.tv_account_sign_account_tips?.let { tv ->
+                        tv_accountBind_account_tips?.let { tv ->
                             tv.visibility = View.VISIBLE
                             tv.text = "* 该账号已被注册,请重新输入"
                             tv.setTextColor(resources.getColor(R.color.red_F03D3D))
@@ -352,82 +342,44 @@ class AccountSignFragment : Fragment() {
     /**
      * 注册检查
      */
-    private fun toSignCheck() {
+    private fun toBindCheck() {
         val accountIsOk =
-            mView?.tv_account_sign_account_tips?.text.toString().trim().startsWith("√")
-                    && mView?.tv_account_sign_account_tips?.visibility == View.VISIBLE
-        val passIsOk = mView?.tv_account_sign_pass_tips?.text.toString().trim()
-            .startsWith("√") && mView?.tv_account_sign_pass_tips?.visibility == View.VISIBLE
-        val rePassIsOk = mView?.tv_account_sign_rePass_tips?.text.toString().trim()
-            .startsWith("√") && mView?.tv_account_sign_rePass_tips?.visibility == View.VISIBLE
-        val account = mView?.et_account_sign_account?.text.toString().trim()
-        val pass = mView?.et_account_sign_pass?.text.toString().trim()
+            tv_accountBind_account_tips?.text.toString().trim().startsWith("√")
+                    && tv_accountBind_account_tips?.visibility == View.VISIBLE
+        val passIsOk = tv_accountBind_pass_tips?.text.toString().trim()
+            .startsWith("√") && tv_accountBind_pass_tips?.visibility == View.VISIBLE
+        val rePassIsOk = tv_accountBind_rePass_tips?.text.toString().trim()
+            .startsWith("√") && tv_accountBind_rePass_tips?.visibility == View.VISIBLE
+        val account = et_accountBind_account?.text.toString().trim()
+        val pass = et_accountBind_pass?.text.toString().trim()
         if (accountIsOk && passIsOk && rePassIsOk) {
-            toSign(account, pass)
+            toBind(account, pass)
         } else {
-            ToastUtils.show("请检查账号密码是否合规后再进行注册!")
+            ToastUtils.show("请检查账号密码是否合规后再进行绑定!")
         }
     }
 
     /**
-     * 注册
+     * 绑定账号
      */
-    private fun toSign(account: String, pass: String) {
-        SPUtils.putValue(SPArgument.LOGIN_TOKEN, null)
-        SPUtils.putValue(SPArgument.PHONE_NUMBER, null)
-        SPUtils.putValue(SPArgument.LOGIN_ACCOUNT, null)
-        SPUtils.putValue(SPArgument.USER_ID, null)
-        SPUtils.putValue(SPArgument.IS_HAVE_ID, 0)
-        SPUtils.putValue(SPArgument.ID_NAME, null)
-        SPUtils.putValue(SPArgument.ID_NUM, null)
-        DialogUtils.showBeautifulDialog(requireContext())
-        val accountSign = RetrofitUtils.builder().accountSign(account, pass)
-        accountSignObservable = accountSign.subscribeOn(Schedulers.io())
+    private fun toBind(account: String, pass: String) {
+        DialogUtils.showBeautifulDialog(this)
+        val bingAccount = RetrofitUtils.builder().bingAccount(account, pass)
+        accountBindObservable = bingAccount
+            .subscribeOn(Schedulers.io())
             .observeOn(AndroidSchedulers.mainThread())
             .subscribe({
-                DialogUtils.dismissLoading()
                 LogUtils.d("success=>${Gson().toJson(it)}")
+                DialogUtils.dismissLoading()
                 when (it.code) {
                     1 -> {
-                        SPUtils.putValue(SPArgument.IS_CHECK_AGREEMENT, true)
-                        SPUtils.putValue(SPArgument.LOGIN_TOKEN, it.data?.token)
-                        SPUtils.putValue(SPArgument.PHONE_NUMBER, it.data?.phone)
-                        SPUtils.putValue(SPArgument.LOGIN_ACCOUNT, it.data?.account)
-                        SPUtils.putValue(SPArgument.USER_ID, it.data?.user_id)
-                        SPUtils.putValue(SPArgument.IS_HAVE_ID, it.data?.id_card)
-                        if (it.data?.id_card == 1) {
-                            SPUtils.putValue(SPArgument.ID_NAME, it.data?.card_name)
-                            SPUtils.putValue(SPArgument.ID_NUM, it.data?.car_num)
-                        }
-
-                        // 是否有奖励积分可以弹框
-                        var isHaveRewardInteger = false
-                        if (it.data?.first_login == 1) {
-                            // 首次注册的推广统计
-                            if (BaseAppUpdateSetting.isToPromoteVersion) {
-                                PromoteUtils.promote(requireActivity())
-                            }
-                            // 首次注册且有奖励积分的
-                            if (it.data?.integral != null && it.data?.integral!! > 0) {
-                                isHaveRewardInteger = true
-                                DialogActivity.showGetIntegral(
-                                    requireActivity(),
-                                    it.data?.integral!!,
-                                    true,
-                                    null
-                                )
-                            }
-                        }
-
-                        EventBus.getDefault().postSticky(
-                            LoginStatusChange(
-                                true,
-                                it.data?.phone,
-                                it.data?.account,
-                                isHaveRewardInteger
-                            )
-                        )
-                        toFinishAllLogin()
+                        SPUtils.putValue(SPArgument.LOGIN_ACCOUNT, account)
+                        ToastUtils.show("账号绑定成功")
+                        finish()
+                    }
+                    -1 -> {
+                        ToastUtils.show(it.msg)
+                        ActivityManager.toSplashActivity(this)
                     }
                     else -> {
                         ToastUtils.show(it.msg)
@@ -436,23 +388,24 @@ class AccountSignFragment : Fragment() {
             }, {
                 DialogUtils.dismissLoading()
                 LogUtils.d("fail=>${it.message.toString()}")
-                ToastUtils.show(HttpExceptionUtils.getExceptionMsg(requireContext(), it))
+                ToastUtils.show(HttpExceptionUtils.getExceptionMsg(this, it))
             })
     }
 
-    /**
-     * 关闭所有登录相关
-     */
-    private fun toFinishAllLogin() {
-        LoginActivity.getInstance()?.finish()
-        requireActivity().finish()
+    override fun onResume() {
+        super.onResume()
+        MobclickAgent.onResume(this)
     }
 
-    override fun onDestroy() {
-        super.onDestroy()
+    override fun onPause() {
+        super.onPause()
+        MobclickAgent.onPause(this)
+    }
+
+    override fun destroy() {
         checkAccountObservable?.dispose()
         checkAccountObservable = null
-        accountSignObservable?.dispose()
-        accountSignObservable = null
+        accountBindObservable?.dispose()
+        accountBindObservable = null
     }
 }

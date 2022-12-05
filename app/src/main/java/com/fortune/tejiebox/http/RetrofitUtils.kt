@@ -410,7 +410,7 @@ object RetrofitUtils {
             @Field("type", encoded = true) type: Int,
             @Field("image_width", encoded = true) image_width: Int?,
             @Field("image_height", encoded = true) image_height: Int?,
-        ): Flowable<BaseBean>
+        ): Flowable<SendMsgBean>
 
         /**
          * 获取客服回复消息

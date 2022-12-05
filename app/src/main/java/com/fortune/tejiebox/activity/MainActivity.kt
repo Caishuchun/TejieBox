@@ -571,7 +571,7 @@ class MainActivity : BaseActivity() {
                                     if (data.type == 1) data.content else null,
                                     if (data.type == 2) data.content else null,
                                     data.img_width, data.img_height,
-                                    System.currentTimeMillis(),
+                                    data.create_stamp,
                                     0
                                 )
                                 customerServiceInfoDao.addInfo(customerServiceInfo)

@@ -47,7 +47,7 @@
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="绑定手机"
+            android:text="手机号"
             android:textColor="#0A0422"
             android:textSize="@dimen/sp_16" />
 
@@ -79,7 +79,7 @@
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="绑定账号"
+            android:text="账号"
             android:textColor="#0A0422"
             android:textSize="@dimen/sp_16" />
 

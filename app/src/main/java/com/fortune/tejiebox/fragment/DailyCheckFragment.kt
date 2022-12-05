@@ -1,6 +1,7 @@
 package com.fortune.tejiebox.fragment
 
 import android.annotation.SuppressLint
+import android.content.Intent
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -9,6 +10,7 @@ import android.view.animation.ScaleAnimation
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.StaggeredGridLayoutManager
 import com.fortune.tejiebox.R
+import com.fortune.tejiebox.activity.AccountSafeActivity
 import com.fortune.tejiebox.activity.DialogActivity
 import com.fortune.tejiebox.activity.GiftActivity
 import com.fortune.tejiebox.adapter.BaseAdapterWithPosition
@@ -193,7 +195,28 @@ class DailyCheckFragment : Fragment() {
 //                                }
 //                            })
                         if (itemData.status == 0 && position == canClickPosition && !isTodayGet) {
-                            toAddExperienceAndIntegral(itemData.num!!, itemView)
+                            val phone = SPUtils.getString(SPArgument.PHONE_NUMBER, null)
+                            if (phone.isNullOrBlank()) {
+                                DialogUtils.showDefaultDialog(
+                                    requireContext(),
+                                    "未绑定手机号",
+                                    "需要绑定手机号才能领取奖励",
+                                    "暂不绑定",
+                                    "立即绑定",
+                                    object : DialogUtils.OnDialogListener {
+                                        override fun next() {
+                                            startActivity(
+                                                Intent(
+                                                    requireContext(),
+                                                    AccountSafeActivity::class.java
+                                                )
+                                            )
+                                        }
+                                    }
+                                )
+                            } else {
+                                toAddExperienceAndIntegral(itemData.num!!, itemView)
+                            }
                         }
                     }
             }

@@ -1,42 +1,56 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@mipmap/bg_login"
-    android:orientation="vertical">
+    android:background="@mipmap/bg_all"
+    android:orientation="vertical"
+    tools:context=".activity.AccountSafeActivity">
 
-    <ImageView
-        android:id="@+id/iv_account_sign_back"
-        android:layout_width="@dimen/dp_32"
-        android:layout_height="@dimen/dp_32"
-        android:layout_marginStart="@dimen/dp_42"
-        android:layout_marginTop="@dimen/dp_48"
-        android:src="@mipmap/login_back" />
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/dp_30" />
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/dp_48">
+
+        <ImageView
+            android:id="@+id/iv_accountBind_back"
+            android:layout_width="@dimen/dp_48"
+            android:layout_height="@dimen/dp_48"
+            android:layout_centerVertical="true"
+            android:padding="@dimen/dp_10"
+            android:src="@mipmap/back_black" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerInParent="true"
+            android:text="账号绑定"
+            android:textColor="#0A0422"
+            android:textSize="@dimen/sp_18"
+            android:textStyle="bold" />
+    </RelativeLayout>
 
     <TextView
-        android:layout_width="wrap_content"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_gravity="center_horizontal"
-        android:layout_marginTop="@dimen/dp_24"
-        android:text="欢迎注册使用"
-        android:textColor="#0E0631"
-        android:textSize="@dimen/sp_18"
-        android:textStyle="bold" />
-
-    <ImageView
-        android:id="@+id/iv_account_sign_title"
-        android:layout_width="@dimen/dp_173"
-        android:layout_height="@dimen/dp_46"
-        android:layout_gravity="center_horizontal"
-        android:layout_marginTop="@dimen/dp_10"
-        android:src="@mipmap/app_title" />
+        android:background="#40F7F7F7"
+        android:paddingStart="@dimen/dp_16"
+        android:paddingTop="@dimen/dp_13"
+        android:paddingEnd="@dimen/dp_16"
+        android:paddingBottom="@dimen/dp_13"
+        android:text="绑定账号密码,下次登录使用账号密码进行登录"
+        android:textColor="#67656F"
+        android:textSize="@dimen/sp_12" />
 
     <TextView
-        android:id="@+id/tv_account_sign_account_tips"
+        android:id="@+id/tv_accountBind_account_tips"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="@dimen/dp_32"
-        android:layout_marginTop="@dimen/dp_79"
+        android:layout_marginTop="@dimen/dp_20"
         android:layout_marginEnd="@dimen/dp_32"
         android:text="√ 你说什么都是对的"
         android:textColor="@color/green_2EC8AC"
@@ -45,14 +59,14 @@
         android:visibility="invisible" />
 
     <EditText
-        android:id="@+id/et_account_sign_account"
+        android:id="@+id/et_accountBind_account"
         android:layout_width="match_parent"
         android:layout_height="@dimen/dp_48"
         android:layout_marginStart="@dimen/dp_32"
         android:layout_marginEnd="@dimen/dp_32"
         android:background="@drawable/bg_phone_enter"
         android:digits="0123456789abcdefghigklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ"
-        android:hint="请输入注册账号"
+        android:hint="请输入绑定账号"
         android:inputType="textVisiblePassword"
         android:maxLength="20"
         android:maxLines="1"
@@ -62,7 +76,7 @@
         android:textSize="@dimen/sp_16" />
 
     <TextView
-        android:id="@+id/tv_account_sign_pass_tips"
+        android:id="@+id/tv_accountBind_pass_tips"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="@dimen/dp_32"
@@ -83,13 +97,13 @@
         android:orientation="horizontal">
 
         <EditText
-            android:id="@+id/et_account_sign_pass"
+            android:id="@+id/et_accountBind_pass"
             android:layout_width="0dp"
             android:layout_height="match_parent"
             android:layout_weight="1"
             android:background="@null"
             android:digits="0123456789abcdefghigklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ"
-            android:hint="请输入注册密码"
+            android:hint="请输入绑定密码"
             android:inputType="textPassword"
             android:maxLength="20"
             android:maxLines="1"
@@ -99,7 +113,7 @@
             android:textSize="@dimen/sp_16" />
 
         <ImageView
-            android:id="@+id/iv_account_sign_pass"
+            android:id="@+id/iv_accountBind_pass"
             android:layout_width="@dimen/dp_48"
             android:layout_height="@dimen/dp_48"
             android:padding="@dimen/dp_12"
@@ -107,7 +121,7 @@
     </LinearLayout>
 
     <TextView
-        android:id="@+id/tv_account_sign_rePass_tips"
+        android:id="@+id/tv_accountBind_rePass_tips"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="@dimen/dp_32"
@@ -128,13 +142,13 @@
         android:orientation="horizontal">
 
         <EditText
-            android:id="@+id/et_account_sign_rePass"
+            android:id="@+id/et_accountBind_rePass"
             android:layout_width="0dp"
             android:layout_height="match_parent"
             android:layout_weight="1"
             android:background="@null"
             android:digits="0123456789abcdefghigklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ"
-            android:hint="请输入注册密码"
+            android:hint="请输入绑定密码"
             android:inputType="textPassword"
             android:maxLength="20"
             android:maxLines="1"
@@ -144,7 +158,7 @@
             android:textSize="@dimen/sp_16" />
 
         <ImageView
-            android:id="@+id/iv_account_sign_rePass"
+            android:id="@+id/iv_accountBind_rePass"
             android:layout_width="@dimen/dp_48"
             android:layout_height="@dimen/dp_48"
             android:padding="@dimen/dp_12"
@@ -152,17 +166,16 @@
     </LinearLayout>
 
     <TextView
-        android:id="@+id/tv_account_sign_login"
+        android:id="@+id/tv_accountBind_bind"
         android:layout_width="match_parent"
         android:layout_height="@dimen/dp_48"
         android:layout_marginStart="@dimen/dp_32"
-        android:layout_marginTop="@dimen/dp_24"
+        android:layout_marginTop="@dimen/dp_90"
         android:layout_marginEnd="@dimen/dp_32"
         android:background="@drawable/bg_btn"
         android:clickable="false"
         android:gravity="center"
-        android:text="注册"
+        android:text="绑定账号"
         android:textColor="@color/white_FFFFFF"
         android:textSize="@dimen/sp_16" />
-
 </LinearLayout>
