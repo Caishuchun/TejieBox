@@ -39,6 +39,7 @@ object LoginUtils {
      */
     @SuppressLint("CheckResult")
     fun init(activity: Activity) {
+        val isAgree = SPUtils.getBoolean(SPArgument.IS_CHECK_AGREEMENT, false)
         isInit = true
         helper?.clearPreInfo()
         val mTokenResultListener = object : TokenResultListener {
@@ -114,7 +115,7 @@ object LoginUtils {
                 .setCheckboxHidden(false)
                 .setCheckBoxWidth(px2dp(activity, 24f))
                 .setCheckBoxHeight(px2dp(activity, 24f))
-                .setPrivacyState(!BaseAppUpdateSetting.isToPromoteVersion)
+                .setPrivacyState(isAgree || !BaseAppUpdateSetting.isToPromoteVersion)
                 .setCheckedImgDrawable(activity.getDrawable(R.drawable.checked))
                 .setUncheckedImgDrawable(activity.getDrawable(R.drawable.uncheck))
                 .setVendorPrivacyPrefix("《")

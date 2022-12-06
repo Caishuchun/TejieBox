@@ -27,7 +27,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_centerInParent="true"
-            android:text="账号绑定"
+            android:text="添加账号"
             android:textColor="#0A0422"
             android:textSize="@dimen/sp_18"
             android:textStyle="bold" />
@@ -41,7 +41,7 @@
         android:paddingTop="@dimen/dp_13"
         android:paddingEnd="@dimen/dp_16"
         android:paddingBottom="@dimen/dp_13"
-        android:text="绑定账号密码,下次登录使用账号密码进行登录"
+        android:text="添加账号密码,下次登录使用账号密码进行登录"
         android:textColor="#67656F"
         android:textSize="@dimen/sp_12" />
 
@@ -66,7 +66,7 @@
         android:layout_marginEnd="@dimen/dp_32"
         android:background="@drawable/bg_phone_enter"
         android:digits="0123456789abcdefghigklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ"
-        android:hint="请输入绑定账号"
+        android:hint="请输入账号"
         android:inputType="textVisiblePassword"
         android:maxLength="20"
         android:maxLines="1"
@@ -103,7 +103,7 @@
             android:layout_weight="1"
             android:background="@null"
             android:digits="0123456789abcdefghigklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ"
-            android:hint="请输入绑定密码"
+            android:hint="请输入密码"
             android:inputType="textPassword"
             android:maxLength="20"
             android:maxLines="1"
@@ -134,6 +134,7 @@
         android:visibility="invisible" />
 
     <LinearLayout
+        android:id="@+id/ll_accountBind_rePass"
         android:layout_width="match_parent"
         android:layout_height="@dimen/dp_48"
         android:layout_marginStart="@dimen/dp_32"
@@ -148,7 +149,7 @@
             android:layout_weight="1"
             android:background="@null"
             android:digits="0123456789abcdefghigklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ"
-            android:hint="请输入绑定密码"
+            android:hint="请输入密码"
             android:inputType="textPassword"
             android:maxLength="20"
             android:maxLines="1"
@@ -175,7 +176,7 @@
         android:background="@drawable/bg_btn"
         android:clickable="false"
         android:gravity="center"
-        android:text="绑定账号"
+        android:text="添加账号"
         android:textColor="@color/white_FFFFFF"
         android:textSize="@dimen/sp_16" />
 </LinearLayout>

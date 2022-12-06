@@ -7,6 +7,7 @@ import android.view.animation.LinearInterpolator
 import androidx.fragment.app.Fragment
 import com.fortune.tejiebox.R
 import com.fortune.tejiebox.base.BaseActivity
+import com.fortune.tejiebox.base.BaseAppUpdateSetting
 import com.fortune.tejiebox.constants.SPArgument
 import com.fortune.tejiebox.event.GiftShowPoint
 import com.fortune.tejiebox.event.GiftShowState
@@ -80,7 +81,11 @@ class GiftActivity : BaseActivity() {
                 when (it.code) {
                     1 -> {
                         SPUtils.putValue(SPArgument.INTEGRAL, it.data.integral)
-                        tv_gift_integral.text = "${it.data.integral / 10}元"
+                        if (BaseAppUpdateSetting.isToAuditVersion) {
+                            tv_gift_integral.text = it.data.integral.toString()
+                        } else {
+                            tv_gift_integral.text = "${it.data.integral / 10}元"
+                        }
                         EventBus.getDefault().postSticky(IntegralChange(it.data.integral))
                     }
                     -1 -> {
@@ -100,6 +105,11 @@ class GiftActivity : BaseActivity() {
 
     @SuppressLint("CheckResult", "SetTextI18n")
     private fun initView() {
+        if (BaseAppUpdateSetting.isToAuditVersion) {
+            tv_gift_title.text = "特戒积分"
+            tv_gift_integralTitle.text = "我的积分:"
+        }
+
         supportFragmentManager.beginTransaction()
             .add(R.id.fl_gift, dailyCheckFragment!!)
             .add(R.id.fl_gift, whitePiaoFragment!!)
@@ -120,7 +130,7 @@ class GiftActivity : BaseActivity() {
             }
         })
 
-        tv_gift_tips.text = "进入任一游戏详情页 --> 点击\"免费充值\" --> 选择区服角色 --> 选择充值金额 --> 点击\"确认充值\" --> 充值成功"
+        tv_gift_tips.text = "进入任一游戏详情页 --> 点击\"免费充值\" --> 选择区服角色 --> 选择充值额度 --> 点击\"确认充值\" --> 充值成功"
     }
 
     private fun toChangeFragment(index: Int) {
@@ -169,7 +179,11 @@ class GiftActivity : BaseActivity() {
             return
         }
         if (integralChange.integral > 0) {
-            val oldIntegral = tv_gift_integral.text.toString().trim().replace("元", "").toInt() * 10
+            val oldIntegral = if (BaseAppUpdateSetting.isToAuditVersion) {
+                tv_gift_integral.text.toString().trim().toInt()
+            } else {
+                tv_gift_integral.text.toString().trim().replace("元", "").toInt() * 10
+            }
             val newIntegral = integralChange.integral
             SPUtils.putValue(SPArgument.INTEGRAL, newIntegral)
             if (oldIntegral == newIntegral) {
@@ -179,7 +193,11 @@ class GiftActivity : BaseActivity() {
             animator.duration = 500
             animator.interpolator = LinearInterpolator()
             animator.addUpdateListener {
-                tv_gift_integral.text = "${animator.animatedValue.toString().toInt() / 10}元"
+                if (BaseAppUpdateSetting.isToAuditVersion) {
+                    tv_gift_integral.text = "${animator.animatedValue.toString().toInt()}"
+                } else {
+                    tv_gift_integral.text = "${animator.animatedValue.toString().toInt() / 10}元"
+                }
             }
             animator.start()
         }

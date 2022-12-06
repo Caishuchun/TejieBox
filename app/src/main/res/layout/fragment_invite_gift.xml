@@ -96,7 +96,7 @@
         android:layout_gravity="center_horizontal"
         android:layout_marginBottom="@dimen/dp_20"
         android:gravity="center"
-        android:text="每日仅首次邀请用户成功可获得 10元"
+        android:text="每日仅首次邀请用户成功可获得邀请奖励"
         android:textColor="@color/black_000000"
         android:textSize="@dimen/sp_10" />
 

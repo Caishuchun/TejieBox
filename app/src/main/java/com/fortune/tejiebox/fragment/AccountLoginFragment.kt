@@ -49,7 +49,8 @@ class AccountLoginFragment : Fragment() {
     }
 
     private fun initView() {
-        if (!BaseAppUpdateSetting.isToPromoteVersion) {
+        val isAgree = SPUtils.getBoolean(SPArgument.IS_CHECK_AGREEMENT, false)
+        if (isAgree || !BaseAppUpdateSetting.isToPromoteVersion) {
             mView?.cb_account_login?.isChecked = true
         }
 
@@ -118,6 +119,7 @@ class AccountLoginFragment : Fragment() {
                             object : DialogUtils.OnDialogListener {
                                 override fun next() {
                                     mView?.cb_account_login?.isChecked = true
+                                    toCheckLogin()
                                 }
                             }
                         )
@@ -180,6 +182,7 @@ class AccountLoginFragment : Fragment() {
         SPUtils.putValue(SPArgument.LOGIN_TOKEN, null)
         SPUtils.putValue(SPArgument.PHONE_NUMBER, null)
         SPUtils.putValue(SPArgument.LOGIN_ACCOUNT, null)
+        SPUtils.putValue(SPArgument.LOGIN_ACCOUNT_PASS, null)
         SPUtils.putValue(SPArgument.USER_ID, null)
         SPUtils.putValue(SPArgument.IS_HAVE_ID, 0)
         SPUtils.putValue(SPArgument.ID_NAME, null)
@@ -197,6 +200,7 @@ class AccountLoginFragment : Fragment() {
                         SPUtils.putValue(SPArgument.LOGIN_TOKEN, it.data?.token)
                         SPUtils.putValue(SPArgument.PHONE_NUMBER, it.data?.phone)
                         SPUtils.putValue(SPArgument.LOGIN_ACCOUNT, it.data?.account)
+                        SPUtils.putValue(SPArgument.LOGIN_ACCOUNT_PASS, pass)
                         SPUtils.putValue(SPArgument.USER_ID, it.data?.user_id)
                         SPUtils.putValue(SPArgument.IS_HAVE_ID, it.data?.id_card)
                         if (it.data?.id_card == 1) {

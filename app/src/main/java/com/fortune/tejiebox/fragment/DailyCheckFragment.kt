@@ -14,6 +14,7 @@ import com.fortune.tejiebox.activity.AccountSafeActivity
 import com.fortune.tejiebox.activity.DialogActivity
 import com.fortune.tejiebox.activity.GiftActivity
 import com.fortune.tejiebox.adapter.BaseAdapterWithPosition
+import com.fortune.tejiebox.base.BaseAppUpdateSetting
 import com.fortune.tejiebox.bean.DailyCheckListBean
 import com.fortune.tejiebox.bean.RedPointBean
 import com.fortune.tejiebox.constants.SPArgument
@@ -162,14 +163,20 @@ class DailyCheckFragment : Fragment() {
                     else R.drawable.bg_daily_checked
                 )
 
-                itemView.tv_item_dailyCheck_title.text =
-                    if (itemData.status != 0) if (position == canClickPosition - 1) "今日已白嫖" else "已白嫖" else "第${position + 1}天"
+                if (BaseAppUpdateSetting.isToAuditVersion) {
+                    itemView.tv_item_dailyCheck_title.text =
+                        if (itemData.status != 0) if (position == canClickPosition - 1) "今日已领取" else "已领取" else "第${position + 1}天"
+                } else {
+                    itemView.tv_item_dailyCheck_title.text =
+                        if (itemData.status != 0) if (position == canClickPosition - 1) "今日已白嫖" else "已白嫖" else "第${position + 1}天"
+                }
 
                 itemView.iv_item_dailyCheck_type.setImageResource(
                     if (itemData.status == 0) R.mipmap.money else R.mipmap.money_ed
                 )
-                itemView.tv_item_dailyCheck_num.text = "+${itemData.num?.div(10)}元"
-
+                itemView.tv_item_dailyCheck_num.text =
+                    if (BaseAppUpdateSetting.isToAuditVersion) "+${itemData.num}"
+                    else "+${itemData.num?.div(10)}元"
                 itemView.tv_item_dailyCheck_num.setTextColor(
                     if (itemData.status == 0) resources.getColor(R.color.orange_FF9C00)
                     else resources.getColor(R.color.gray_C4C4C4)
@@ -177,8 +184,8 @@ class DailyCheckFragment : Fragment() {
 
                 if (position == canClickPosition && !isTodayGet) {
                     //今天的没有领取的话,就开始布灵布灵的
-//                if (position == 11) {
-                    itemView.tv_item_dailyCheck_title.text = "今日可白嫖"
+                    itemView.tv_item_dailyCheck_title.text =
+                        if (BaseAppUpdateSetting.isToAuditVersion) "今日可领取" else "今日可白嫖"
                     itemView.iv_item_dailyCheck_type.startAnimation(scaleAnimation)
                     itemView.rl_item_dailyCheck_bg.setBackgroundResource(R.drawable.bg_daily_checking)
                 }
@@ -186,14 +193,6 @@ class DailyCheckFragment : Fragment() {
                 RxView.clicks(itemView.rootView)
                     .throttleFirst(200, TimeUnit.MILLISECONDS)
                     .subscribe {
-//                        DialogActivity.showGetIntegral(
-//                            requireContext(),
-//                            50,
-//                            true,
-//                            object : DialogActivity.OnCallback {
-//                                override fun cancel() {
-//                                }
-//                            })
                         if (itemData.status == 0 && position == canClickPosition && !isTodayGet) {
                             val phone = SPUtils.getString(SPArgument.PHONE_NUMBER, null)
                             if (phone.isNullOrBlank()) {
@@ -244,7 +243,9 @@ class DailyCheckFragment : Fragment() {
                         1 -> {
                             itemView.iv_item_dailyCheck_type.clearAnimation()
                             itemView.setBackgroundResource(R.drawable.bg_daily_checked)
-                            itemView.tv_item_dailyCheck_title.text = "今日已白嫖"
+                            itemView.tv_item_dailyCheck_title.text =
+                                if (BaseAppUpdateSetting.isToAuditVersion) "今日已领取"
+                                else "今日已白嫖"
                             itemView.tv_item_dailyCheck_num.setTextColor(resources.getColor(R.color.gray_C4C4C4))
                             itemView.iv_item_dailyCheck_type.setImageResource(R.mipmap.money_ed)
 

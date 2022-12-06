@@ -45,22 +45,33 @@ class AccountBindActivity : BaseActivity() {
 
     @SuppressLint("CheckResult", "SetTextI18n")
     private fun initView() {
-        iv_accountBind_back?.let {
-            RxView.clicks(it)
-                .throttleFirst(200, TimeUnit.MILLISECONDS)
-                .subscribe {
-                    Login4AccountActivity.getInstance()?.switchFragment(0)
-                }
+        RxView.clicks(iv_accountBind_back)
+            .throttleFirst(200, TimeUnit.MILLISECONDS)
+            .subscribe {
+                finish()
+            }
+
+        val account = SPUtils.getString(SPArgument.LOGIN_ACCOUNT, null)
+        val pass = SPUtils.getString(SPArgument.LOGIN_ACCOUNT_PASS, null)
+        if (!account.isNullOrBlank() && !pass.isNullOrBlank()) {
+            ll_accountBind_rePass.visibility = View.GONE
+            tv_accountBind_bind.visibility = View.GONE
+            et_accountBind_account.isEnabled = false
+            et_accountBind_account.setText(account)
+            et_accountBind_account.setTextColor(resources.getColor(R.color.gray_C4C4C4))
+            et_accountBind_pass.isEnabled = false
+            et_accountBind_pass.setText(pass)
+            et_accountBind_pass.setTextColor(resources.getColor(R.color.gray_C4C4C4))
         }
 
         et_accountBind_account?.let { et ->
-            RxTextView.textChanges(et)
+            RxTextView.textChanges(et_accountBind_account)
                 .skipInitialValue()
                 .subscribe {
                     if (it.length > 16) {
                         tv_accountBind_account_tips?.let { tv ->
                             tv.visibility = View.VISIBLE
-                            tv.text = "* 绑定账号不得超过16位字符"
+                            tv.text = "* 账号不得超过16位字符"
                             tv.setTextColor(resources.getColor(R.color.red_F03D3D))
                         }
                     } else {
@@ -74,14 +85,14 @@ class AccountBindActivity : BaseActivity() {
                             et.text.length < 8 -> {
                                 tv_accountBind_account_tips?.let { tv ->
                                     tv.visibility = View.VISIBLE
-                                    tv.text = "* 绑定账号不得少于8位字符"
+                                    tv.text = "* 账号不得少于8位字符"
                                     tv.setTextColor(resources.getColor(R.color.red_F03D3D))
                                 }
                             }
                             !checkAccountIsOk(et.text.toString()) -> {
                                 tv_accountBind_account_tips?.let { tv ->
                                     tv.visibility = View.VISIBLE
-                                    tv.text = "* 绑定账号过于简单,需8-16位数字加字母组合"
+                                    tv.text = "* 账号过于简单,需8-16位数字加字母组合"
                                     tv.setTextColor(resources.getColor(R.color.red_F03D3D))
                                 }
                             }
@@ -91,7 +102,7 @@ class AccountBindActivity : BaseActivity() {
                             et.text.length > 16 -> {
                                 tv_accountBind_account_tips?.let { tv ->
                                     tv.visibility = View.VISIBLE
-                                    tv.text = "* 绑定账号不得超过16位字符"
+                                    tv.text = "* 账号不得超过16位字符"
                                     tv.setTextColor(resources.getColor(R.color.red_F03D3D))
                                 }
                             }
@@ -102,41 +113,19 @@ class AccountBindActivity : BaseActivity() {
         }
 
         et_accountBind_pass?.let { et ->
-            RxTextView.textChanges(et)
-                .skipInitialValue()
-                .subscribe {
-                    when {
-                        it.length in 8..16 -> {
-                            tv_accountBind_pass_tips?.let { tv ->
-                                tv.visibility = View.VISIBLE
-                                tv.text = "√ 密码可用"
-                                tv.setTextColor(resources.getColor(R.color.green_2EC8AC))
-                            }
-                        }
-                        it.length > 16 -> {
-                            tv_accountBind_pass_tips?.let { tv ->
-                                tv.visibility = View.VISIBLE
-                                tv.text = "* 密码不得超过16位字符"
-                                tv.setTextColor(resources.getColor(R.color.red_F03D3D))
-                            }
-                        }
-                        else -> {
-                            tv_accountBind_pass_tips?.visibility = View.INVISIBLE
-                        }
-                    }
-                }
-            et.setOnFocusChangeListener { v, hasFocus ->
-                if (et.text.isNotEmpty()) {
-                    if (!hasFocus) {
+            if (account.isNullOrBlank() || pass.isNullOrBlank()) {
+                RxTextView.textChanges(et)
+                    .skipInitialValue()
+                    .subscribe {
                         when {
-                            et.text.length < 8 -> {
+                            it.length in 8..16 -> {
                                 tv_accountBind_pass_tips?.let { tv ->
                                     tv.visibility = View.VISIBLE
-                                    tv.text = "* 密码不得少于8位字符"
-                                    tv.setTextColor(resources.getColor(R.color.red_F03D3D))
+                                    tv.text = "√ 密码可用"
+                                    tv.setTextColor(resources.getColor(R.color.green_2EC8AC))
                                 }
                             }
-                            et.text.length > 16 -> {
+                            it.length > 16 -> {
                                 tv_accountBind_pass_tips?.let { tv ->
                                     tv.visibility = View.VISIBLE
                                     tv.text = "* 密码不得超过16位字符"
@@ -144,10 +133,34 @@ class AccountBindActivity : BaseActivity() {
                                 }
                             }
                             else -> {
-                                tv_accountBind_pass_tips?.let { tv ->
-                                    tv.visibility = View.VISIBLE
-                                    tv.text = "√ 密码可用"
-                                    tv.setTextColor(resources.getColor(R.color.green_2EC8AC))
+                                tv_accountBind_pass_tips?.visibility = View.INVISIBLE
+                            }
+                        }
+                    }
+                et.setOnFocusChangeListener { v, hasFocus ->
+                    if (et.text.isNotEmpty()) {
+                        if (!hasFocus) {
+                            when {
+                                et.text.length < 8 -> {
+                                    tv_accountBind_pass_tips?.let { tv ->
+                                        tv.visibility = View.VISIBLE
+                                        tv.text = "* 密码不得少于8位字符"
+                                        tv.setTextColor(resources.getColor(R.color.red_F03D3D))
+                                    }
+                                }
+                                et.text.length > 16 -> {
+                                    tv_accountBind_pass_tips?.let { tv ->
+                                        tv.visibility = View.VISIBLE
+                                        tv.text = "* 密码不得超过16位字符"
+                                        tv.setTextColor(resources.getColor(R.color.red_F03D3D))
+                                    }
+                                }
+                                else -> {
+                                    tv_accountBind_pass_tips?.let { tv ->
+                                        tv.visibility = View.VISIBLE
+                                        tv.text = "√ 密码可用"
+                                        tv.setTextColor(resources.getColor(R.color.green_2EC8AC))
+                                    }
                                 }
                             }
                         }
@@ -289,9 +302,17 @@ class AccountBindActivity : BaseActivity() {
         val digits4Number = "0123456789"
         val digits4Letter = "abcdefghigklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ"
         //纯数字,纯字母都不行
-        val regex = "^(?![0-9]+\$)(?![a-zA-Z]+\$)[0-9A-Za-z]{8,10}\$".toRegex()
-        val matches = regex.matches(account)
-        if (!matches) {
+        var isHaveNumber = false
+        var isHaveLetter = false
+        for (char in account) {
+            if (char in digits4Number) {
+                isHaveNumber = true
+            }
+            if (char in digits4Letter) {
+                isHaveLetter = true
+            }
+        }
+        if (!isHaveNumber || !isHaveLetter) {
             return false
         }
         if (account[0] in digits4Letter) {
@@ -355,12 +376,12 @@ class AccountBindActivity : BaseActivity() {
         if (accountIsOk && passIsOk && rePassIsOk) {
             toBind(account, pass)
         } else {
-            ToastUtils.show("请检查账号密码是否合规后再进行绑定!")
+            ToastUtils.show("请检查账号密码是否合规后再进行!")
         }
     }
 
     /**
-     * 绑定账号
+     * 账号
      */
     private fun toBind(account: String, pass: String) {
         DialogUtils.showBeautifulDialog(this)
@@ -374,7 +395,8 @@ class AccountBindActivity : BaseActivity() {
                 when (it.code) {
                     1 -> {
                         SPUtils.putValue(SPArgument.LOGIN_ACCOUNT, account)
-                        ToastUtils.show("账号绑定成功")
+                        SPUtils.putValue(SPArgument.LOGIN_ACCOUNT_PASS, pass)
+                        ToastUtils.show("账号成功")
                         finish()
                     }
                     -1 -> {

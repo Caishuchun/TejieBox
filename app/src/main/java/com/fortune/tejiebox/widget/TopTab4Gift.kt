@@ -9,6 +9,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.widget.LinearLayout
 import com.fortune.tejiebox.R
+import com.fortune.tejiebox.base.BaseAppUpdateSetting
 import com.fortune.tejiebox.listener.OnBottomBarItemSelectListener
 import com.jakewharton.rxbinding2.view.RxView
 import kotlinx.android.synthetic.main.layout_top_tab_gift.view.*
@@ -62,6 +63,11 @@ class TopTab4Gift(context: Context, attrs: AttributeSet) : LinearLayout(context,
     init {
         //获取布局文件
         mView = LayoutInflater.from(context).inflate(R.layout.layout_top_tab_gift, this, true)
+
+        if (BaseAppUpdateSetting.isToAuditVersion) {
+            mView.tv_top_dailyCheck.text = "每日福利"
+            mView.tv_top_whitePiao.text = "限时福利"
+        }
 
         RxView.clicks(mView.rl_top_dailyCheck)
             .throttleFirst(200, TimeUnit.MILLISECONDS)

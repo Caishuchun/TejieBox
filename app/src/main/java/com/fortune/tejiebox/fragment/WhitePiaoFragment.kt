@@ -12,6 +12,7 @@ import com.fortune.tejiebox.activity.AccountSafeActivity
 import com.fortune.tejiebox.activity.DialogActivity
 import com.fortune.tejiebox.activity.GiftActivity
 import com.fortune.tejiebox.adapter.BaseAdapterWithPosition
+import com.fortune.tejiebox.base.BaseAppUpdateSetting
 import com.fortune.tejiebox.bean.RedPointBean
 import com.fortune.tejiebox.bean.WhitePiaoListBean
 import com.fortune.tejiebox.constants.SPArgument
@@ -158,8 +159,9 @@ class WhitePiaoFragment : Fragment() {
                         "$time  ${resources.getString(R.string.overdue)}"
                 }
 
-                itemView.tv_white_piao_integral.text = "+${itemData.integral?.div(10)}元"
-
+                itemView.tv_white_piao_integral.text =
+                    if (BaseAppUpdateSetting.isToAuditVersion) "+${itemData.integral}"
+                    else "+${itemData.integral?.div(10)}元"
                 when (itemData.id) {
                     1 -> {
                         when (itemData.status) {
@@ -315,14 +317,6 @@ class WhitePiaoFragment : Fragment() {
                 RxView.clicks(itemView.rootView)
                     .throttleFirst(200, TimeUnit.MILLISECONDS)
                     .subscribe {
-//                        DialogActivity.showGetIntegral(
-//                            requireContext(),
-//                            50,
-//                            true,
-//                            object : DialogActivity.OnCallback {
-//                                override fun cancel() {
-//                                }
-//                            })
                         if (itemData.status == 1 && canClick) {
                             val phone = SPUtils.getString(SPArgument.PHONE_NUMBER, null)
                             if (phone.isNullOrBlank()) {

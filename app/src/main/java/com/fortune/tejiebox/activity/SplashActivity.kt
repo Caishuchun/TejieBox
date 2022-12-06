@@ -21,6 +21,7 @@ import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.Disposable
 import io.reactivex.schedulers.Schedulers
 import kotlinx.android.synthetic.main.activity_splash.*
+import kotlinx.android.synthetic.main.fragment_account_login.view.*
 import me.weyye.hipermission.HiPermission
 import me.weyye.hipermission.PermissionCallback
 import me.weyye.hipermission.PermissionItem
@@ -53,7 +54,27 @@ class SplashActivity : BaseActivity() {
         toSetSplashBg()
 
         toDeleteGameApk()
-        getPermission(0)
+        toAgreeAgreement()
+    }
+
+    /**
+     * 先去同意协议再说
+     */
+    private fun toAgreeAgreement() {
+        val isAgree = SPUtils.getBoolean(SPArgument.IS_CHECK_AGREEMENT, false)
+        if (!isAgree && BaseAppUpdateSetting.isToAuditVersion) {
+            DialogUtils.showAgreementDialog(
+                this,
+                object : DialogUtils.OnDialogListener {
+                    override fun next() {
+                        SPUtils.putValue(SPArgument.IS_CHECK_AGREEMENT, true)
+                        getPermission(0)
+                    }
+                }
+            )
+        } else {
+            getPermission(0)
+        }
     }
 
     /**

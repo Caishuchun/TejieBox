@@ -194,7 +194,11 @@ class MineFragment : Fragment() {
             RxView.clicks(it)
                 .throttleFirst(200, TimeUnit.MILLISECONDS)
                 .subscribe {
-                    startActivity(Intent(requireContext(), CustomerServiceActivity::class.java))
+                    if (MyApp.getInstance().isHaveToken()) {
+                        startActivity(Intent(requireContext(), CustomerServiceActivity::class.java))
+                    } else {
+                        LoginUtils.toQuickLogin(requireActivity())
+                    }
                 }
         }
     }

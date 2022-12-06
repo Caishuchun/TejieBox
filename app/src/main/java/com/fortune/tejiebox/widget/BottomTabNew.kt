@@ -11,6 +11,7 @@ import android.widget.LinearLayout
 import com.fortune.tejiebox.R
 import com.fortune.tejiebox.activity.GiftActivity
 import com.fortune.tejiebox.activity.MainActivity
+import com.fortune.tejiebox.base.BaseAppUpdateSetting
 import com.fortune.tejiebox.listener.OnBottomBarItemSelectListener
 import com.fortune.tejiebox.myapp.MyApp
 import com.fortune.tejiebox.utils.FlipAnimUtils
@@ -85,6 +86,11 @@ class BottomTabNew(context: Context, attrs: AttributeSet) : LinearLayout(context
     init {
         //获取布局文件
         mView = LayoutInflater.from(context).inflate(R.layout.layout_bottom_tab_new, this, true)
+
+        if (BaseAppUpdateSetting.isToAuditVersion) {
+            mView.iv_bottomTab_whitePiao.setImageResource(R.mipmap.white_piao_audit)
+        }
+
         RxView.clicks(mView.rl_bottomTab_home)
             .throttleFirst(20, TimeUnit.MILLISECONDS)
             .subscribe {

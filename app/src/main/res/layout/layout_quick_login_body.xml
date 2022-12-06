@@ -35,7 +35,7 @@
 
         <View
             android:layout_width="0dp"
-            android:layout_height="@dimen/dp_170" />
+            android:layout_height="@dimen/dp_200" />
 
         <LinearLayout
             android:layout_width="@dimen/dp_250"

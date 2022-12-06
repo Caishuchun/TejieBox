@@ -135,7 +135,8 @@ object DialogUtils {
         mDialog?.setCancelable(true)
         mDialog?.setCanceledOnTouchOutside(true)
 
-        val ssb = SpannableStringBuilder("我已阅读并同意《用户协议》和《隐私协议》")
+        val ssb =
+            SpannableStringBuilder("欢迎使用特戒!\n我们非常重视您的个人信息和隐私协议保护。为了更好地保障您的个人权益, 在使用我们的服务前, 请务必打开链接并审慎阅读《用户协议》和《隐私协议》")
         ssb.setSpan(object : ClickableSpan() {
             override fun onClick(widget: View) {
                 val intent = Intent(context, WebActivity::class.java)
@@ -149,7 +150,7 @@ object DialogUtils {
                 ds.isUnderlineText = false
             }
 
-        }, 7, 13, 0)
+        }, 66, 72, 0)
         ssb.setSpan(object : ClickableSpan() {
             override fun onClick(widget: View) {
                 val intent = Intent(context, WebActivity::class.java)
@@ -162,7 +163,7 @@ object DialogUtils {
                 ds.color = Color.parseColor("#5F60FF")
                 ds.isUnderlineText = false
             }
-        }, 14, ssb.length, 0)
+        }, 73, ssb.length, 0)
 
         mDialog?.tv_dialog_agreement_content?.let {
             it.movementMethod = LinkMovementMethod.getInstance()

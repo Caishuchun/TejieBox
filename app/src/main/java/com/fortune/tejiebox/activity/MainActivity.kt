@@ -319,6 +319,9 @@ class MainActivity : BaseActivity() {
         tab_main.setOnItemListener(object : OnBottomBarItemSelectListener {
             override fun setOnItemSelectListener(index: Int) {
                 toChangeFragment(index)
+                if (MyApp.getInstance().isHaveToken()) {
+                    toGetCustomerServiceInfo()
+                }
             }
         })
 

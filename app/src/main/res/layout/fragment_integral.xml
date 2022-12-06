@@ -195,7 +195,7 @@
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="选择充值金额"
+                        android:text="选择充值额度"
                         android:textColor="#0A0422"
                         android:textSize="@dimen/sp_14" />
 
@@ -234,7 +234,7 @@
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="使用余额"
+                    android:text="使用说明"
                     android:textColor="#0A0422"
                     android:textSize="@dimen/sp_14" />
 

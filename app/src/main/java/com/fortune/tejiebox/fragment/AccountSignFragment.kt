@@ -299,9 +299,17 @@ class AccountSignFragment : Fragment() {
         val digits4Number = "0123456789"
         val digits4Letter = "abcdefghigklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ"
         //纯数字,纯字母都不行
-        val regex = "^(?![0-9]+\$)(?![a-zA-Z]+\$)[0-9A-Za-z]{8,10}\$".toRegex()
-        val matches = regex.matches(account)
-        if (!matches) {
+        var isHaveNumber = false
+        var isHaveLetter = false
+        for (char in account) {
+            if (char in digits4Number) {
+                isHaveNumber = true
+            }
+            if (char in digits4Letter) {
+                isHaveLetter = true
+            }
+        }
+        if (!isHaveNumber || !isHaveLetter) {
             return false
         }
         if (account[0] in digits4Letter) {
@@ -376,6 +384,7 @@ class AccountSignFragment : Fragment() {
         SPUtils.putValue(SPArgument.LOGIN_TOKEN, null)
         SPUtils.putValue(SPArgument.PHONE_NUMBER, null)
         SPUtils.putValue(SPArgument.LOGIN_ACCOUNT, null)
+        SPUtils.putValue(SPArgument.LOGIN_ACCOUNT_PASS, null)
         SPUtils.putValue(SPArgument.USER_ID, null)
         SPUtils.putValue(SPArgument.IS_HAVE_ID, 0)
         SPUtils.putValue(SPArgument.ID_NAME, null)
@@ -393,6 +402,7 @@ class AccountSignFragment : Fragment() {
                         SPUtils.putValue(SPArgument.LOGIN_TOKEN, it.data?.token)
                         SPUtils.putValue(SPArgument.PHONE_NUMBER, it.data?.phone)
                         SPUtils.putValue(SPArgument.LOGIN_ACCOUNT, it.data?.account)
+                        SPUtils.putValue(SPArgument.LOGIN_ACCOUNT_PASS, pass)
                         SPUtils.putValue(SPArgument.USER_ID, it.data?.user_id)
                         SPUtils.putValue(SPArgument.IS_HAVE_ID, it.data?.id_card)
                         if (it.data?.id_card == 1) {

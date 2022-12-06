@@ -79,9 +79,21 @@ object SPUtils {
      */
     fun clear() {
         val isLogined = getBoolean(SPArgument.IS_LOGIN_ED, false)
+        val account = getString(SPArgument.LOGIN_ACCOUNT, null)
+        val pass = getString(SPArgument.LOGIN_ACCOUNT_PASS, null)
+        val isAgree = getBoolean(SPArgument.IS_CHECK_AGREEMENT, false)
         sp.edit().clear().apply()
         if (isLogined) {
             putValue(SPArgument.IS_LOGIN_ED, true)
+        }
+        if (!account.isNullOrBlank()) {
+            putValue(SPArgument.LOGIN_ACCOUNT, account)
+        }
+        if (!pass.isNullOrBlank()) {
+            putValue(SPArgument.LOGIN_ACCOUNT_PASS, pass)
+        }
+        if (isAgree) {
+            putValue(SPArgument.IS_CHECK_AGREEMENT, true)
         }
     }
 

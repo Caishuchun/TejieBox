@@ -7,7 +7,6 @@
     android:orientation="vertical"
     tools:context=".activity.AccountSafeActivity">
 
-
     <View
         android:layout_width="match_parent"
         android:layout_height="@dimen/dp_30" />
@@ -89,7 +88,7 @@
             android:layout_height="wrap_content"
             android:layout_weight="1"
             android:gravity="end"
-            android:text="未绑定"
+            android:text="未添加"
             android:textSize="@dimen/sp_12" />
 
         <ImageView

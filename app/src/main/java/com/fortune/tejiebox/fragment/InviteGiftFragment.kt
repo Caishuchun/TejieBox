@@ -97,7 +97,9 @@ class InviteGiftFragment : Fragment() {
                             if (it.getData() != null) {
                                 shareReward = it.getData()?.share_reward!!
                                 inviteReward = it.getData()?.invite_reward!!
-                                mView?.tv_inviteGift_inviteMoney?.text = "+${inviteReward / 10}元"
+                                mView?.tv_inviteGift_inviteMoney?.text =
+                                    if (BaseAppUpdateSetting.isToAuditVersion) "+$inviteReward"
+                                    else "+${inviteReward / 10}元"
                                 if (it.getData()?.list != null) {
                                     mData.clear()
                                     for (data in it.getData()!!.list!!) {
@@ -198,7 +200,9 @@ class InviteGiftFragment : Fragment() {
                     }
                 )
                 itemView.tv_item_gift_name.text = "成功邀请${itemData.user?.user_phone ?: "特戒用户"}获得"
-                itemView.tv_item_gift_integral.text = "+${inviteReward / 10}元"
+                itemView.tv_item_gift_integral.text =
+                    if (BaseAppUpdateSetting.isToAuditVersion) "+$inviteReward"
+                    else "+${inviteReward / 10}元"
                 when (itemData.receive) {
                     0 -> {
                         //没有领取

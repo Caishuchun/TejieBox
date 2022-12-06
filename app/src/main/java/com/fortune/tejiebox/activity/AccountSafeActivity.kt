@@ -42,13 +42,6 @@ class AccountSafeActivity : BaseActivity() {
         if (phone.isNullOrBlank()) {
             tv_accountSafe_phone.text = "未绑定"
             tv_accountSafe_phone.setTextColor(Color.parseColor("#FF982E"))
-            RxView.clicks(ll_accountSafe_phone)
-                .throttleFirst(200, TimeUnit.MILLISECONDS)
-                .subscribe {
-                    val intent = Intent(this, ChangePhone1Activity::class.java)
-                    intent.putExtra(ChangePhone1Activity.IS_BIND, true)
-                    startActivity(intent)
-                }
         } else {
             tv_accountSafe_phone.text = "${phone.substring(0, 3)}****${phone.substring(7)}"
             tv_accountSafe_phone.setTextColor(Color.parseColor("#5F60FF"))
@@ -56,22 +49,35 @@ class AccountSafeActivity : BaseActivity() {
 
         val account = SPUtils.getString(SPArgument.LOGIN_ACCOUNT, null)
         if (account.isNullOrBlank()) {
-            tv_accountSafe_account.text = "未绑定"
+            tv_accountSafe_account.text = "未添加"
             tv_accountSafe_account.setTextColor(Color.parseColor("#FF982E"))
-            RxView.clicks(ll_accountSafe_account)
-                .throttleFirst(200, TimeUnit.MILLISECONDS)
-                .subscribe {
-                    startActivity(Intent(this, AccountBindActivity::class.java))
-                }
         } else {
             tv_accountSafe_account.text = "${account.substring(0, 3)}****${account.substring(7)}"
             tv_accountSafe_account.setTextColor(Color.parseColor("#5F60FF"))
         }
 
+        RxView.clicks(ll_accountSafe_phone)
+            .throttleFirst(200, TimeUnit.MILLISECONDS)
+            .subscribe {
+                val phone4Current = SPUtils.getString(SPArgument.PHONE_NUMBER, null)
+                if (phone4Current.isNullOrBlank()) {
+                    val intent = Intent(this, ChangePhone1Activity::class.java)
+                    intent.putExtra(ChangePhone1Activity.IS_BIND, true)
+                    startActivity(intent)
+                }
+            }
+
+        RxView.clicks(ll_accountSafe_account)
+            .throttleFirst(200, TimeUnit.MILLISECONDS)
+            .subscribe {
+                startActivity(Intent(this, AccountBindActivity::class.java))
+            }
+
         RxView.clicks(ll_accountSafe_changePhone)
             .throttleFirst(200, TimeUnit.MILLISECONDS)
             .subscribe {
-                if (phone.isNullOrBlank()) {
+                val phone4Current = SPUtils.getString(SPArgument.PHONE_NUMBER, null)
+                if (phone4Current.isNullOrBlank()) {
                     ToastUtils.show("暂未绑定手机号,无法修改...")
                 } else {
                     startActivity(Intent(this, ChangePhone1Activity::class.java))
@@ -93,7 +99,7 @@ class AccountSafeActivity : BaseActivity() {
         }
         val account = SPUtils.getString(SPArgument.LOGIN_ACCOUNT, null)
         if (account.isNullOrBlank()) {
-            tv_accountSafe_account.text = "未绑定"
+            tv_accountSafe_account.text = "未添加"
             tv_accountSafe_account.setTextColor(Color.parseColor("#FF982E"))
         } else {
             tv_accountSafe_account.text = "${account.substring(0, 3)}****${account.substring(7)}"

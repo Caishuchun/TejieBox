@@ -14,6 +14,7 @@ import com.fortune.tejiebox.R
 import com.fortune.tejiebox.activity.DialogActivity
 import com.fortune.tejiebox.activity.IntegralActivity
 import com.fortune.tejiebox.adapter.BaseAdapterWithPosition
+import com.fortune.tejiebox.base.BaseAppUpdateSetting
 import com.fortune.tejiebox.bean.RechargeListBean
 import com.fortune.tejiebox.bean.RoleListBean
 import com.fortune.tejiebox.constants.SPArgument
@@ -103,7 +104,11 @@ class IntegralFragment : Fragment() {
                     when (it.code) {
                         1 -> {
                             mView?.tv_integralFragment_currentIntegral?.let { tv ->
-                                tv.text = "剩余余额: ${it.data.integral / 10}元"
+                                tv.text = if (BaseAppUpdateSetting.isToAuditVersion) {
+                                    "剩余积分: ${it.data.integral}"
+                                } else {
+                                    "剩余余额: ${it.data.integral / 10}元"
+                                }
                             }
                             SPUtils.putValue(SPArgument.INTEGRAL, it.data.integral)
                         }
@@ -168,7 +173,9 @@ class IntegralFragment : Fragment() {
                             mSelectRecharge = itemData
                             mAdapter?.notifyDataSetChanged()
                             mView?.tv_integralFragment_tips?.let {
-                                it.text = "使用特戒余额充值${itemData.money}元"
+                                it.text =
+                                    if (BaseAppUpdateSetting.isToAuditVersion) "使用${itemData.money.toInt() * 10}积分兑换${itemData.money}充值"
+                                    else "使用特戒余额充值${itemData.money}元"
                             }
                         }
                     }
@@ -184,7 +191,7 @@ class IntegralFragment : Fragment() {
                 .throttleFirst(200, TimeUnit.MILLISECONDS)
                 .subscribe {
                     if (mSelectRecharge == null || mSelectRole == null) {
-                        ToastUtils.show("请选择区服角色和充值金额!")
+                        ToastUtils.show("请选择区服角色和充值额度!")
                     } else {
                         val currentIntegral = SPUtils.getInt(SPArgument.INTEGRAL, 0)
                         val needIntegral = mSelectRecharge!!.money.toInt() * 10
@@ -192,7 +199,8 @@ class IntegralFragment : Fragment() {
                             DialogActivity.showRechargeResult(
                                 requireActivity(),
                                 false,
-                                "余额不足"
+                                if (BaseAppUpdateSetting.isToAuditVersion) "剩余积分不足"
+                                else "余额不足"
                             )
                         } else {
                             val playerId = mSelectRole!!.roleId
@@ -239,16 +247,26 @@ class IntegralFragment : Fragment() {
                             DialogActivity.showRechargeResult(
                                 requireActivity(),
                                 true,
-                                "成功使用特戒余额充值${rechargeMoney}元"
+                                if (BaseAppUpdateSetting.isToAuditVersion) "成功使用特戒积分兑换${rechargeMoney}充值"
+                                else "成功使用特戒余额充值${rechargeMoney}元"
                             )
 
                             mView?.tv_integralFragment_currentIntegral?.let { tv ->
                                 val currentIntegral =
-                                    tv.text.toString().trim()
-                                        .replace("剩余余额: ", "").replace("元", "")
-                                        .toInt() * 10
+                                    if (BaseAppUpdateSetting.isToAuditVersion) {
+                                        tv.text.toString().trim()
+                                            .replace("剩余积分: ", "").toInt()
+                                    } else {
+                                        tv.text.toString().trim()
+                                            .replace("剩余余额: ", "").replace("元", "")
+                                            .toInt() * 10
+                                    }
                                 val residue = currentIntegral - rechargeMoney * 10
-                                tv.text = "剩余余额: ${residue / 10}元"
+                                tv.text = if (BaseAppUpdateSetting.isToAuditVersion) {
+                                    "剩余余额: ${residue / 10}元"
+                                } else {
+                                    "剩余积分: $residue"
+                                }
                                 SPUtils.putValue(SPArgument.INTEGRAL, residue)
                             }
                         }
@@ -307,7 +325,8 @@ class IntegralFragment : Fragment() {
             mSelectPosition = -1
             mSelectRecharge = null
             mView?.tv_integralFragment_tips?.let {
-                it.text = "使用特戒余额免费充值"
+                it.text = if (BaseAppUpdateSetting.isToAuditVersion) "使用特戒积分免费充值"
+                else "使用特戒余额免费充值"
             }
             mSelectRole = role
             toGetGameRechargeList(role)

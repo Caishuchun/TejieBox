@@ -7,6 +7,7 @@ import android.text.Html
 import android.view.View
 import com.fortune.tejiebox.R
 import com.fortune.tejiebox.base.BaseActivity
+import com.fortune.tejiebox.base.BaseAppUpdateSetting
 import com.fortune.tejiebox.event.LoginStatusChange
 import com.fortune.tejiebox.http.RetrofitUtils
 import com.fortune.tejiebox.myapp.MyApp
@@ -281,7 +282,9 @@ class DialogActivity : BaseActivity() {
             .throttleFirst(200, TimeUnit.MILLISECONDS)
             .subscribe { }
 
-        tv_integral_integral.text = "余额 +${integral / 10}元"
+        tv_integral_integral.text =
+            if (BaseAppUpdateSetting.isToAuditVersion) "积分 +$integral"
+            else "余额 +${integral / 10}元"
         iv_dialog_color.postDelayed({
             val explosionField = ExplosionField.attach2Window(this)
             explosionField.explode(iv_dialog_color)
