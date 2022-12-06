@@ -1,7 +1,7 @@
 ## 特戒盒子
 
 ### 提交github 
-1. git config http.sslVerify "false"
+1. git config http.sslVerify "false" 
 2. git config --global http.proxy 127.0.0.1:7890
 3. git config --global https.proxy 127.0.0.1:7890
 
