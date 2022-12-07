@@ -2,9 +2,14 @@ package com.fortune.tejiebox.activity
 
 import android.annotation.SuppressLint
 import android.content.Intent
+import android.graphics.drawable.Drawable
 import android.view.View
 import android.widget.LinearLayout
 import com.bumptech.glide.Glide
+import com.bumptech.glide.load.engine.DiskCacheStrategy
+import com.bumptech.glide.request.RequestOptions
+import com.bumptech.glide.request.target.SimpleTarget
+import com.bumptech.glide.request.transition.Transition
 import com.fortune.tejiebox.GlideEngine
 import com.fortune.tejiebox.R
 import com.fortune.tejiebox.adapter.BaseAdapterWithPosition4CustomerService
@@ -18,6 +23,7 @@ import com.fortune.tejiebox.room.CustomerServiceInfoDao
 import com.fortune.tejiebox.room.CustomerServiceInfoDataBase
 import com.fortune.tejiebox.utils.*
 import com.fortune.tejiebox.widget.SafeLinearLayoutManager
+import com.google.gson.Gson
 import com.jakewharton.rxbinding2.view.RxView
 import com.jakewharton.rxbinding2.widget.RxTextView
 import com.luck.picture.lib.basic.PictureSelector
@@ -134,6 +140,7 @@ class CustomerServiceActivity : BaseActivity() {
             }
             EventBus.getDefault().postSticky(ShowNumChange(0))
         }
+        LogUtils.d(Gson().toJson(mData))
 
         mAdapter = BaseAdapterWithPosition4CustomerService.Builder<CustomerServiceInfo>()
             .setLayoutId(R.layout.item_customer_service)
@@ -167,9 +174,21 @@ class CustomerServiceActivity : BaseActivity() {
                                 formatImgSize(itemData.imgW.toInt(), itemData.imgH.toInt())[1]
                             itemView.rl_item_customerService_left_img.layoutParams = layoutParams
 
+                            val options =
+                                RequestOptions().diskCacheStrategy(DiskCacheStrategy.ALL)
                             Glide.with(this)
                                 .load(itemData.chat_img_url)
-                                .into(itemView.iv_item_customerService_left_img)
+                                .apply(options)
+                                .into(object : SimpleTarget<Drawable>() {
+                                    override fun onResourceReady(
+                                        resource: Drawable,
+                                        transition: Transition<in Drawable>?
+                                    ) {
+                                        itemView.iv_item_customerService_left_img.setImageDrawable(
+                                            resource
+                                        )
+                                    }
+                                })
 
                             itemView.tv_item_customerService_left_img_time.text =
                                 formatChatTime(itemData.chat_time)
@@ -214,38 +233,23 @@ class CustomerServiceActivity : BaseActivity() {
                                 formatImgSize(itemData.imgW.toInt(), itemData.imgH.toInt())[1]
                             itemView.rl_item_customerService_right_img.layoutParams = layoutParams
 
+                            val options =
+                                RequestOptions().diskCacheStrategy(DiskCacheStrategy.ALL)
                             Glide.with(this)
                                 .load(itemData.chat_img_url)
-                                .into(itemView.iv_item_customerService_right_img)
+                                .apply(options)
+                                .into(object : SimpleTarget<Drawable>() {
+                                    override fun onResourceReady(
+                                        resource: Drawable,
+                                        transition: Transition<in Drawable>?
+                                    ) {
+                                        itemView.iv_item_customerService_right_img.setImageDrawable(
+                                            resource
+                                        )
+                                    }
+                                })
                             itemView.tv_item_customerService_right_img_time.text =
                                 formatChatTime(itemData.chat_time)
-
-                            if (payloads.isNotEmpty()) {
-                                LogUtils.d("==========$payloads")
-                                if ((payloads[payloads.size - 1] as Int) < 100) {
-                                    itemView.progress_item_customerService_right_img.visibility =
-                                        View.VISIBLE
-                                    val layoutParams4Progress =
-                                        itemView.progress_item_customerService_right_img.layoutParams
-                                    layoutParams4Progress.width = layoutParams.width
-                                    layoutParams4Progress.height = layoutParams.height
-                                    itemView.progress_item_customerService_right_img.layoutParams =
-                                        layoutParams4Progress
-
-                                    itemView.progress_item_customerService_right_img.setBaseSizeNum(
-                                        PhoneInfoUtils.getWidth(this) / 360f
-                                    )
-                                    itemView.progress_item_customerService_right_img.setProgress(
-                                        payloads[payloads.size - 1] as Int
-                                    )
-                                } else {
-                                    itemView.progress_item_customerService_right_img.visibility =
-                                        View.GONE
-                                }
-                            } else {
-                                itemView.progress_item_customerService_right_img.visibility =
-                                    View.GONE
-                            }
 
                             RxView.clicks(itemView.rootView)
                                 .throttleFirst(200, TimeUnit.MILLISECONDS)
@@ -459,12 +463,14 @@ class CustomerServiceActivity : BaseActivity() {
                             )
                         }
                         else -> {
+                            mAdapter?.notifyItemRemoved(mData.size - 1)
                             ToastUtils.show("发送图片异常,请稍后重试! ")
                         }
                     }
                     picIndex++
                     toSendPic(result)
                 }, {
+                    mAdapter?.notifyItemRemoved(mData.size - 1)
                     ToastUtils.show(it.message)
                 })
         } else {
@@ -518,10 +524,16 @@ class CustomerServiceActivity : BaseActivity() {
         if (width >= height) {
             //宽图,高度80,宽度自适应
             imgHeight = (80 * (screenWidth.toFloat() / 360)).toInt()
+            if (imgHeight > height) {
+                imgHeight = height
+            }
             imgWidth = (width * (imgHeight.toFloat() / height)).toInt()
         } else {
             //长图,宽度80,高度自适应
             imgWidth = (80 * (screenWidth.toFloat() / 360)).toInt()
+            if (imgWidth > width) {
+                imgWidth = width
+            }
             imgHeight = (height * (imgWidth.toFloat()) / width).toInt()
         }
         return intArrayOf(imgWidth, imgHeight)

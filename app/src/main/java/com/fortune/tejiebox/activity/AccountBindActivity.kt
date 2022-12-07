@@ -277,7 +277,7 @@ class AccountBindActivity : BaseActivity() {
                     1 -> {
                         tv_accountBind_account_tips?.let { tv ->
                             tv.visibility = View.VISIBLE
-                            tv.text = "√ 注册账号未被使用,可注册"
+                            tv.text = "√ 账号未被使用,可注册"
                             tv.setTextColor(resources.getColor(R.color.green_2EC8AC))
                         }
                     }

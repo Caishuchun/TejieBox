@@ -270,7 +270,7 @@ class ChangePhone2Activity : BaseActivity() {
     private fun sendCode() {
         DialogUtils.showBeautifulDialog(this)
         val sendCode4changePhone =
-            if (isBind) RetrofitUtils.builder().sendCode(currentPhone)
+            if (isBind) RetrofitUtils.builder().sendCode(currentPhone, 1)
             else RetrofitUtils.builder().sendCode4changePhone(currentPhone)
         sendCodeObservable = sendCode4changePhone
             .subscribeOn(Schedulers.io())

@@ -54,6 +54,13 @@ class AccountLoginFragment : Fragment() {
             mView?.cb_account_login?.isChecked = true
         }
 
+        val account = SPUtils.getString(SPArgument.LOGIN_ACCOUNT, null)
+        val pass = SPUtils.getString(SPArgument.LOGIN_ACCOUNT_PASS, null)
+        if (!account.isNullOrBlank() && !pass.isNullOrBlank()) {
+            mView?.et_account_login_account?.setText(account)
+            mView?.et_account_login_pass?.setText(pass)
+        }
+
         mView?.iv_account_login_back?.let {
             RxView.clicks(it)
                 .throttleFirst(200, TimeUnit.MILLISECONDS)

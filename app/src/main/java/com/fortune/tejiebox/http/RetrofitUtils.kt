@@ -100,7 +100,8 @@ object RetrofitUtils {
         @FormUrlEncoded
         @POST(HttpUrls.SEND_CODE)
         fun sendCode(
-            @Field("phone", encoded = true) phone: String
+            @Field("phone", encoded = true) phone: String,
+            @Field("is_verify", encoded = true) is_verify: Int? = null,
         ): Flowable<BaseBean>
 
         /**

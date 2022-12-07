@@ -164,7 +164,8 @@
             <com.fortune.tejiebox.widget.UploadPicProgress
                 android:id="@+id/progress_item_customerService_right_img"
                 android:layout_width="wrap_content"
-                android:layout_height="wrap_content" />
+                android:layout_height="wrap_content"
+                android:visibility="gone" />
         </RelativeLayout>
 
         <com.fortune.tejiebox.widget.RoundImageView
