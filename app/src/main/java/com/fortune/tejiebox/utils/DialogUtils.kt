@@ -13,11 +13,15 @@ import android.view.WindowManager
 import android.widget.TextView
 import com.fortune.tejiebox.R
 import com.fortune.tejiebox.activity.WebActivity
+import com.fortune.tejiebox.base.BaseAppUpdateSetting
 import com.fortune.tejiebox.base.BaseDialog
+import com.jakewharton.rxbinding2.view.RxView
 import kotlinx.android.synthetic.main.dialog_beautiful.*
 import kotlinx.android.synthetic.main.dialog_loading.*
 import kotlinx.android.synthetic.main.layout_dialog_agreement.*
 import kotlinx.android.synthetic.main.layout_dialog_default.*
+import java.util.concurrent.TimeUnit
+import kotlin.system.exitProcess
 
 object DialogUtils {
     private var mDialog: BaseDialog? = null
@@ -134,6 +138,19 @@ object DialogUtils {
         mDialog?.setContentView(R.layout.layout_dialog_agreement)
         mDialog?.setCancelable(true)
         mDialog?.setCanceledOnTouchOutside(true)
+
+        if (BaseAppUpdateSetting.isToAuditVersion) {
+            mDialog?.tv_dialog_agreement_cancel?.visibility = View.VISIBLE
+            mDialog?.tv_dialog_agreement_cancel?.let {
+                RxView.clicks(it)
+                    .throttleFirst(200, TimeUnit.MILLISECONDS)
+                    .subscribe {
+                        exitProcess(0)
+                    }
+            }
+        } else {
+            mDialog?.tv_dialog_agreement_cancel?.visibility = View.GONE
+        }
 
         val ssb =
             SpannableStringBuilder("欢迎使用特戒!\n我们非常重视您的个人信息和隐私协议保护。为了更好地保障您的个人权益, 在使用我们的服务前, 请务必打开链接并审慎阅读《用户协议》和《隐私协议》")

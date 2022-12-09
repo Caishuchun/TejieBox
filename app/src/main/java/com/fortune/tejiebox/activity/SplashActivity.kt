@@ -49,7 +49,6 @@ class SplashActivity : BaseActivity() {
         StatusBarUtils.setTextDark(this, false)
         setTheme(R.style.NormalTheme)
         instance = this
-        LoginUtils.init(this)
 
         toSetSplashBg()
 
@@ -68,11 +67,13 @@ class SplashActivity : BaseActivity() {
                 object : DialogUtils.OnDialogListener {
                     override fun next() {
                         SPUtils.putValue(SPArgument.IS_CHECK_AGREEMENT, true)
+                        LoginUtils.init(this@SplashActivity)
                         getPermission(0)
                     }
                 }
             )
         } else {
+            LoginUtils.init(this)
             getPermission(0)
         }
     }

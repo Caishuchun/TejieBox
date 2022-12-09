@@ -778,6 +778,9 @@ class SearchGameActivity : BaseActivity() {
         if (str == "888888" || str == "免费礼包") {
             //通用礼包
             toGetGiftCode()
+        } else if (str.startsWith("99") && str.length == 6 && isDigit(str)) {
+            //99固定礼包
+            toGetGiftCode(str)
         } else if (str.startsWith("88") && str.length == 6 && isDigit(str)) {
             //特定礼包 88+游戏id
             toGetGiftCode(str)

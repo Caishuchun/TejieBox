@@ -20,6 +20,7 @@ import com.fortune.tejiebox.activity.GameDetailActivity
 import com.fortune.tejiebox.activity.SearchGameActivity
 import com.fortune.tejiebox.adapter.BaseAdapterWithPosition
 import com.fortune.tejiebox.bean.BaseGameListInfoBean
+import com.fortune.tejiebox.event.IsHaveNewPlayingGame
 import com.fortune.tejiebox.event.LikeDataChange
 import com.fortune.tejiebox.event.LoginStatusChange
 import com.fortune.tejiebox.event.PlayingDataChange
@@ -103,6 +104,10 @@ class GameFragment : Fragment() {
                 //如果是收藏界面和在玩界面
                 isShake = false
                 mAdapter?.notifyDataSetChanged()
+            }
+        } else {
+            if (type == 1) {
+                EventBus.getDefault().postSticky(IsHaveNewPlayingGame(false))
             }
         }
     }
@@ -566,6 +571,7 @@ class GameFragment : Fragment() {
         }
         if (type == 1) {
             getInfo(false)
+            EventBus.getDefault().postSticky(IsHaveNewPlayingGame(true))
         }
     }
 
@@ -612,7 +618,8 @@ class GameFragment : Fragment() {
         val addPlayingGame = RetrofitUtils.builder().addPlayingGame(gameId, 0)
         addPlayingGameObservable = addPlayingGame.subscribeOn(Schedulers.io())
             .observeOn(AndroidSchedulers.mainThread())
-            .subscribe({}, {})
+            .subscribe({
+            }, {})
     }
 
     override fun onDestroy() {

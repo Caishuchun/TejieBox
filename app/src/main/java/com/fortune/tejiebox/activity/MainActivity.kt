@@ -10,6 +10,8 @@ import android.net.Uri
 import android.os.*
 import android.provider.Settings
 import android.view.View
+import android.view.animation.AlphaAnimation
+import android.view.animation.Animation
 import androidx.annotation.RequiresApi
 import androidx.core.content.FileProvider
 import androidx.fragment.app.Fragment
@@ -159,6 +161,7 @@ class MainActivity : BaseActivity() {
         mainFragment = GameFragment.newInstance(0)
 
         initView()
+        isHaveNewPlayingGame(IsHaveNewPlayingGame(true))
 
         intentFilter = IntentFilter()
         intentFilter?.addAction(Intent.ACTION_TIME_TICK)
@@ -837,6 +840,32 @@ class MainActivity : BaseActivity() {
         exitProcess(0)
     }
 
+    /**
+     * 是否有新的在玩出现
+     */
+    @Subscribe(sticky = true, threadMode = ThreadMode.MAIN)
+    fun isHaveNewPlayingGame(isHaveNewPlayingGame: IsHaveNewPlayingGame) {
+        if (isHaveNewPlayingGame.isHaveNewPlayingGame) {
+            tv_main_tip.visibility = View.VISIBLE
+            val fadeOutAnimation = AlphaAnimation(1f, 0f)
+            fadeOutAnimation.duration = 2000
+            fadeOutAnimation.fillBefore = true
+            fadeOutAnimation.setAnimationListener(object : Animation.AnimationListener {
+                override fun onAnimationStart(animation: Animation?) {}
+
+                override fun onAnimationEnd(animation: Animation?) {
+                    tv_main_tip.postDelayed({
+                        tv_main_tip.startAnimation(fadeOutAnimation)
+                    }, 2000)
+                }
+
+                override fun onAnimationRepeat(animation: Animation?) {}
+            })
+            tv_main_tip.startAnimation(fadeOutAnimation)
+        } else {
+            tv_main_tip.visibility = View.GONE
+        }
+    }
 
     override fun onResume() {
         super.onResume()

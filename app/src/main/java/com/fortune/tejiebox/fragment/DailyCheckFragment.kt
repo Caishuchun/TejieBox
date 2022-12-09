@@ -165,10 +165,18 @@ class DailyCheckFragment : Fragment() {
 
                 if (BaseAppUpdateSetting.isToAuditVersion) {
                     itemView.tv_item_dailyCheck_title.text =
-                        if (itemData.status != 0) if (position == canClickPosition - 1) "今日已领取" else "已领取" else "第${position + 1}天"
+                        if (itemData.status != 0) {
+                            if (position == canClickPosition - 1) {
+                                if (!isTodayGet) "已领取" else "今日已领取"
+                            } else "已领取"
+                        } else "第${position + 1}天"
                 } else {
                     itemView.tv_item_dailyCheck_title.text =
-                        if (itemData.status != 0) if (position == canClickPosition - 1) "今日已白嫖" else "已白嫖" else "第${position + 1}天"
+                        if (itemData.status != 0) {
+                            if (position == canClickPosition - 1) {
+                                if (!isTodayGet) "已白嫖" else "今日已白嫖"
+                            } else "已白嫖"
+                        } else "第${position + 1}天"
                 }
 
                 itemView.iv_item_dailyCheck_type.setImageResource(

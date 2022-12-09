@@ -29,10 +29,10 @@ object BaseAppUpdateSetting {
      * 是否是推广版本
      * @suppress 记得修改string.xml中的应用名
      */
-    const val isToPromoteVersion = true
+    const val isToPromoteVersion = false
 
     /**
      * 是否是审核版本
      */
-    const val isToAuditVersion = true
+    const val isToAuditVersion = false
 }

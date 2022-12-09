@@ -19,6 +19,40 @@
             android:layout_height="@dimen/dp_45"
             android:layout_alignParentBottom="true" />
 
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_alignParentBottom="true"
+            android:orientation="horizontal">
+
+            <View
+                android:layout_width="0dp"
+                android:layout_height="0dp"
+                android:layout_weight="1" />
+
+            <TextView
+                android:id="@+id/tv_main_tip"
+                android:layout_width="0dp"
+                android:layout_height="@dimen/dp_79"
+                android:layout_marginBottom="@dimen/dp_36"
+                android:layout_weight="1"
+                android:background="@mipmap/tip"
+                android:gravity="clip_horizontal"
+                android:paddingStart="@dimen/dp_10"
+                android:paddingTop="@dimen/dp_15"
+                android:paddingEnd="@dimen/dp_10"
+                android:text="刚玩的游戏在这里"
+                android:textColor="@color/white_FFFFFF"
+                android:textSize="@dimen/dp_13"
+                android:textStyle="bold"
+                android:visibility="gone" />
+
+            <View
+                android:layout_width="0dp"
+                android:layout_height="0dp"
+                android:layout_weight="3" />
+        </LinearLayout>
+
     </RelativeLayout>
 
     <LinearLayout
