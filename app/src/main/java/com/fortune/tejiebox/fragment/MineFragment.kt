@@ -74,6 +74,7 @@ class MineFragment : Fragment() {
                 }
             } else {
                 it.text = "未登录"
+                it.setTextColor(Color.parseColor("#FF982E"))
             }
         }
 
@@ -229,6 +230,7 @@ class MineFragment : Fragment() {
                 }
             } else {
                 it.text = "未登录"
+                it.setTextColor(Color.parseColor("#FF982E"))
             }
         }
         mView?.tv_mineFragment_idCardMsg?.let {
@@ -317,6 +319,7 @@ class MineFragment : Fragment() {
                     }
                 } else {
                     it.text = "未登录"
+                    it.setTextColor(Color.parseColor("#FF982E"))
                 }
             }
         }
@@ -344,6 +347,7 @@ class MineFragment : Fragment() {
                 }
             } else {
                 it.text = "未登录"
+                it.setTextColor(Color.parseColor("#FF982E"))
             }
         }
     }

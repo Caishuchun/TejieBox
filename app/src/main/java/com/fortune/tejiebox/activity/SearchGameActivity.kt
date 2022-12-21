@@ -28,9 +28,11 @@ import com.jakewharton.rxbinding2.view.RxView
 import com.jakewharton.rxbinding2.widget.RxTextView
 import com.umeng.analytics.MobclickAgent
 import com.unity3d.player.JumpUtils
+import io.reactivex.Observable
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.Disposable
 import io.reactivex.schedulers.Schedulers
+import kotlinx.android.synthetic.main.activity_dialog.*
 import kotlinx.android.synthetic.main.activity_search_game.*
 import kotlinx.android.synthetic.main.item_main_frament_game.view.*
 import kotlinx.android.synthetic.main.layout_item_hot_search.view.*
@@ -662,7 +664,37 @@ class SearchGameActivity : BaseActivity() {
      * 获取游戏礼包
      */
     private fun toGetGiftCode(giftNum: String = "888888") {
-        DialogActivity.showGiftCode(this, giftNum)
+        if (!MyApp.getInstance().isHaveToken()) {
+            DialogActivity.showGiftCode(this, giftNum)
+        } else {
+            val getGiftCode = RetrofitUtils.builder().getGiftCode(giftNum)
+            getGiftCodeObservable = getGiftCode.subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe({
+                    DialogUtils.dismissLoading()
+                    LogUtils.d("success=>${Gson().toJson(it)}")
+                    if (it != null) {
+                        when (it.code) {
+                            1 -> {
+                                DialogActivity.showGiftCode(this, giftNum)
+                            }
+                            -1 -> {
+                                ToastUtils.show(it.msg)
+                                ActivityManager.toSplashActivity(this)
+                            }
+                            else -> {
+                                ToastUtils.show(it.msg)
+                            }
+                        }
+                    } else {
+                        ToastUtils.show(getString(R.string.network_fail_to_responseDate))
+                    }
+                }, {
+                    DialogUtils.dismissLoading()
+                    LogUtils.d("fail=>${it.message.toString()}")
+                    ToastUtils.show(HttpExceptionUtils.getExceptionMsg(this, it))
+                })
+        }
     }
 
     /**
@@ -778,7 +810,7 @@ class SearchGameActivity : BaseActivity() {
         if (str == "888888" || str == "免费礼包") {
             //通用礼包
             toGetGiftCode()
-        } else if (str.startsWith("99") && str.length == 6 && isDigit(str)) {
+        } else if (str.startsWith("9") && str.length == 6 && isDigit(str)) {
             //99固定礼包
             toGetGiftCode(str)
         } else if (str.startsWith("88") && str.length == 6 && isDigit(str)) {

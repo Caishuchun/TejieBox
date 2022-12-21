@@ -154,7 +154,6 @@ class DialogActivity : BaseActivity() {
                     isLogin = true
                     LoginUtils.toQuickLogin(this)
                 }
-
         } else {
             toGetGiftCode()
         }
@@ -177,20 +176,25 @@ class DialogActivity : BaseActivity() {
                             ll_dialog_giftCode_show.visibility = View.VISIBLE
                             tv_dialog_giftCode_login.visibility = View.GONE
                             tv_dialog_giftCode_code.text = it.data.code
-                            time = it.data.ttl
+                            if (giftNum.startsWith("9") && giftNum.length == 6) {
+                                tv_dialog_giftCode_time.visibility = View.GONE
+                            } else {
+                                tv_dialog_giftCode_time.visibility = View.VISIBLE
+                                time = it.data.ttl
 
-                            timer?.dispose()
-                            timer = Observable.interval(0L, 1L, TimeUnit.SECONDS)
-                                .subscribeOn(Schedulers.io())
-                                .observeOn(AndroidSchedulers.mainThread())
-                                .subscribe {
-                                    tv_dialog_giftCode_time.text = "${timeFormat()} 有效"
-                                    if (time <= 0L) {
-                                        //重新请求接口获取数据
-                                        timer?.dispose()
-                                        toGetGiftCode()
+                                timer?.dispose()
+                                timer = Observable.interval(0L, 1L, TimeUnit.SECONDS)
+                                    .subscribeOn(Schedulers.io())
+                                    .observeOn(AndroidSchedulers.mainThread())
+                                    .subscribe {
+                                        tv_dialog_giftCode_time.text = "${timeFormat()} 有效"
+                                        if (time <= 0L) {
+                                            //重新请求接口获取数据
+                                            timer?.dispose()
+                                            toGetGiftCode()
+                                        }
                                     }
-                                }
+                            }
                         }
                         -1 -> {
                             ToastUtils.show(it.msg)

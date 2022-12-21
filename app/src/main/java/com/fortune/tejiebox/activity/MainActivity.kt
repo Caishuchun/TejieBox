@@ -1,5 +1,8 @@
 package com.fortune.tejiebox.activity
 
+import android.animation.Animator
+import android.animation.AnimatorListenerAdapter
+import android.animation.ObjectAnimator
 import android.annotation.SuppressLint
 import android.app.*
 import android.content.BroadcastReceiver
@@ -10,9 +13,9 @@ import android.net.Uri
 import android.os.*
 import android.provider.Settings
 import android.view.View
-import android.view.animation.AlphaAnimation
-import android.view.animation.Animation
+import android.view.animation.*
 import androidx.annotation.RequiresApi
+import androidx.core.animation.addListener
 import androidx.core.content.FileProvider
 import androidx.fragment.app.Fragment
 import com.arialyy.aria.core.Aria
@@ -68,6 +71,7 @@ class MainActivity : BaseActivity() {
     private var splashUrlList = mutableListOf<String>()
     private var getSplashUrlObservable: Disposable? = null
     private var getReCustomerInfoObservable: Disposable? = null
+    private var textFontChangeObservable: Disposable? = null
 
     companion object {
         @SuppressLint("StaticFieldLeak")
@@ -161,7 +165,7 @@ class MainActivity : BaseActivity() {
         mainFragment = GameFragment.newInstance(0)
 
         initView()
-        isHaveNewPlayingGame(IsHaveNewPlayingGame(true))
+//        isHaveNewPlayingGame(IsHaveNewPlayingGame(true))
 
         intentFilter = IntentFilter()
         intentFilter?.addAction(Intent.ACTION_TIME_TICK)
@@ -713,6 +717,9 @@ class MainActivity : BaseActivity() {
 
         getReCustomerInfoObservable?.dispose()
         getReCustomerInfoObservable = null
+
+        textFontChangeObservable?.dispose()
+        textFontChangeObservable = null
     }
 
     override fun onTaskResume(task: DownloadTask?) {
@@ -844,27 +851,62 @@ class MainActivity : BaseActivity() {
      * 是否有新的在玩出现
      */
     @Subscribe(sticky = true, threadMode = ThreadMode.MAIN)
-    fun isHaveNewPlayingGame(isHaveNewPlayingGame: IsHaveNewPlayingGame) {
+    fun isHaveNewPlayingGame(isHaveNewPlayingGame: IsHaveNewPlayingGame) =
         if (isHaveNewPlayingGame.isHaveNewPlayingGame) {
             tv_main_tip.visibility = View.VISIBLE
-            val fadeOutAnimation = AlphaAnimation(1f, 0f)
-            fadeOutAnimation.duration = 2000
-            fadeOutAnimation.fillBefore = true
-            fadeOutAnimation.setAnimationListener(object : Animation.AnimationListener {
-                override fun onAnimationStart(animation: Animation?) {}
-
-                override fun onAnimationEnd(animation: Animation?) {
-                    tv_main_tip.postDelayed({
-                        tv_main_tip.startAnimation(fadeOutAnimation)
-                    }, 2000)
+            //组合动画
+            val animationSet = AnimationSet(true)
+            val alphaAnimation = AlphaAnimation(0f, 1f)
+            val scaleAnimation = ScaleAnimation(
+                0f, 1f, 0.1f, 1f,
+                Animation.RELATIVE_TO_SELF, 0.5f,
+                Animation.RELATIVE_TO_SELF, 1f
+            )
+            animationSet.addAnimation(alphaAnimation)
+            animationSet.addAnimation(scaleAnimation)
+            animationSet.duration = 2000
+            animationSet.interpolator = AccelerateDecelerateInterpolator()
+            animationSet.fillAfter = true
+            animationSet.setAnimationListener(object : Animation.AnimationListener {
+                override fun onAnimationStart(animation: Animation?) {
                 }
 
-                override fun onAnimationRepeat(animation: Animation?) {}
+                @SuppressLint("CheckResult")
+                override fun onAnimationEnd(animation: Animation?) {
+                    toSetText(animationSet)
+                }
+
+                override fun onAnimationRepeat(animation: Animation?) {
+                }
             })
-            tv_main_tip.startAnimation(fadeOutAnimation)
+            tv_main_tip.startAnimation(animationSet)
         } else {
             tv_main_tip.visibility = View.GONE
         }
+
+    /**
+     * 逐一显示文字, 突出明显性
+     */
+    @SuppressLint("CheckResult")
+    private fun toSetText(animationSet: AnimationSet) {
+        textFontChangeObservable?.dispose()
+        textFontChangeObservable = null
+        var currentIndex = -1
+        val textFont = "刚玩的游戏在这里"
+        textFontChangeObservable = Observable.interval(200, TimeUnit.MILLISECONDS)
+            .subscribeOn(Schedulers.io())
+            .observeOn(AndroidSchedulers.mainThread())
+            .subscribe {
+                currentIndex += 1
+                if (currentIndex > 0 && currentIndex <= textFont.length) {
+                    tv_main_tip.text = textFont.substring(0, currentIndex)
+                } else if (currentIndex == textFont.length * 3) {
+                    textFontChangeObservable?.dispose()
+                    textFontChangeObservable = null
+                    tv_main_tip.text = "点击这里查看在玩"
+                    tv_main_tip.startAnimation(animationSet)
+                }
+            }
     }
 
     override fun onResume() {

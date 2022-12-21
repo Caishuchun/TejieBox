@@ -20,7 +20,6 @@ import com.fortune.tejiebox.activity.GameDetailActivity
 import com.fortune.tejiebox.activity.SearchGameActivity
 import com.fortune.tejiebox.adapter.BaseAdapterWithPosition
 import com.fortune.tejiebox.bean.BaseGameListInfoBean
-import com.fortune.tejiebox.event.IsHaveNewPlayingGame
 import com.fortune.tejiebox.event.LikeDataChange
 import com.fortune.tejiebox.event.LoginStatusChange
 import com.fortune.tejiebox.event.PlayingDataChange
@@ -107,7 +106,7 @@ class GameFragment : Fragment() {
             }
         } else {
             if (type == 1) {
-                EventBus.getDefault().postSticky(IsHaveNewPlayingGame(false))
+//                EventBus.getDefault().postSticky(IsHaveNewPlayingGame(false))
             }
         }
     }
@@ -571,7 +570,7 @@ class GameFragment : Fragment() {
         }
         if (type == 1) {
             getInfo(false)
-            EventBus.getDefault().postSticky(IsHaveNewPlayingGame(true))
+//            EventBus.getDefault().postSticky(IsHaveNewPlayingGame(true))
         }
     }
 

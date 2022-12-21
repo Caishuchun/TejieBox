@@ -348,7 +348,7 @@ object RetrofitUtils {
         ): Flowable<BaseBean>
 
         /**
-         * 获取游戏充值基数
+         * 获取游戏礼包
          */
         @GET(HttpUrls.GET_GIFT_CODE)
         fun getGiftCode(
