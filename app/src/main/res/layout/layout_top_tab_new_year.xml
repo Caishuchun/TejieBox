@@ -1,0 +1,95 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="@dimen/dp_36"
+    android:orientation="horizontal">
+
+    <RelativeLayout
+        android:id="@+id/rl_newYear_whitePiao"
+        android:layout_width="0dp"
+        android:layout_height="match_parent"
+        android:layout_marginStart="@dimen/dp_20"
+        android:layout_weight="1"
+        android:background="@mipmap/bg_newyear_title_unselect">
+
+        <TextView
+            android:id="@+id/tv_newYear_whitePiao"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerHorizontal="true"
+            android:layout_marginTop="@dimen/dp_6"
+            android:text="每日都白嫖"
+            android:textColor="#fde9bc"
+            android:textSize="@dimen/sp_14" />
+
+        <View
+            android:id="@+id/view_newYear_whitePiao"
+            android:layout_width="@dimen/dp_6"
+            android:layout_height="@dimen/dp_6"
+            android:layout_alignParentEnd="true"
+            android:layout_marginTop="@dimen/dp_8"
+            android:layout_marginEnd="@dimen/dp_10"
+            android:background="@drawable/point_red"
+            android:visibility="gone" />
+    </RelativeLayout>
+
+    <RelativeLayout
+        android:id="@+id/rl_newYear_invite"
+        android:layout_width="0dp"
+        android:layout_height="match_parent"
+        android:layout_marginStart="@dimen/dp_20"
+        android:layout_marginEnd="@dimen/dp_20"
+        android:layout_weight="1"
+        android:background="@mipmap/bg_newyear_title_unselect">
+
+        <TextView
+            android:id="@+id/tv_newYear_invite"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerHorizontal="true"
+            android:layout_marginTop="@dimen/dp_6"
+            android:text="邀请发大财"
+            android:textColor="#fde9bc"
+            android:textSize="@dimen/sp_14" />
+
+        <View
+            android:id="@+id/view_newYear_invite"
+            android:layout_width="@dimen/dp_6"
+            android:layout_height="@dimen/dp_6"
+            android:layout_alignParentEnd="true"
+            android:layout_marginTop="@dimen/dp_8"
+            android:layout_marginEnd="@dimen/dp_10"
+            android:background="@drawable/point_red"
+            android:visibility="gone" />
+    </RelativeLayout>
+
+    <RelativeLayout
+        android:id="@+id/rl_newYear_nianShou"
+        android:layout_width="0dp"
+        android:layout_height="match_parent"
+        android:layout_marginEnd="@dimen/dp_20"
+        android:layout_weight="1"
+        android:background="@mipmap/bg_newyear_title_unselect">
+
+        <TextView
+            android:id="@+id/tv_newYear_nianShou"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerHorizontal="true"
+            android:layout_marginTop="@dimen/dp_6"
+            android:text="激情炸年兽"
+            android:textColor="#fde9bc"
+            android:textSize="@dimen/sp_14" />
+
+        <View
+            android:id="@+id/view_newYear_nianShou"
+            android:layout_width="@dimen/dp_6"
+            android:layout_height="@dimen/dp_6"
+            android:layout_alignParentEnd="true"
+            android:layout_marginTop="@dimen/dp_8"
+            android:layout_marginEnd="@dimen/dp_10"
+            android:background="@drawable/point_red"
+            android:visibility="gone" />
+    </RelativeLayout>
+
+</LinearLayout>

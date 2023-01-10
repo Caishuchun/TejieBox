@@ -22,13 +22,17 @@ object FlipAnimUtils {
      * @param scaleLarge 放大倍数
      * @param shakeDegrees 抖动角度
      * @param duration 动画时间
+     * @param interval 间隔时间
+     * @param isAlwaysShake 是否一直抖动
      */
     fun startShakeByPropertyAnim(
         view: View?,
         scaleSmall: Float,
         scaleLarge: Float,
         shakeDegrees: Float,
-        duration: Long
+        duration: Long,
+        interval: Long = 2000,
+        isAlwaysShake: Boolean = true
     ) {
         if (view == null) {
             return
@@ -76,11 +80,13 @@ object FlipAnimUtils {
             }
 
             override fun onAnimationEnd(animation: Animator?) {
-                mHandler.removeMessages(101)
-                val message = Message()
-                message.what = 101
-                message.obj = view
-                mHandler.sendMessageDelayed(message, 2000)
+                if (isAlwaysShake) {
+                    mHandler.removeMessages(101)
+                    val message = Message()
+                    message.what = 101
+                    message.obj = view
+                    mHandler.sendMessageDelayed(message, interval)
+                }
             }
 
             override fun onAnimationCancel(animation: Animator?) {

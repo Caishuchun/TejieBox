@@ -131,4 +131,28 @@ object HttpUrls {
 
     //获取客服消息
     const val GET_MSG = "/android/v2.chats/user"
+
+    //新年活动_白嫖详情
+    const val FREE_GIVE_NY = "/android/activity.newYear/freeGive"
+
+    //新年活动_领取白嫖
+    const val RECEIVE_FREE_GIVE_NY = "/android/activity.newYear/receiveFreeGive"
+
+    //新年活动_邀请详情
+    const val INVITE_NY = "/android/activity.newYear/invite"
+
+    //新年活动_邀请开箱子
+    const val OPEN_BOX_NY = "/android/activity.newYear/inviteOpenBox"
+
+    //新年活动_年兽详情页
+    const val NIAN_SHOU_INFO_NY = "/android/activity.newYear/monster"
+
+    //新年活动_打年兽
+    const val FIGHT_NIAN_SHOU_NY = "/android/activity.newYear/attack"
+
+    //新年活动_年兽开箱子
+    const val NIAN_SHOU_OPEN_BOX_NY = "/android/activity.newYear/monsterOpenBox"
+
+    //新年活动_能量星详情
+    const val NIAN_SHOU_STAR_INFO_NY = "/android/activity.newYear/getStar"
 }

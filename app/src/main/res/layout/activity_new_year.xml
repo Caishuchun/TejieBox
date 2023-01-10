@@ -1,0 +1,69 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical"
+        tools:context=".activity.NewYearActivity">
+
+        <RelativeLayout
+            android:id="@+id/rl_newYear_top"
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/dp_180">
+
+            <ImageView
+                android:id="@+id/iv_newYear_top"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:scaleType="fitXY"
+                android:src="@mipmap/new_year_top" />
+
+            <View
+                android:layout_width="@dimen/dp_300"
+                android:layout_height="@dimen/dp_1"
+                android:layout_alignParentBottom="true"
+                android:layout_centerHorizontal="true"
+                android:background="#A0fde9bc" />
+        </RelativeLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:background="#8F0A0D"
+            android:orientation="vertical">
+
+            <TextView
+                android:id="@+id/tv_newYear_date"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_horizontal"
+                android:layout_margin="@dimen/dp_10"
+                android:text="活动时间: "
+                android:textColor="#efceab"
+                android:textSize="@dimen/sp_14" />
+
+            <com.fortune.tejiebox.widget.TopTab4NewYear
+                android:id="@+id/top_newYear"
+                android:layout_width="match_parent"
+                android:layout_height="@dimen/dp_40" />
+
+            <FrameLayout
+                android:id="@+id/fl_newYear"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent" />
+        </LinearLayout>
+
+    </LinearLayout>
+
+    <ImageView
+        android:id="@+id/iv_newYear_back"
+        android:layout_width="@dimen/dp_48"
+        android:layout_height="@dimen/dp_48"
+        android:layout_marginTop="@dimen/dp_30"
+        android:padding="@dimen/dp_10"
+        android:src="@mipmap/back_white" />
+</RelativeLayout>

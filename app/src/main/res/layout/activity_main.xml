@@ -53,6 +53,14 @@
                 android:layout_weight="3" />
         </LinearLayout>
 
+        <com.fortune.tejiebox.widget.FloatView
+            android:id="@+id/floatView"
+            android:layout_width="@dimen/dp_79"
+            android:layout_height="@dimen/dp_79"
+            android:layout_alignParentEnd="true"
+            android:layout_marginTop="@dimen/dp_150"
+            android:visibility="gone" />
+
     </RelativeLayout>
 
     <LinearLayout

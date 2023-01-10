@@ -45,7 +45,6 @@ import org.greenrobot.eventbus.EventBus
 import java.text.SimpleDateFormat
 import java.util.*
 import java.util.concurrent.TimeUnit
-import android.R.attr.name
 import android.os.Build
 import android.webkit.*
 
@@ -961,8 +960,7 @@ class GameDetailActivity : BaseActivity() {
                     )
                     updateGameTimeInfoObservable = updateGameTimeInfo.subscribeOn(Schedulers.io())
                         .observeOn(AndroidSchedulers.mainThread())
-                        .subscribe({
-                        }, {})
+                        .subscribe({}, {})
                 }
             }
         }

@@ -1,0 +1,207 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="@dimen/dp_350"
+    android:layout_height="wrap_content"
+    android:orientation="vertical">
+
+    <ImageView
+        android:id="@+id/iv_dialog_star_cancel"
+        android:layout_width="@dimen/dp_40"
+        android:layout_height="@dimen/dp_40"
+        android:layout_gravity="end"
+        android:layout_margin="@dimen/dp_10"
+        android:padding="@dimen/dp_10"
+        android:src="@mipmap/cancel_new_year_invite" />
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="@dimen/dp_10"
+        android:layout_marginEnd="@dimen/dp_10"
+        android:background="@mipmap/bg_new_year_get_star"
+        android:orientation="vertical">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/dp_64"
+            android:layout_gravity="center_horizontal"
+            android:layout_marginStart="@dimen/dp_64"
+            android:layout_marginTop="@dimen/dp_54"
+            android:layout_marginEnd="@dimen/dp_64"
+            android:background="@drawable/bg_new_year_star_item"
+            android:orientation="vertical"
+            android:padding="@dimen/dp_10">
+
+            <TextView
+                android:id="@+id/tv_dialog_star_title1"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="每天签到可获得5颗能量星"
+                android:textColor="@color/white_FFFFFF"
+                android:textSize="@dimen/sp_14"
+                android:textStyle="bold" />
+
+            <RelativeLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/dp_5"
+                android:orientation="horizontal">
+
+                <RelativeLayout
+                    android:layout_width="@dimen/dp_50"
+                    android:layout_height="@dimen/dp_16"
+                    android:layout_centerVertical="true"
+                    android:background="@mipmap/bg_new_year_star_state">
+
+                    <TextView
+                        android:id="@+id/tv_dialog_star_star1"
+                        android:layout_width="@dimen/dp_36"
+                        android:layout_height="@dimen/dp_16"
+                        android:layout_alignParentEnd="true"
+                        android:layout_centerHorizontal="true"
+                        android:gravity="center"
+                        android:text="0"
+                        android:textColor="#AA4208"
+                        android:textSize="@dimen/sp_11" />
+                </RelativeLayout>
+
+                <ImageView
+                    android:id="@+id/iv_dialog_star_btn1"
+                    android:layout_width="@dimen/dp_54"
+                    android:layout_height="@dimen/dp_20"
+                    android:layout_alignParentEnd="true"
+                    android:layout_centerVertical="true"
+                    android:src="@mipmap/bg_new_year_star_go" />
+            </RelativeLayout>
+
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/dp_100"
+            android:layout_gravity="center_horizontal"
+            android:layout_marginStart="@dimen/dp_64"
+            android:layout_marginTop="@dimen/dp_8"
+            android:layout_marginEnd="@dimen/dp_64"
+            android:background="@drawable/bg_new_year_star_item"
+            android:orientation="vertical"
+            android:padding="@dimen/dp_10">
+
+            <TextView
+                android:id="@+id/tv_dialog_star_title2"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="每邀请一个新用户获得10颗能量星"
+                android:textColor="@color/white_FFFFFF"
+                android:textSize="@dimen/sp_14"
+                android:textStyle="bold" />
+
+            <TextView
+                android:id="@+id/tv_dialog_star_msg2"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="新用户累计玩游戏超过30分钟有效"
+                android:textColor="@color/white_FFFFFF"
+                android:textSize="@dimen/sp_10" />
+
+            <RelativeLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/dp_5"
+                android:orientation="horizontal">
+
+                <RelativeLayout
+                    android:layout_width="@dimen/dp_50"
+                    android:layout_height="@dimen/dp_16"
+                    android:layout_centerVertical="true"
+                    android:background="@mipmap/bg_new_year_star_state">
+
+                    <TextView
+                        android:id="@+id/tv_dialog_star_star2"
+                        android:layout_width="@dimen/dp_36"
+                        android:layout_height="@dimen/dp_16"
+                        android:layout_alignParentEnd="true"
+                        android:layout_centerHorizontal="true"
+                        android:gravity="center"
+                        android:text="0"
+                        android:textColor="#AA4208"
+                        android:textSize="@dimen/sp_11" />
+                </RelativeLayout>
+
+                <ImageView
+                    android:id="@+id/iv_dialog_star_btn2"
+                    android:layout_width="@dimen/dp_54"
+                    android:layout_height="@dimen/dp_20"
+                    android:layout_alignParentEnd="true"
+                    android:layout_centerVertical="true"
+                    android:src="@mipmap/bg_new_year_star_go" />
+            </RelativeLayout>
+
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/dp_100"
+            android:layout_gravity="center_horizontal"
+            android:layout_marginStart="@dimen/dp_64"
+            android:layout_marginTop="@dimen/dp_8"
+            android:layout_marginEnd="@dimen/dp_64"
+            android:background="@drawable/bg_new_year_star_item"
+            android:orientation="vertical"
+            android:padding="@dimen/dp_10">
+
+            <TextView
+                android:id="@+id/tv_dialog_star_title3"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="任意游戏累计时长20分钟获得2个能量星"
+                android:textColor="@color/white_FFFFFF"
+                android:textSize="@dimen/sp_14"
+                android:textStyle="bold" />
+
+            <TextView
+                android:id="@+id/tv_dialog_star_msg3"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="每天上限20颗"
+                android:textColor="@color/white_FFFFFF"
+                android:textSize="@dimen/sp_10" />
+
+            <RelativeLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/dp_5"
+                android:orientation="horizontal">
+
+                <RelativeLayout
+                    android:layout_width="@dimen/dp_50"
+                    android:layout_height="@dimen/dp_16"
+                    android:layout_centerVertical="true"
+                    android:background="@mipmap/bg_new_year_star_state">
+
+                    <TextView
+                        android:id="@+id/tv_dialog_star_star3"
+                        android:layout_width="@dimen/dp_36"
+                        android:layout_height="@dimen/dp_16"
+                        android:layout_alignParentEnd="true"
+                        android:layout_centerHorizontal="true"
+                        android:gravity="center"
+                        android:text="20/20"
+                        android:textColor="#AA4208"
+                        android:textSize="@dimen/sp_11" />
+                </RelativeLayout>
+
+                <ImageView
+                    android:id="@+id/iv_dialog_star_btn3"
+                    android:layout_width="@dimen/dp_54"
+                    android:layout_height="@dimen/dp_20"
+                    android:layout_alignParentEnd="true"
+                    android:layout_centerVertical="true"
+                    android:src="@mipmap/bg_new_year_star_go" />
+            </RelativeLayout>
+
+        </LinearLayout>
+
+    </LinearLayout>
+
+</LinearLayout>

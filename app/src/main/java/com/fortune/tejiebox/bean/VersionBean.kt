@@ -65,5 +65,6 @@ class VersionBean {
         var update_url2: String? = null
         var default_page: String? = null
         var channel: Int? = null
+        var activity_is_open:Int? = null
     }
 }

@@ -1,0 +1,133 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="#80000000"
+    tools:context=".activity.ShadeActivity">
+
+    <TextView
+        android:id="@+id/tv_shade_tips"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerHorizontal="true"
+        android:layout_alignParentBottom="true"
+        android:layout_marginBottom="@dimen/dp_250"
+        android:textColor="@color/white_FFFFFF"
+        android:textSize="@dimen/sp_16"
+        android:textStyle="bold" />
+
+    <TextView
+        android:id="@+id/tv_shade_btn"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:layout_centerHorizontal="true"
+        android:layout_marginBottom="@dimen/dp_200"
+        android:background="@drawable/bg_login_enter_line"
+        android:paddingStart="@dimen/dp_15"
+        android:paddingTop="@dimen/dp_5"
+        android:paddingEnd="@dimen/dp_15"
+        android:paddingBottom="@dimen/dp_5"
+        android:text="下一步"
+        android:textColor="@color/white_FFFFFF"
+        android:textSize="@dimen/sp_14"
+        android:textStyle="bold" />
+
+    <LinearLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:layout_centerHorizontal="true"
+        android:layout_marginBottom="@dimen/dp_60"
+        android:gravity="center"
+        android:orientation="horizontal">
+
+        <RelativeLayout
+            android:id="@+id/rl_shade_fireworks1"
+            android:layout_width="@dimen/dp_64"
+            android:layout_height="@dimen/dp_79"
+            android:visibility="invisible">
+
+            <ImageView
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_alignParentBottom="true"
+                android:layout_marginBottom="@dimen/dp_5"
+                android:background="@mipmap/bg_new_year_pen1" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_centerHorizontal="true"
+                android:text="1"
+                android:textColor="#922416"
+                android:textSize="@dimen/sp_12"
+                android:textStyle="bold" />
+        </RelativeLayout>
+
+        <RelativeLayout
+            android:id="@+id/rl_shade_fireworks2"
+            android:layout_width="@dimen/dp_64"
+            android:layout_height="@dimen/dp_79"
+            android:layout_marginStart="@dimen/dp_10"
+            android:layout_marginEnd="@dimen/dp_10"
+            android:visibility="invisible">
+
+            <ImageView
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_alignParentBottom="true"
+                android:layout_marginBottom="@dimen/dp_5"
+                android:background="@mipmap/bg_new_year_pen2" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_centerHorizontal="true"
+                android:text="5"
+                android:textColor="#922416"
+                android:textSize="@dimen/sp_12"
+                android:textStyle="bold" />
+        </RelativeLayout>
+
+        <RelativeLayout
+            android:id="@+id/rl_shade_fireworks3"
+            android:layout_width="@dimen/dp_64"
+            android:layout_height="@dimen/dp_79"
+            android:visibility="invisible">
+
+            <ImageView
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_alignParentBottom="true"
+                android:layout_marginBottom="@dimen/dp_5"
+                android:background="@mipmap/bg_new_year_pen3" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_centerHorizontal="true"
+                android:text="10"
+                android:textColor="#922416"
+                android:textSize="@dimen/sp_12"
+                android:textStyle="bold" />
+        </RelativeLayout>
+    </LinearLayout>
+
+    <TextView
+        android:id="@+id/tv_shade_getStar"
+        android:layout_width="@dimen/dp_150"
+        android:layout_height="@dimen/dp_36"
+        android:layout_alignParentBottom="true"
+        android:layout_centerHorizontal="true"
+        android:layout_gravity="center"
+        android:layout_marginBottom="@dimen/dp_20"
+        android:background="@mipmap/bg_new_year_get_btn"
+        android:gravity="center"
+        android:text="获取能量星"
+        android:textColor="#E5250C"
+        android:textSize="@dimen/sp_14"
+        android:visibility="invisible" />
+
+</RelativeLayout>

@@ -163,7 +163,7 @@ object GetDeviceId {
      * @param upperCase 加密以后的字符串是是大写还是小写 true 大写 false 小写
      * @return
      */
-    private fun getMD5(message: String, upperCase: Boolean): String {
+    fun getMD5(message: String, upperCase: Boolean): String {
         var md5str = ""
         try {
             val md = MessageDigest.getInstance("MD5")

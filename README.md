@@ -5,6 +5,9 @@
 2. git config --global http.proxy 127.0.0.1:7890
 3. git config --global https.proxy 127.0.0.1:7890
 
+### V3.1.5
+新年活动版....
+
 ### V3.0.9
 1. 埋下详情页优化的种子
 2. 新增客服聊天界面

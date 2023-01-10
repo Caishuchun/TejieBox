@@ -28,4 +28,6 @@ object SPArgument {
     const val IS_CHECK_AGREEMENT = "isCheckAgreement" //是否已经同意协议
     const val LOGIN_ACCOUNT = "login_account" //登录账号
     const val LOGIN_ACCOUNT_PASS = "login_account_pass" //登录账号密码
+
+    const val IS_SHOW_SHADE = "is_show_shade" //是否显示遮罩层
 }

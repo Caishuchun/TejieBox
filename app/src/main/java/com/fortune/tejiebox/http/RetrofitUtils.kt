@@ -438,5 +438,62 @@ object RetrofitUtils {
             @Field("phone", encoded = true) phone: String,
             @Field("code", encoded = true) code: String
         ): Flowable<BaseBean>
+
+        /**
+         * 新年活动_白嫖详情
+         */
+        @GET(HttpUrls.FREE_GIVE_NY)
+        fun freeGive(): Flowable<NewYear4WhitePiaoBean>
+
+        /**
+         * 新年活动_领取白嫖
+         */
+        @GET(HttpUrls.RECEIVE_FREE_GIVE_NY)
+        fun receiveFreeGive(): Flowable<BaseBean>
+
+        /**
+         * 新年活动_邀请详情
+         */
+        @GET(HttpUrls.INVITE_NY)
+        fun invite(): Flowable<NewYear4InviteBean>
+
+        /**
+         * 新年活动_邀请开箱子
+         */
+        @FormUrlEncoded
+        @POST(HttpUrls.OPEN_BOX_NY)
+        fun openBox(
+            @Field("treasure_id", encoded = true) treasure_id: Int
+        ): Flowable<BaseBean>
+
+        /**
+         * 新年活动_年兽详情
+         */
+        @GET(HttpUrls.NIAN_SHOU_INFO_NY)
+        fun nianShouInfo(): Flowable<NewYear4NianShouBean>
+
+        /**
+         * 新年活动_打年兽
+         */
+        @FormUrlEncoded
+        @POST(HttpUrls.FIGHT_NIAN_SHOU_NY)
+        fun fightNianShou(
+            @Field("fire_type", encoded = true) fire_type: Int
+        ): Flowable<NewYear4FightNianShouBean>
+
+        /**
+         * 新年活动_年兽宝箱
+         */
+        @FormUrlEncoded
+        @POST(HttpUrls.NIAN_SHOU_OPEN_BOX_NY)
+        fun openBox4NianShou(
+            @Field("treasure_id", encoded = true) treasure_id: Int
+        ): Flowable<BaseBean>
+
+        /**
+         * 新年活动_能量星详情
+         */
+        @GET(HttpUrls.NIAN_SHOU_STAR_INFO_NY)
+        fun nianShouStarInfo(): Flowable<NewYear4StarBean>
     }
 }

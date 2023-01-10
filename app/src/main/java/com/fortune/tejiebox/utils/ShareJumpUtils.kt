@@ -28,7 +28,10 @@ object ShareJumpUtils {
      * 分享dialog
      */
     @SuppressLint("SetTextI18n")
-    fun showDefaultDialog(context: Activity) {
+    fun showDefaultDialog(
+        context: Activity,
+        message: String? = null
+    ) {
         if (mDialog != null) {
             mDialog?.dismiss()
             mDialog = null
@@ -38,7 +41,12 @@ object ShareJumpUtils {
         mDialog?.setCancelable(true)
         mDialog?.setCanceledOnTouchOutside(true)
         mDialog?.tv_dialog_default_title?.text = "特戒分享"
-        mDialog?.tv_dialog_default_message?.text = "分享链接已复制到剪贴板,\n可在QQ和微信上分享给他人!"
+        mDialog?.tv_dialog_default_message?.text =
+            if (message != null) {
+                "分享图片已保存至本地,\n可在QQ和微信上分享给他人!"
+            } else {
+                "分享链接已复制到剪贴板,\n可在QQ和微信上分享给他人!"
+            }
         mDialog?.tv_dialog_default_cancel?.text = "微信"
         mDialog?.tv_dialog_default_sure?.text = "QQ"
         mDialog?.tv_dialog_default_sure?.setOnClickListener {

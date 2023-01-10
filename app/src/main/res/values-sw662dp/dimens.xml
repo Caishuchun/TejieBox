@@ -61,6 +61,7 @@
 	<dimen name="dp_250">459.7222dp</dimen>
     <dimen name="dp_296">544.3111dp</dimen>
     <dimen name="dp_300">551.6667dp</dimen>
+    <dimen name="dp_350">643.6112dp</dimen>
     <dimen name="sp_8">14.7111sp</dimen>
     <dimen name="sp_9">16.5500sp</dimen>
     <dimen name="sp_10">18.3889sp</dimen>
