@@ -37,7 +37,7 @@ object FlipAnimUtils {
         if (view == null) {
             return
         }
-        mHandler.removeMessages(101)
+        mHandler.removeMessages(view.id)
         val scaleXValuesHolder = PropertyValuesHolder.ofKeyframe(
             View.SCALE_X,
             Keyframe.ofFloat(0f, 1.0f),
@@ -81,9 +81,9 @@ object FlipAnimUtils {
 
             override fun onAnimationEnd(animation: Animator?) {
                 if (isAlwaysShake) {
-                    mHandler.removeMessages(101)
+                    mHandler.removeMessages(view.id)
                     val message = Message()
-                    message.what = 101
+                    message.what = view.id
                     message.obj = view
                     mHandler.sendMessageDelayed(message, interval)
                 }
@@ -103,14 +103,13 @@ object FlipAnimUtils {
     object : Handler() {
         override fun handleMessage(msg: Message) {
             super.handleMessage(msg)
+            val view = msg.obj as View
             when (msg.what) {
-                101 -> {
-                    val view = msg.obj as View
+                view.id -> {
                     val objectAnimator = objectAnimatorMap[view]
                     objectAnimator?.start()
                 }
                 102 -> {
-                    val view = msg.obj as View
                     val objectAnimator = objectAnimatorMap[view]
                     objectAnimator?.cancel()
                     view.animate().rotation(0f).setDuration(60).start()

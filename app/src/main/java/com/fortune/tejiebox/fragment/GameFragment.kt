@@ -416,7 +416,11 @@ class GameFragment : Fragment() {
                                     val count = it.data.paging.count
                                     val limit = it.data.paging.limit
                                     countPage = count / limit + if (count % limit == 0) 0 else 1
-                                    mData.addAll(it.data.list)
+                                    for (list in it.data.list) {
+                                        if (!mData.contains(list)) {
+                                            mData.add(list)
+                                        }
+                                    }
                                     mAdapter?.notifyItemChanged(mData.size - 1)
                                     mView?.tv_gameFragment_nothing?.let { tv ->
                                         tv.visibility = View.GONE
