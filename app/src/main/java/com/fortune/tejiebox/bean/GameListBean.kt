@@ -16,7 +16,8 @@ data class GameListBean(
             val game_id: Int,
             val game_name: String,
             val game_tag: List<String>,
-            val game_type: String
+            val game_type: String,
+            val game_style: String?
         )
 
         data class Paging(

@@ -20,6 +20,7 @@ data class GameInfoBean(
         val game_tag: List<String>,
         val game_type: String,
         val game_update_time: Int,
-        val is_fav: Int
+        val is_fav: Int,
+        val game_style: String?
     )
 }

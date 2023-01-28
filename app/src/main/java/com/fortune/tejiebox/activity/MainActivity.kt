@@ -30,9 +30,7 @@ import com.fortune.tejiebox.room.CustomerServiceInfo
 import com.fortune.tejiebox.room.CustomerServiceInfoDataBase
 import com.fortune.tejiebox.utils.*
 import com.fortune.tejiebox.utils.ActivityManager
-import com.fortune.tejiebox.widget.FloatView
 import com.jakewharton.rxbinding2.view.RxView
-import com.luck.picture.lib.utils.SpUtils
 import com.umeng.analytics.MobclickAgent
 import io.reactivex.Observable
 import io.reactivex.android.schedulers.AndroidSchedulers
@@ -261,13 +259,6 @@ class MainActivity : BaseActivity() {
 
         val data = VersionBean.getData()
         if (data != null) {
-            if (data.activity_is_open != null && data.activity_is_open == 1) {
-                floatView.visibility = View.VISIBLE
-                setFloatView()
-            } else {
-                floatView.visibility = View.GONE
-            }
-
             val newVersion = data.version_name!!.replace(".", "").toInt()
             val currentVersion = MyApp.getInstance().getVersion().replace(".", "").toInt()
             LogUtils.d("toDownLoadApk==>newVersion = $newVersion, currentVersion = $currentVersion")
@@ -359,34 +350,6 @@ class MainActivity : BaseActivity() {
 
         toCheckIsNeedUpdateGameInfo()
         toGetSplashImgUrl()
-    }
-
-    /**
-     * 设置浮动框
-     */
-    private fun setFloatView() {
-        val width = PhoneInfoUtils.getWidth(this)
-        val height = PhoneInfoUtils.getHeight(this)
-        floatView.setParentSize(
-            width,
-            height,
-            (width.toFloat() / 360 * 64).toInt(),
-            (width.toFloat() / 360 * 45).toInt()
-        )
-
-        FlipAnimUtils.startShakeByPropertyAnim(
-            floatView,1f,1f,2f,500,5000
-        )
-
-        floatView.setOnClickCallback(object : FloatView.OnClickCallback {
-            override fun click() {
-                if (MyApp.getInstance().isHaveToken()) {
-                    startActivity(Intent(this@MainActivity, NewYearActivity::class.java))
-                } else {
-                    LoginUtils.toQuickLogin(this@MainActivity)
-                }
-            }
-        })
     }
 
     /**

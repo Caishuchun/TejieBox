@@ -3,12 +3,14 @@ package com.fortune.tejiebox.activity
 import android.annotation.SuppressLint
 import android.content.Intent
 import android.graphics.Color
+import android.os.Build
 import android.os.Handler
 import android.os.Message
 import android.view.LayoutInflater
 import android.view.MotionEvent
 import android.view.View
 import android.view.ViewGroup
+import android.webkit.*
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.OrientationHelper
 import androidx.recyclerview.widget.PagerSnapHelper
@@ -45,8 +47,6 @@ import org.greenrobot.eventbus.EventBus
 import java.text.SimpleDateFormat
 import java.util.*
 import java.util.concurrent.TimeUnit
-import android.os.Build
-import android.webkit.*
 
 
 class GameDetailActivity : BaseActivity() {
@@ -64,6 +64,7 @@ class GameDetailActivity : BaseActivity() {
     private var gameId = -1
     private var gameChannelId: String? = null
     private var isPlayingGame = false
+    private var gameStyle: String? = null //游戏登录器UI
 
     private var updateGameTimeInfoObservable: Disposable? = null
 
@@ -613,7 +614,8 @@ class GameDetailActivity : BaseActivity() {
 
                                 JumpUtils.jump2Game(
                                     this,
-                                    gameChannel + Box2GameUtils.getPhoneAndToken()
+                                    gameChannel + Box2GameUtils.getPhoneAndToken(),
+                                    gameStyle
                                 )
                             }
                             -1 -> {
@@ -638,6 +640,7 @@ class GameDetailActivity : BaseActivity() {
             intent.putExtra(IdCardActivity.FROM, 2)
             intent.putExtra(IdCardActivity.GAME_ID, gameId)
             intent.putExtra(IdCardActivity.GAME_CHANNEL, gameChannel)
+            intent.putExtra(IdCardActivity.GAME_STYLE, gameStyle)
             startActivity(intent)
         }
     }
@@ -729,6 +732,7 @@ class GameDetailActivity : BaseActivity() {
                         1 -> {
                             DialogUtils.dismissLoading()
                             val data = it.data
+                            gameStyle = it.data.game_style
                             toInitView(data)
                         }
                         -1 -> {

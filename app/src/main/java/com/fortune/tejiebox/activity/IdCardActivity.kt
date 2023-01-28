@@ -35,6 +35,8 @@ class IdCardActivity : BaseActivity() {
     private var addPlayingGameObservable: Disposable? = null
     private var isPlayingGame = false
 
+    private var gameStyle: String? = null
+
     companion object {
         @SuppressLint("StaticFieldLeak")
         private lateinit var instance: IdCardActivity
@@ -44,6 +46,7 @@ class IdCardActivity : BaseActivity() {
         const val FROM = "from"
         const val GAME_ID = "gameId"
         const val GAME_CHANNEL = "gameChannel"
+        const val GAME_STYLE = "gameStyle"
     }
 
     override fun getLayoutId() = R.layout.activity_id_card
@@ -61,6 +64,7 @@ class IdCardActivity : BaseActivity() {
         from = intent.getIntExtra(FROM, 0)
         gameId = intent.getIntExtra(GAME_ID, -1)
         gameChannel = intent.getStringExtra(GAME_CHANNEL)
+        gameStyle = intent.getStringExtra(GAME_STYLE)
 
         when (from) {
             1 -> {
@@ -193,7 +197,8 @@ class IdCardActivity : BaseActivity() {
                             )
                             JumpUtils.jump2Game(
                                 this,
-                                gameChannel + Box2GameUtils.getPhoneAndToken()
+                                gameChannel + Box2GameUtils.getPhoneAndToken(),
+                                gameStyle
                             )
                             finish()
                         }

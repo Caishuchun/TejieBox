@@ -649,7 +649,11 @@ class SearchGameActivity : BaseActivity() {
                     .subscribe {
                         if (MyApp.getInstance().isHaveToken()) {
                             toAddToHotSearch(itemData.game_name)
-                            toStartGame(itemData.game_id, itemData.game_channelId)
+                            toStartGame(
+                                itemData.game_id,
+                                itemData.game_channelId,
+                                itemData.game_style
+                            )
                         } else {
                             LoginUtils.toQuickLogin(this)
                         }
@@ -700,7 +704,7 @@ class SearchGameActivity : BaseActivity() {
     /**
      * 启动游戏
      */
-    private fun toStartGame(gameId: Int, gameChannelid: String) {
+    private fun toStartGame(gameId: Int, gameChannelid: String, gameStyle: String? = null) {
         val isHaveId = SPUtils.getInt(SPArgument.IS_HAVE_ID)
         if (isHaveId == 1) {
             DialogUtils.showBeautifulDialog(this)
@@ -725,7 +729,8 @@ class SearchGameActivity : BaseActivity() {
 
                                 JumpUtils.jump2Game(
                                     this,
-                                    gameChannelid + Box2GameUtils.getPhoneAndToken()
+                                    gameChannelid + Box2GameUtils.getPhoneAndToken(),
+                                    gameStyle
                                 )
                             }
                             -1 -> {
@@ -750,6 +755,7 @@ class SearchGameActivity : BaseActivity() {
             intent.putExtra(IdCardActivity.FROM, 2)
             intent.putExtra(IdCardActivity.GAME_ID, gameId)
             intent.putExtra(IdCardActivity.GAME_CHANNEL, gameChannelid)
+            intent.putExtra(IdCardActivity.GAME_STYLE, gameStyle)
             startActivity(intent)
         }
     }
