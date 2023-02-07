@@ -1,5 +1,7 @@
 package com.fortune.tejiebox.adapter
 
+import android.os.Handler
+import android.os.Looper
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -15,6 +17,8 @@ class BaseAdapterWithPosition<T> private constructor() :
     private var mLayoutId: Int? = null
     private var addBindView: ((itemView: View, itemData: T, position: Int) -> Unit)? = null
 
+    private var isHsaStableIds = false
+
     override fun onCreateViewHolder(
         parent: ViewGroup,
         viewType: Int
@@ -27,12 +31,31 @@ class BaseAdapterWithPosition<T> private constructor() :
         return mDataList!!.size
     }
 
-    override fun onBindViewHolder(holder: BaseViewHolder, position: Int) {
-        holder.setIsRecyclable(false)
-        addBindView!!.invoke(holder.itemView, mDataList!![position], position)
+    override fun getItemId(position: Int): Long {
+        return position.toLong()
     }
 
-    inner class BaseViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView)
+    override fun onBindViewHolder(holder: BaseViewHolder, position: Int) {
+//        是否允许回收
+//        holder.setIsRecyclable(false)
+        holder.handler.removeMessages(0)
+        holder.handler.postDelayed({
+            addBindView!!.invoke(holder.itemView, mDataList!![position], position)
+        }, 50)
+    }
+
+    override fun onViewDetachedFromWindow(holder: BaseViewHolder) {
+//        super.onViewDetachedFromWindow(holder)
+        holder.handler.removeMessages(0)
+    }
+
+    override fun onViewRecycled(holder: BaseViewHolder) {
+        super.onViewRecycled(holder)
+    }
+
+    inner class BaseViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
+        var handler = Handler(Looper.getMainLooper())
+    }
 
     class Builder<B> {
         private var baseAdapter: BaseAdapterWithPosition<B> = BaseAdapterWithPosition()
@@ -52,7 +75,9 @@ class BaseAdapterWithPosition<T> private constructor() :
             return this
         }
 
-        fun create(): BaseAdapterWithPosition<B> {
+        fun create(isHsaStableIds: Boolean = false): BaseAdapterWithPosition<B> {
+            baseAdapter.isHsaStableIds = isHsaStableIds
+            baseAdapter.setHasStableIds(isHsaStableIds)
             return baseAdapter
         }
     }

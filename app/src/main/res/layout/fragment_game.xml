@@ -67,12 +67,12 @@
 
     <RelativeLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content">
+        android:layout_height="match_parent">
 
         <com.scwang.smart.refresh.layout.SmartRefreshLayout
             android:id="@+id/refresh_gameFragment_game"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
+            android:layout_height="match_parent"
             android:layout_marginBottom="@dimen/dp_45">
 
             <com.scwang.smart.refresh.header.MaterialHeader
@@ -82,7 +82,7 @@
             <androidx.recyclerview.widget.RecyclerView
                 android:id="@+id/rv_gameFragment_game"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
+                android:layout_height="match_parent"
                 android:layout_marginStart="@dimen/dp_10"
                 android:layout_marginEnd="@dimen/dp_10"
                 android:scrollbars="none" />
@@ -110,5 +110,6 @@
         android:id="@+id/view_gameFragment_space"
         android:layout_width="match_parent"
         android:layout_height="0dp"
+        android:visibility="gone"
         android:layout_weight="1" />
 </LinearLayout>

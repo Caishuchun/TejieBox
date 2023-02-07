@@ -20,6 +20,8 @@ abstract class BaseActivity : AppCompatActivity(), DownloadTaskListener {
         ActivityManager.addActivity(this)
         Aria.download(this).register()
         doSomething()
+
+//        FPSUtils.getFps()
     }
 
     /**

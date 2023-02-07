@@ -120,7 +120,7 @@ class RoleFragment : Fragment() {
                 itemView.tv_item_areaName.text = itemData.areaName
                 itemView.tv_item_serviceName.text = itemData.serverName
 
-                RxView.clicks(itemView.rootView)
+                RxView.clicks(itemView)
                     .throttleFirst(200, TimeUnit.MILLISECONDS)
                     .subscribe {
                         (activity as IntegralActivity).toIntegralFragment(itemData, mGameVersion)

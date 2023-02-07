@@ -314,7 +314,7 @@ class WhitePiaoFragment : Fragment() {
                         })
                 }
 
-                RxView.clicks(itemView.rootView)
+                RxView.clicks(itemView)
                     .throttleFirst(200, TimeUnit.MILLISECONDS)
                     .subscribe {
                         if (itemData.status == 1 && canClick) {

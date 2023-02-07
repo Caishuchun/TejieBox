@@ -16,6 +16,7 @@ import androidx.recyclerview.widget.OrientationHelper
 import androidx.recyclerview.widget.PagerSnapHelper
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
+import com.bumptech.glide.load.engine.DiskCacheStrategy
 import com.fortune.tejiebox.R
 import com.fortune.tejiebox.adapter.BaseAdapterWithPosition
 import com.fortune.tejiebox.base.BaseActivity
@@ -64,6 +65,8 @@ class GameDetailActivity : BaseActivity() {
     private var gameId = -1
     private var gameChannelId: String? = null
     private var isPlayingGame = false
+
+    private var oldSmallPicIndex = 0 //旧小图当前index
     private var gameStyle: String? = null //游戏登录器UI
 
     private var updateGameTimeInfoObservable: Disposable? = null
@@ -512,6 +515,7 @@ class GameDetailActivity : BaseActivity() {
             .addBindView { itemView, itemData, position ->
                 Glide.with(this)
                     .load(itemData)
+                    .diskCacheStrategy(DiskCacheStrategy.ALL)
                     .into(itemView.iv_item_gamePicSmall)
 
                 if (currentPicPosition == position) {
@@ -520,7 +524,7 @@ class GameDetailActivity : BaseActivity() {
                 } else {
                     itemView.view_item_gamePicSmall.visibility = View.VISIBLE
                     itemView.rl_item_gamePicSmall.setBackgroundResource(R.drawable.bg_pic_unselected)
-                    RxView.clicks(itemView.rootView)
+                    RxView.clicks(itemView)
                         .throttleFirst(200, TimeUnit.MILLISECONDS)
                         .subscribe {
                             currentPicPosition = position
@@ -541,9 +545,10 @@ class GameDetailActivity : BaseActivity() {
             .addBindView { itemView, itemData, position ->
                 Glide.with(this)
                     .load(itemData)
+                    .diskCacheStrategy(DiskCacheStrategy.ALL)
                     .into(itemView.iv_item_gamePic)
 
-                RxView.clicks(itemView.rootView)
+                RxView.clicks(itemView)
                     .throttleFirst(200, TimeUnit.MILLISECONDS)
                     .subscribe {
                         mHandler.removeMessages(0)
@@ -571,7 +576,10 @@ class GameDetailActivity : BaseActivity() {
                     RecyclerView.State(),
                     currentPicPosition
                 )
-                picAdapter4Small.notifyDataSetChanged()
+//                picAdapter4Small.notifyDataSetChanged()
+                picAdapter4Small.notifyItemChanged(currentPicPosition)
+                picAdapter4Small.notifyItemChanged(oldSmallPicIndex)
+                oldSmallPicIndex = currentPicPosition
             }
         })
 

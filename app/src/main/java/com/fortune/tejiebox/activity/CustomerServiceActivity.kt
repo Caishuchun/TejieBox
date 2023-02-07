@@ -193,7 +193,7 @@ class CustomerServiceActivity : BaseActivity() {
                             itemView.tv_item_customerService_left_img_time.text =
                                 formatChatTime(itemData.chat_time)
 
-                            RxView.clicks(itemView.rootView)
+                            RxView.clicks(itemView)
                                 .throttleFirst(200, TimeUnit.MILLISECONDS)
                                 .subscribe {
                                     val intent = Intent(this, ShowPicActivity::class.java)
@@ -251,7 +251,7 @@ class CustomerServiceActivity : BaseActivity() {
                             itemView.tv_item_customerService_right_img_time.text =
                                 formatChatTime(itemData.chat_time)
 
-                            RxView.clicks(itemView.rootView)
+                            RxView.clicks(itemView)
                                 .throttleFirst(200, TimeUnit.MILLISECONDS)
                                 .subscribe {
                                     val intent = Intent(this, ShowPicActivity::class.java)

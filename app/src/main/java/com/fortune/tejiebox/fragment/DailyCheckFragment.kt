@@ -198,7 +198,7 @@ class DailyCheckFragment : Fragment() {
                     itemView.rl_item_dailyCheck_bg.setBackgroundResource(R.drawable.bg_daily_checking)
                 }
 
-                RxView.clicks(itemView.rootView)
+                RxView.clicks(itemView)
                     .throttleFirst(200, TimeUnit.MILLISECONDS)
                     .subscribe {
                         if (itemData.status == 0 && position == canClickPosition && !isTodayGet) {

@@ -433,7 +433,7 @@ class SearchGameActivity : BaseActivity() {
                 }
                 itemView.tv_hot_search_item_hot.text = itemData
                 itemView.tv_hot_search_item_num.text = "${position + 1}"
-                RxView.clicks(itemView.rootView)
+                RxView.clicks(itemView)
                     .throttleFirst(200, TimeUnit.MILLISECONDS)
                     .subscribe {
                         toSearch(itemData)
@@ -465,7 +465,7 @@ class SearchGameActivity : BaseActivity() {
                             tv_search_clearAll.visibility = View.GONE
                         }
                     }
-                RxView.clicks(itemView.rootView)
+                RxView.clicks(itemView)
                     .throttleFirst(200, TimeUnit.MILLISECONDS)
                     .subscribe {
                         toSearch(itemData.str)
@@ -582,7 +582,7 @@ class SearchGameActivity : BaseActivity() {
                     itemView.tv_item_search_sugrec_gameName.text =
                         redText(gameName, et_search_str.text.toString().trim())
                 }
-                RxView.clicks(itemView.rootView)
+                RxView.clicks(itemView)
                     .throttleFirst(200, TimeUnit.MILLISECONDS)
                     .subscribe {
                         if (gameID.contains(et_search_str.text.toString().trim())) {
@@ -635,7 +635,7 @@ class SearchGameActivity : BaseActivity() {
                     itemView.flowLayout_item_mainFragment.addView(tagView)
                 }
 
-                RxView.clicks(itemView.rootView)
+                RxView.clicks(itemView)
                     .throttleFirst(200, TimeUnit.MILLISECONDS)
                     .subscribe {
                         toAddToHotSearch(itemData.game_name)

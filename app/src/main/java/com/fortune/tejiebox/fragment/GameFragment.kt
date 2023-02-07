@@ -10,11 +10,14 @@ import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.OrientationHelper
 import androidx.recyclerview.widget.RecyclerView
+import androidx.recyclerview.widget.SimpleItemAnimator
 import androidx.recyclerview.widget.StaggeredGridLayoutManager
 import com.bumptech.glide.Glide
+import com.bumptech.glide.load.DataSource
 import com.bumptech.glide.load.engine.DiskCacheStrategy
-import com.bumptech.glide.request.target.ImageViewTarget
-import com.bumptech.glide.request.transition.Transition
+import com.bumptech.glide.load.engine.GlideException
+import com.bumptech.glide.request.RequestListener
+import com.bumptech.glide.request.target.Target
 import com.fortune.tejiebox.R
 import com.fortune.tejiebox.activity.GameDetailActivity
 import com.fortune.tejiebox.activity.SearchGameActivity
@@ -114,7 +117,7 @@ class GameFragment : Fragment() {
     /**
      * 初始化布局
      */
-    @SuppressLint("CheckResult")
+    @SuppressLint("CheckResult", "NotifyDataSetChanged")
     private fun initView() {
         when (type) {
             0 -> {
@@ -200,21 +203,29 @@ class GameFragment : Fragment() {
                 itemView.runView_item_gameFragment.visibility = View.GONE
                 itemView.iv_item_gameFragment_type.visibility = View.GONE
 
+                //Tag是为了防止图片重复
+                itemView.iv_item_gameFragment_icon.setTag(R.id.image, position)
                 Glide.with(this)
                     .load(itemData.game_cover)
                     .placeholder(R.mipmap.bg_gray_6)
                     .skipMemoryCache(true)
-                    .diskCacheStrategy(DiskCacheStrategy.AUTOMATIC)
-                    .into(object : ImageViewTarget<Drawable>(itemView.iv_item_gameFragment_icon) {
-                        override fun setResource(resource: Drawable?) {
-                            itemView.iv_item_gameFragment_icon.setImageDrawable(resource)
+                    .listener(object : RequestListener<Drawable> {
+                        override fun onLoadFailed(
+                            e: GlideException?,
+                            model: Any?,
+                            target: Target<Drawable>?,
+                            isFirstResource: Boolean
+                        ): Boolean {
+                            return false
                         }
 
                         override fun onResourceReady(
-                            resource: Drawable,
-                            transition: Transition<in Drawable>?
-                        ) {
-                            super.onResourceReady(resource, transition)
+                            resource: Drawable?,
+                            model: Any?,
+                            target: Target<Drawable>?,
+                            dataSource: DataSource?,
+                            isFirstResource: Boolean
+                        ): Boolean {
                             itemView.runView_item_gameFragment.visibility =
                                 if (itemData.game_top == 1) View.VISIBLE else View.GONE
                             when (itemData.icon_type) {
@@ -230,10 +241,13 @@ class GameFragment : Fragment() {
                                     itemView.iv_item_gameFragment_type.visibility = View.GONE
                                 }
                             }
+                            return false
                         }
                     })
-                itemView.tv_item_gameFragment_name.text = itemData.game_name
+                    .diskCacheStrategy(DiskCacheStrategy.AUTOMATIC)
+                    .into(itemView.iv_item_gameFragment_icon)
 
+                itemView.tv_item_gameFragment_name.text = itemData.game_name
                 //在玩和收藏,描述替换成在线时长
                 if (type == 0) {
                     itemView.tv_item_gameFragment_des.text = itemData.game_desc
@@ -270,7 +284,7 @@ class GameFragment : Fragment() {
                                 override fun next() {
                                     mData.removeAt(position)
                                     toDeleteCurrentGame(itemData.game_id)
-                                    mAdapter?.notifyDataSetChanged()
+                                    mAdapter?.notifyItemRemoved(position)
                                     if (mData.size == 0) {
                                         isShake = false
                                         mView?.tv_gameFragment_cancel?.let {
@@ -284,9 +298,14 @@ class GameFragment : Fragment() {
                             })
                     }
             }
-            .create()
+            .create(true)
 
         mView?.rv_gameFragment_game?.let {
+            it.setHasFixedSize(true)
+            it.setItemViewCacheSize(20)
+            it.isDrawingCacheEnabled = true
+            it.drawingCacheQuality = View.DRAWING_CACHE_QUALITY_HIGH
+            (it.itemAnimator as SimpleItemAnimator).supportsChangeAnimations = false //取消默认动画
             it.adapter = mAdapter
             it.layoutManager = SafeStaggeredGridLayoutManager(4, OrientationHelper.VERTICAL)
         }
@@ -312,7 +331,7 @@ class GameFragment : Fragment() {
 
         mView?.refresh_gameFragment_game?.let {
             it.setEnableRefresh(true)
-            it.setEnableLoadMore(type == 0)
+            it.setEnableLoadMore(true)
             it.setEnableLoadMoreWhenContentNotFull(false)
             it.setRefreshHeader(MaterialHeader(requireActivity()))
             it.setRefreshFooter(ClassicsFooter(requireActivity()))
@@ -325,14 +344,14 @@ class GameFragment : Fragment() {
                 }
 
                 override fun onLoadMore(refreshLayout: RefreshLayout) {
-                    if (type == 0) {
-                        if (currentPage < countPage) {
-                            currentPage++
-                            getInfo(false)
-                        } else {
-                            mView?.refresh_gameFragment_game?.finishLoadMoreWithNoMoreData()
-                        }
+//                    if (type == 0) {
+                    if (currentPage < countPage) {
+                        currentPage++
+                        getInfo(false)
+                    } else {
+                        mView?.refresh_gameFragment_game?.finishLoadMoreWithNoMoreData()
                     }
+//                    }
                 }
             })
         }
@@ -396,12 +415,6 @@ class GameFragment : Fragment() {
             .subscribe(
                 {
                     LogUtils.d("${javaClass.simpleName}=success=>${Gson().toJson(it)}")
-                    var count = 0
-                    for (info in it.data.list) {
-                        if (info.game_top == 1) {
-                            count++
-                        }
-                    }
                     DialogUtils.dismissLoading()
                     mView?.refresh_gameFragment_game?.finishRefresh()
                     mView?.refresh_gameFragment_game?.finishLoadMore()
@@ -416,12 +429,17 @@ class GameFragment : Fragment() {
                                     val count = it.data.paging.count
                                     val limit = it.data.paging.limit
                                     countPage = count / limit + if (count % limit == 0) 0 else 1
+                                    val oldSize = mData.size
                                     for (list in it.data.list) {
                                         if (!mData.contains(list)) {
                                             mData.add(list)
                                         }
                                     }
-                                    mAdapter?.notifyItemChanged(mData.size - 1)
+//                                    mAdapter?.notifyItemChanged(mData.size - 1)
+                                    mAdapter?.notifyItemRangeInserted(
+                                        if (oldSize > 1) oldSize - 1 else 0,
+                                        it.data.list.size
+                                    )
                                     mView?.tv_gameFragment_nothing?.let { tv ->
                                         tv.visibility = View.GONE
                                     }

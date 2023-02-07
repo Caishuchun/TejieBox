@@ -56,7 +56,7 @@
             android:ellipsize="end"
             android:gravity="center"
             android:maxLength="6"
-            android:text="名称"
+            android:text="特戒"
             android:textColor="#232323"
             android:textSize="@dimen/sp_10"
             android:textStyle="bold" />
@@ -70,7 +70,7 @@
             android:gravity="center"
             android:maxLines="1"
             android:singleLine="true"
-            android:text="冰雪"
+            android:text="特戒盒子非常好用"
             android:textColor="#767676"
             android:textSize="@dimen/sp_9" />
     </RelativeLayout>

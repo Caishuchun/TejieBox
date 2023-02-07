@@ -53,15 +53,30 @@ class AccountBindActivity : BaseActivity() {
 
         val account = SPUtils.getString(SPArgument.LOGIN_ACCOUNT, null)
         val pass = SPUtils.getString(SPArgument.LOGIN_ACCOUNT_PASS, null)
-        if (!account.isNullOrBlank() && !pass.isNullOrBlank()) {
+//        if (!account.isNullOrBlank() && !pass.isNullOrBlank()) {
+//            ll_accountBind_rePass.visibility = View.GONE
+//            tv_accountBind_bind.visibility = View.GONE
+//            et_accountBind_account.isEnabled = false
+//            et_accountBind_account.setText(account)
+//            et_accountBind_account.setTextColor(resources.getColor(R.color.gray_C4C4C4))
+//            et_accountBind_pass.isEnabled = false
+//            et_accountBind_pass.setText(pass)
+//            et_accountBind_pass.setTextColor(resources.getColor(R.color.gray_C4C4C4))
+//        }
+
+        if(!account.isNullOrBlank()){
             ll_accountBind_rePass.visibility = View.GONE
             tv_accountBind_bind.visibility = View.GONE
             et_accountBind_account.isEnabled = false
             et_accountBind_account.setText(account)
             et_accountBind_account.setTextColor(resources.getColor(R.color.gray_C4C4C4))
-            et_accountBind_pass.isEnabled = false
-            et_accountBind_pass.setText(pass)
-            et_accountBind_pass.setTextColor(resources.getColor(R.color.gray_C4C4C4))
+            if(!pass.isNullOrBlank()){
+                et_accountBind_pass.isEnabled = false
+                et_accountBind_pass.setText(pass)
+                et_accountBind_pass.setTextColor(resources.getColor(R.color.gray_C4C4C4))
+            }else{
+                ll_accountBind_pass.visibility = View.GONE
+            }
         }
 
         et_accountBind_account?.let { et ->

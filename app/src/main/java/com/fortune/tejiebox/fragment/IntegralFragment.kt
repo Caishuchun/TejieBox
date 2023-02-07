@@ -165,13 +165,17 @@ class IntegralFragment : Fragment() {
                     itemView.ll_item_bg.setBackgroundResource(R.drawable.bg_integral_unselect)
                 }
 
-                RxView.clicks(itemView.rootView)
+                RxView.clicks(itemView)
                     .throttleFirst(200, TimeUnit.MILLISECONDS)
                     .subscribe {
                         if (position != mSelectPosition) {
+                            if (mSelectPosition != -1) {
+                                mAdapter?.notifyItemChanged(mSelectPosition)
+                            }
                             mSelectPosition = position
+                            mAdapter?.notifyItemChanged(mSelectPosition)
                             mSelectRecharge = itemData
-                            mAdapter?.notifyDataSetChanged()
+//                            mAdapter?.notifyDataSetChanged()
                             mView?.tv_integralFragment_tips?.let {
                                 it.text =
                                     if (BaseAppUpdateSetting.isToAuditVersion) "使用${itemData.money.toInt() * 10}积分兑换${itemData.money}充值"
@@ -263,9 +267,9 @@ class IntegralFragment : Fragment() {
                                     }
                                 val residue = currentIntegral - rechargeMoney * 10
                                 tv.text = if (BaseAppUpdateSetting.isToAuditVersion) {
-                                    "剩余余额: ${residue / 10}元"
-                                } else {
                                     "剩余积分: $residue"
+                                } else {
+                                    "剩余余额: ${residue / 10}元"
                                 }
                                 SPUtils.putValue(SPArgument.INTEGRAL, residue)
                             }
