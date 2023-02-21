@@ -42,7 +42,7 @@ object HttpUrls {
     //游戏搜索
     const val SEARCH = "/android/v2.game/search"
 
-    //游戏搜索
+    //添加到热门搜索
     const val ADD_TO_HOT_SEARCH = "/android/v2.game/recordSearch"
 
     //游戏信息
@@ -155,4 +155,13 @@ object HttpUrls {
 
     //新年活动_能量星详情
     const val NIAN_SHOU_STAR_INFO_NY = "/android/activity.newYear/getStar"
+
+    //所有游戏
+    const val ALL_GAME = "/android/v2.allGame/list"
+
+    //所有账号
+    const val ALL_ACCOUNT = "/android/v2.userGameAccount"
+
+    //账号校验
+    const val SAVE_ACCOUNT = "/android/v2.userGameAccount/saveOrUpdate"
 }

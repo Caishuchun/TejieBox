@@ -50,8 +50,8 @@ import kotlin.system.exitProcess
 class MainActivity : BaseActivity() {
 
     private var mainFragment: GameFragment? = null
-    private var playingFragment: GameFragment? = null
-    private var likeFragment: GameFragment? = null
+    private var moreGameFragment: MoreGameFragment? = null
+    private var playingFragment: PlayingAndCollectionFatherFragment? = null
     private var mineFragment: MineFragment? = null
 
     private var canQuit = false
@@ -122,7 +122,7 @@ class MainActivity : BaseActivity() {
     }
 
     enum class MainPage {
-        MAIN, PLAYING, LIKE, ME
+        MAIN, PLAYING, ALL, ME
     }
 
     override fun getLayoutId() = R.layout.activity_main
@@ -159,7 +159,7 @@ class MainActivity : BaseActivity() {
         StatusBarUtils.setTextDark(this, true)
         Aria.download(this).register()
 
-        mainFragment = GameFragment.newInstance(0)
+        mainFragment = GameFragment.newInstance()
 
         initView()
 //        isHaveNewPlayingGame(IsHaveNewPlayingGame(true))
@@ -242,10 +242,10 @@ class MainActivity : BaseActivity() {
         super.onAttachFragment(fragment)
         if (mainFragment == null && fragment is GameFragment && mainPage == MainPage.MAIN) {
             mainFragment = fragment
-        } else if (playingFragment == null && fragment is GameFragment && mainPage == MainPage.PLAYING) {
+        } else if (playingFragment == null && fragment is PlayingAndCollectionFatherFragment && mainPage == MainPage.PLAYING) {
             playingFragment = fragment
-        } else if (likeFragment == null && fragment is GameFragment && mainPage == MainPage.LIKE) {
-            likeFragment = fragment
+        } else if (moreGameFragment == null && fragment is MoreGameFragment && mainPage == MainPage.ALL) {
+            moreGameFragment = fragment
         } else if (mineFragment == null && fragment is MineFragment) {
             mineFragment = fragment
         }
@@ -543,7 +543,7 @@ class MainActivity : BaseActivity() {
                     tab_main.setCurrentItem(1)
                     toChangeFragment(1)
                 }
-                MainPage.LIKE -> {
+                MainPage.ALL -> {
                     tab_main.setCurrentItem(2)
                     toChangeFragment(2)
                 }
@@ -642,7 +642,7 @@ class MainActivity : BaseActivity() {
                 mainPage = MainPage.PLAYING
                 hideAll()
                 if (null == playingFragment) {
-                    playingFragment = GameFragment.newInstance(1)
+                    playingFragment = PlayingAndCollectionFatherFragment.newInstance()
                     currentFragment = playingFragment
                     supportFragmentManager.beginTransaction()
                         .add(R.id.fl_main, currentFragment!!)
@@ -655,16 +655,16 @@ class MainActivity : BaseActivity() {
                 }
             }
             2 -> {
-                mainPage = MainPage.LIKE
+                mainPage = MainPage.ALL
                 hideAll()
-                if (null == likeFragment) {
-                    likeFragment = GameFragment.newInstance(2)
-                    currentFragment = likeFragment
+                if (null == moreGameFragment) {
+                    moreGameFragment = MoreGameFragment.newInstance()
+                    currentFragment = moreGameFragment
                     supportFragmentManager.beginTransaction()
                         .add(R.id.fl_main, currentFragment!!)
                         .commitAllowingStateLoss()
                 } else {
-                    currentFragment = likeFragment
+                    currentFragment = moreGameFragment
                     supportFragmentManager.beginTransaction()
                         .show(currentFragment!!)
                         .commitAllowingStateLoss()
@@ -696,7 +696,7 @@ class MainActivity : BaseActivity() {
         supportFragmentManager.beginTransaction()
             .hide(mainFragment!!)
             .hide(playingFragment ?: mainFragment!!)
-            .hide(likeFragment ?: mainFragment!!)
+            .hide(moreGameFragment ?: mainFragment!!)
             .hide(mineFragment ?: mainFragment!!)
             .commitAllowingStateLoss()
     }

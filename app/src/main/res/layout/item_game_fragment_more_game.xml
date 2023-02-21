@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="@dimen/dp_90"
+    android:layout_height="wrap_content"
+    android:layout_marginBottom="@dimen/dp_6"
+    android:gravity="center_horizontal"
+    android:paddingTop="@dimen/dp_5"
+    android:orientation="vertical">
+
+    <com.fortune.tejiebox.widget.RoundImageView
+        android:id="@+id/iv_item_gameFragment_icon"
+        android:layout_width="@dimen/dp_54"
+        android:layout_height="@dimen/dp_54"
+        android:layout_marginStart="@dimen/dp_1_5"
+        android:layout_marginTop="@dimen/dp_1_5"
+        android:layout_marginEnd="@dimen/dp_1_5"
+        android:layout_marginBottom="@dimen/dp_1_5"
+        android:background="@drawable/bg_game_icon_un"
+        android:foreground="@drawable/bg_game_icon_select"
+        android:scaleType="centerCrop"
+        android:src="@mipmap/game_icon"
+        app:radius="@dimen/dp_9"
+        app:type="round" />
+
+    <TextView
+        android:id="@+id/tv_item_gameFragment_name"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/dp_5"
+        android:ellipsize="end"
+        android:gravity="center"
+        android:maxLength="6"
+        android:text="特戒"
+        android:textColor="#232323"
+        android:textSize="@dimen/sp_10"
+        android:textStyle="bold" />
+
+</LinearLayout>

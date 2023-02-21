@@ -10,6 +10,6 @@ object Box2GameUtils {
     fun getPhoneAndToken(): String {
         val phoneNum = SPUtils.getString(SPArgument.PHONE_NUMBER)
         val token = SPUtils.getString(SPArgument.USER_ID)
-        return "|phone=$phoneNum|token=$token"
+        return "|phone=$phoneNum|token=$token|logintype=1"
     }
 }

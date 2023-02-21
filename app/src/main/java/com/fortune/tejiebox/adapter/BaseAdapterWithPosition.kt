@@ -1,7 +1,5 @@
 package com.fortune.tejiebox.adapter
 
-import android.os.Handler
-import android.os.Looper
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -38,24 +36,10 @@ class BaseAdapterWithPosition<T> private constructor() :
     override fun onBindViewHolder(holder: BaseViewHolder, position: Int) {
 //        是否允许回收
 //        holder.setIsRecyclable(false)
-        holder.handler.removeMessages(0)
-        holder.handler.postDelayed({
-            addBindView!!.invoke(holder.itemView, mDataList!![position], position)
-        }, 50)
+        addBindView!!.invoke(holder.itemView, mDataList!![position], position)
     }
 
-    override fun onViewDetachedFromWindow(holder: BaseViewHolder) {
-//        super.onViewDetachedFromWindow(holder)
-        holder.handler.removeMessages(0)
-    }
-
-    override fun onViewRecycled(holder: BaseViewHolder) {
-        super.onViewRecycled(holder)
-    }
-
-    inner class BaseViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
-        var handler = Handler(Looper.getMainLooper())
-    }
+    inner class BaseViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView)
 
     class Builder<B> {
         private var baseAdapter: BaseAdapterWithPosition<B> = BaseAdapterWithPosition()

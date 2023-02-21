@@ -28,7 +28,6 @@ import com.jakewharton.rxbinding2.view.RxView
 import com.jakewharton.rxbinding2.widget.RxTextView
 import com.umeng.analytics.MobclickAgent
 import com.unity3d.player.JumpUtils
-import io.reactivex.Observable
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.Disposable
 import io.reactivex.schedulers.Schedulers
@@ -62,6 +61,9 @@ class SearchGameActivity : BaseActivity() {
     private var isPlayingGame = false
 
     private var getGiftCodeObservable: Disposable? = null
+
+    private var allAccountObservable: Disposable? = null
+    private var saveAccountObservable: Disposable? = null
 
     private var isNeedSugrec = true //是不是需要建议和历史记录的请求
 
@@ -600,60 +602,86 @@ class SearchGameActivity : BaseActivity() {
             .setLayoutId(R.layout.item_main_frament_game)
             .setData(searchList)
             .addBindView { itemView, itemData, position ->
-                Glide.with(this)
-                    .load(itemData.game_cover)
-                    .skipMemoryCache(true)
-                    .diskCacheStrategy(DiskCacheStrategy.AUTOMATIC)
-                    .into(itemView.iv_item_mainFragment_icon)
+                if (itemData.game_id < 10000) {
+                    Glide.with(this)
+                        .load(itemData.game_cover)
+                        .skipMemoryCache(true)
+                        .diskCacheStrategy(DiskCacheStrategy.AUTOMATIC)
+                        .into(itemView.iv_item_mainFragment_icon)
 
-                itemView.tv_item_mainFragment_gameName.text = itemData.game_name
-                itemView.tv_item_mainFragment_gameDes.text = itemData.game_desc
+                    itemView.fl_item_mainFragment_flow.visibility = View.VISIBLE
+                    itemView.tv_item_mainFragment_gameDes.text = itemData.game_desc
 
-                val typeView =
-                    LayoutInflater.from(this)
-                        .inflate(R.layout.layout_item_tag, null)
-                typeView.tv_tag.text = itemData.game_type
-                typeView.tv_tag.setTextColor(Color.parseColor("#5F60FF"))
-                typeView.tv_tag.setBackgroundResource(R.drawable.bg_tag1)
-                itemView.flowLayout_item_mainFragment.addView(typeView)
-                val size = itemData.game_tag.size
-                for (index in 0 until size) {
-                    val tagView =
+                    val typeView =
                         LayoutInflater.from(this)
                             .inflate(R.layout.layout_item_tag, null)
-                    tagView.tv_tag.text = itemData.game_tag[index]
-                    when (index % 2 == 0) {
-                        true -> {
-                            tagView.tv_tag.setTextColor(Color.parseColor("#5CE6FF"))
-                            tagView.tv_tag.setBackgroundResource(R.drawable.bg_tag2)
+                    typeView.tv_tag.text = itemData.game_type
+                    typeView.tv_tag.setTextColor(Color.parseColor("#5F60FF"))
+                    typeView.tv_tag.setBackgroundResource(R.drawable.bg_tag1)
+                    itemView.flowLayout_item_mainFragment.addView(typeView)
+                    val size = itemData.game_tag.size
+                    for (index in 0 until size) {
+                        val tagView =
+                            LayoutInflater.from(this)
+                                .inflate(R.layout.layout_item_tag, null)
+                        tagView.tv_tag.text = itemData.game_tag[index]
+                        when (index % 2 == 0) {
+                            true -> {
+                                tagView.tv_tag.setTextColor(Color.parseColor("#5CE6FF"))
+                                tagView.tv_tag.setBackgroundResource(R.drawable.bg_tag2)
+                            }
+                            false -> {
+                                tagView.tv_tag.setTextColor(Color.parseColor("#FF5FEB"))
+                                tagView.tv_tag.setBackgroundResource(R.drawable.bg_tag3)
+                            }
                         }
-                        false -> {
-                            tagView.tv_tag.setTextColor(Color.parseColor("#FF5FEB"))
-                            tagView.tv_tag.setBackgroundResource(R.drawable.bg_tag3)
-                        }
+                        itemView.flowLayout_item_mainFragment.addView(tagView)
                     }
-                    itemView.flowLayout_item_mainFragment.addView(tagView)
+                } else {
+                    itemView.tv_item_mainFragment_gameDes.visibility = View.GONE
+                    itemView.fl_item_mainFragment_flow.visibility = View.GONE
                 }
+                itemView.tv_item_mainFragment_gameName.text = itemData.game_name
 
                 RxView.clicks(itemView)
                     .throttleFirst(200, TimeUnit.MILLISECONDS)
                     .subscribe {
-                        toAddToHotSearch(itemData.game_name)
-                        val intent = Intent(this, GameDetailActivity::class.java)
-                        intent.putExtra(GameDetailActivity.GAME_ID, itemData.game_id)
-                        startActivity(intent)
+                        if (itemData.game_id < 10000) {
+                            toAddToHotSearch(itemData.game_name)
+                            val intent = Intent(this, GameDetailActivity::class.java)
+                            intent.putExtra(GameDetailActivity.GAME_ID, itemData.game_id)
+                            startActivity(intent)
+                        } else {
+                            //全部游戏,展示Dialog
+                            if (MyApp.getInstance().isHaveToken()) {
+                                toGetAllAccount(
+                                    itemData.game_id,
+                                    itemData.game_channelId
+                                )
+                            } else {
+                                LoginUtils.toQuickLogin(this)
+                            }
+                        }
                     }
 
                 RxView.clicks(itemView.tv_item_mainFragment_start)
                     .throttleFirst(200, TimeUnit.MILLISECONDS)
                     .subscribe {
                         if (MyApp.getInstance().isHaveToken()) {
-                            toAddToHotSearch(itemData.game_name)
-                            toStartGame(
-                                itemData.game_id,
-                                itemData.game_channelId,
-                                itemData.game_style
-                            )
+                            if (itemData.game_id < 10000) {
+                                toAddToHotSearch(itemData.game_name)
+                                toStartGame(
+                                    itemData.game_id,
+                                    itemData.game_channelId,
+                                    itemData.game_style
+                                )
+                            } else {
+                                //全部游戏,展示Dialog
+                                toGetAllAccount(
+                                    itemData.game_id,
+                                    itemData.game_channelId
+                                )
+                            }
                         } else {
                             LoginUtils.toQuickLogin(this)
                         }
@@ -701,10 +729,146 @@ class SearchGameActivity : BaseActivity() {
         }
     }
 
+
+    /**
+     * 获取全部账号
+     */
+    private fun toGetAllAccount(gameId: Int, gameChannelId: String) {
+        DialogUtils.showBeautifulDialog(this)
+        val allAccount = RetrofitUtils.builder().allAccount()
+        allAccountObservable = allAccount.subscribeOn(Schedulers.io())
+            .observeOn(AndroidSchedulers.mainThread())
+            .subscribe({
+                DialogUtils.dismissLoading()
+                LogUtils.d("success=>${Gson().toJson(it)}")
+                if (it != null) {
+                    when (it.code) {
+                        1 -> {
+                            DialogUtils.showStartGameDialog(
+                                this,
+                                it.data,
+                                object : DialogUtils.OnDialogListener4StartGame {
+                                    override fun tejieStart() {
+                                        toStartGame(gameId, gameChannelId)
+                                    }
+
+                                    override fun accountStart(account: String, password: String) {
+                                        toSaveAccount(gameId, gameChannelId, account, password)
+                                    }
+                                })
+                        }
+                        -1 -> {
+                            ToastUtils.show(it.msg)
+                            ActivityManager.toSplashActivity(this)
+                        }
+                        else -> {
+                            ToastUtils.show(it.msg)
+                        }
+                    }
+                } else {
+                    ToastUtils.show(getString(R.string.network_fail_to_responseDate))
+                }
+            }, {
+                DialogUtils.dismissLoading()
+                LogUtils.d("fail=>${it.message.toString()}")
+                ToastUtils.show(HttpExceptionUtils.getExceptionMsg(this, it))
+            })
+    }
+
+    /**
+     * 校验保存账号
+     */
+    private fun toSaveAccount(
+        gameId: Int,
+        gameChannelId: String,
+        account: String,
+        password: String
+    ) {
+        val saveAccount = RetrofitUtils.builder().saveAccount(account, password)
+        saveAccountObservable = saveAccount.subscribeOn(Schedulers.io())
+            .observeOn(AndroidSchedulers.mainThread())
+            .subscribe({
+                LogUtils.d("success=>${Gson().toJson(it)}")
+                if (it != null) {
+                    when (it.code) {
+                        1 -> {
+                            DialogUtils.dismissLoading()
+                            toStartGame(gameId, gameChannelId, account, password)
+                        }
+                        -1 -> {
+                            ToastUtils.show(it.msg)
+                            ActivityManager.toSplashActivity(this)
+                        }
+                        else -> {
+                            ToastUtils.show(it.msg)
+                        }
+                    }
+                } else {
+                    ToastUtils.show(getString(R.string.network_fail_to_responseDate))
+                }
+            }, {
+                LogUtils.d("fail=>${it.message.toString()}")
+                ToastUtils.show(HttpExceptionUtils.getExceptionMsg(this, it))
+            })
+    }
+
     /**
      * 启动游戏
      */
-    private fun toStartGame(gameId: Int, gameChannelid: String, gameStyle: String? = null) {
+    private fun toStartGame(gameId: Int, gameChannel: String, account: String, password: String) {
+        val isHaveId = SPUtils.getInt(SPArgument.IS_HAVE_ID)
+        if (isHaveId == 1) {
+            DialogUtils.showBeautifulDialog(this)
+            val addPlayingGame = RetrofitUtils.builder().addPlayingGame(gameId, 1)
+            addPlayingGameObservable = addPlayingGame.subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe({
+                    DialogUtils.dismissLoading()
+                    LogUtils.d("success=>${Gson().toJson(it)}")
+                    if (it != null) {
+                        when (it.code) {
+                            1 -> {
+                                //起个子线程的页面
+                                startActivity(Intent(this, ProcessActivity::class.java))
+
+                                EventBus.getDefault().post(PlayingDataChange(""))
+                                JumpUtils.jump2Game(
+                                    this,
+                                    "$gameChannel|phone=$account|token=$password|logintype=2",
+                                    null
+                                )
+                            }
+                            -1 -> {
+                                ToastUtils.show(it.msg)
+                                ActivityManager.toSplashActivity(this)
+                            }
+                            else -> {
+                                ToastUtils.show(it.msg)
+                            }
+                        }
+                    } else {
+                        ToastUtils.show(getString(R.string.network_fail_to_responseDate))
+                    }
+                }, {
+                    DialogUtils.dismissLoading()
+                    LogUtils.d("fail=>${it.message.toString()}")
+                    ToastUtils.show(HttpExceptionUtils.getExceptionMsg(this, it))
+                })
+        } else {
+            val intent = Intent(this, IdCardActivity::class.java)
+            intent.putExtra(IdCardActivity.FROM, 2)
+            intent.putExtra(IdCardActivity.GAME_ID, gameId)
+            intent.putExtra(IdCardActivity.GAME_CHANNEL, gameChannel)
+            intent.putExtra(IdCardActivity.ACCOUNT, account)
+            intent.putExtra(IdCardActivity.PASSWORD, password)
+            startActivity(intent)
+        }
+    }
+
+    /**
+     * 启动游戏
+     */
+    private fun toStartGame(gameId: Int, gameChannelId: String, gameStyle: String? = null) {
         val isHaveId = SPUtils.getInt(SPArgument.IS_HAVE_ID)
         if (isHaveId == 1) {
             DialogUtils.showBeautifulDialog(this)
@@ -722,15 +886,15 @@ class SearchGameActivity : BaseActivity() {
 
                                 EventBus.getDefault().post(PlayingDataChange(""))
                                 isPlayingGame = true
+
                                 SPUtils.putValue(
                                     SPArgument.GAME_TIME_INFO,
                                     "$gameId-${System.currentTimeMillis()}"
                                 )
-
                                 JumpUtils.jump2Game(
                                     this,
-                                    gameChannelid + Box2GameUtils.getPhoneAndToken(),
-                                    gameStyle
+                                    gameChannelId + Box2GameUtils.getPhoneAndToken(),
+                                    null
                                 )
                             }
                             -1 -> {
@@ -754,7 +918,7 @@ class SearchGameActivity : BaseActivity() {
             val intent = Intent(this, IdCardActivity::class.java)
             intent.putExtra(IdCardActivity.FROM, 2)
             intent.putExtra(IdCardActivity.GAME_ID, gameId)
-            intent.putExtra(IdCardActivity.GAME_CHANNEL, gameChannelid)
+            intent.putExtra(IdCardActivity.GAME_CHANNEL, gameChannelId)
             intent.putExtra(IdCardActivity.GAME_STYLE, gameStyle)
             startActivity(intent)
         }
@@ -819,7 +983,7 @@ class SearchGameActivity : BaseActivity() {
         } else if (str.startsWith("9") && str.length == 6 && isDigit(str)) {
             //99固定礼包
             toGetGiftCode(str)
-        } else if (str.startsWith("88") && str.length == 6 && isDigit(str)) {
+        } else if (str.startsWith("8") && str.length == 6 && isDigit(str)) {
             //特定礼包 88+游戏id
             toGetGiftCode(str)
         } else {
@@ -933,6 +1097,12 @@ class SearchGameActivity : BaseActivity() {
 
         getGiftCodeObservable?.dispose()
         getGiftCodeObservable = null
+
+        allAccountObservable?.dispose()
+        allAccountObservable = null
+
+        saveAccountObservable?.dispose()
+        saveAccountObservable = null
     }
 
     /**

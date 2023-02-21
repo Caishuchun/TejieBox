@@ -176,9 +176,7 @@ class DialogActivity : BaseActivity() {
                             ll_dialog_giftCode_show.visibility = View.VISIBLE
                             tv_dialog_giftCode_login.visibility = View.GONE
                             tv_dialog_giftCode_code.text = it.data.code
-                            if (giftNum.startsWith("9") && giftNum.length == 6) {
-                                tv_dialog_giftCode_time.visibility = View.GONE
-                            } else {
+                            if (giftNum == "888888") {
                                 tv_dialog_giftCode_time.visibility = View.VISIBLE
                                 time = it.data.ttl
 
@@ -194,6 +192,8 @@ class DialogActivity : BaseActivity() {
                                             toGetGiftCode()
                                         }
                                     }
+                            } else {
+                                tv_dialog_giftCode_time.visibility = View.GONE
                             }
                         }
                         -1 -> {

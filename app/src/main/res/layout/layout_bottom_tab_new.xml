@@ -81,7 +81,7 @@
                 android:id="@+id/tv_bottomTab_like"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="收藏"
+                android:text="全部"
                 android:textColor="#4DFFFFFF"
                 android:textSize="@dimen/sp_11"
                 android:textStyle="bold" />

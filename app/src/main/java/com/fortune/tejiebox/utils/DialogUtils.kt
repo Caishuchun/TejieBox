@@ -1,5 +1,6 @@
 package com.fortune.tejiebox.utils
 
+import android.annotation.SuppressLint
 import android.app.Activity
 import android.content.Context
 import android.content.Intent
@@ -8,19 +9,29 @@ import android.text.SpannableStringBuilder
 import android.text.TextPaint
 import android.text.method.LinkMovementMethod
 import android.text.style.ClickableSpan
+import android.view.LayoutInflater
 import android.view.View
 import android.view.WindowManager
+import android.widget.PopupWindow
 import android.widget.TextView
 import com.fortune.tejiebox.R
 import com.fortune.tejiebox.activity.WebActivity
+import com.fortune.tejiebox.adapter.BaseAdapterWithPosition
 import com.fortune.tejiebox.base.BaseAppUpdateSetting
 import com.fortune.tejiebox.base.BaseDialog
+import com.fortune.tejiebox.bean.AllAccountBean
+import com.fortune.tejiebox.constants.SPArgument
+import com.fortune.tejiebox.widget.SafeLinearLayoutManager
 import com.jakewharton.rxbinding2.view.RxView
+import com.jakewharton.rxbinding2.widget.RxTextView
 import io.reactivex.disposables.Disposable
 import kotlinx.android.synthetic.main.dialog_beautiful.*
 import kotlinx.android.synthetic.main.dialog_loading.*
+import kotlinx.android.synthetic.main.item_popup_account.view.*
 import kotlinx.android.synthetic.main.layout_dialog_agreement.*
 import kotlinx.android.synthetic.main.layout_dialog_default.*
+import kotlinx.android.synthetic.main.layout_dialog_start_game.*
+import kotlinx.android.synthetic.main.popupwindow_account.view.*
 import java.util.concurrent.TimeUnit
 import kotlin.system.exitProcess
 
@@ -43,6 +54,9 @@ object DialogUtils {
             getStarObservable?.dispose()
             getStarObservable = null
             mDialog = null
+            mPopupWindow?.dismiss()
+            mPopupWindow = null
+            isShowPopupWindow = false
         }
     }
 
@@ -204,6 +218,215 @@ object DialogUtils {
             dismissLoading()
         }
         mDialog?.show()
+    }
+
+
+    private var currentPage = 0
+    private var mPopupWindow: PopupWindow? = null
+    private var isShowPopupWindow = false
+
+    /**
+     * 显示进入未上架游戏Dialog
+     */
+    @SuppressLint("SetTextI18n", "CheckResult")
+    fun showStartGameDialog(
+        context: Activity,
+        data: List<AllAccountBean.Data>?,
+        listener: OnDialogListener4StartGame?
+    ) {
+        currentPage = 0
+        mPopupWindow?.dismiss()
+        mPopupWindow = null
+        isShowPopupWindow = false
+        if (mDialog != null) {
+            mDialog?.dismiss()
+            mDialog = null
+        }
+        mDialog = BaseDialog(context, R.style.new_circle_progress)
+        mDialog?.setContentView(R.layout.layout_dialog_start_game)
+        mDialog?.setCancelable(false)
+        mDialog?.setCanceledOnTouchOutside(false)
+
+        if (data == null || data.isEmpty()) {
+            mDialog?.iv_dialog_startGame_more?.visibility = View.GONE
+        } else {
+            mDialog?.iv_dialog_startGame_more?.visibility = View.VISIBLE
+            mDialog?.et_dialog_startGame_account?.let {
+                it.setText(data[0].account)
+                it.setSelection(data[0].account.length)
+            }
+            mDialog?.et_dialog_startGame_password?.let {
+                it.setText(data[0].password)
+                it.setSelection(data[0].password.length)
+            }
+
+            val popupWindow = LayoutInflater.from(context)
+                .inflate(R.layout.popupwindow_account, null)
+            val width = PhoneInfoUtils.getWidth(context)
+            mPopupWindow = PopupWindow(
+                popupWindow,
+                (248f / 360 * width).toInt(),
+                (36f / 360 * width).toInt() * Math.min(data.size, 6)
+            )
+            mPopupWindow?.setOnDismissListener {
+                isShowPopupWindow = false
+            }
+            mPopupWindow?.isOutsideTouchable = true
+            mPopupWindow?.isFocusable = true
+
+            val adapter = BaseAdapterWithPosition.Builder<AllAccountBean.Data>()
+                .setLayoutId(R.layout.item_popup_account)
+                .setData(data)
+                .addBindView { itemView, itemData, position ->
+                    itemView.tv_item_popup_account.text = itemData.account
+                    RxView.clicks(itemView)
+                        .throttleFirst(200, TimeUnit.MILLISECONDS)
+                        .subscribe {
+                            mDialog?.et_dialog_startGame_account?.let {
+                                it.setText(itemData.account)
+                                it.setSelection(itemData.account.length)
+                            }
+                            mDialog?.et_dialog_startGame_password?.let {
+                                it.setText(itemData.password)
+                                it.setSelection(itemData.password.length)
+                            }
+                            mPopupWindow?.dismiss()
+                        }
+                }.create()
+            popupWindow.rv_popupWindow_account.adapter = adapter
+            popupWindow.rv_popupWindow_account.layoutManager = SafeLinearLayoutManager(context)
+            adapter.notifyDataSetChanged()
+        }
+
+        changeView(context)
+        mDialog?.tv_dialog_startGame_btn1?.let {
+            RxView.clicks(it)
+                .throttleFirst(200, TimeUnit.MILLISECONDS)
+                .subscribe {
+                    currentPage = if (currentPage == 0) {
+                        1
+                    } else {
+                        0
+                    }
+                    changeView(context)
+                }
+        }
+        mDialog?.tv_dialog_startGame_btn2?.let {
+            RxView.clicks(it)
+                .throttleFirst(200, TimeUnit.MILLISECONDS)
+                .subscribe {
+                    if (currentPage == 0) {
+                        //特戒账号登录
+                        listener?.tejieStart()
+                    } else {
+                        //账号密码登录
+                        val account = mDialog?.et_dialog_startGame_account?.text?.toString()?.trim()
+                        val password =
+                            mDialog?.et_dialog_startGame_password?.text?.toString()?.trim()
+                        if (account != null && account != "" && password != null && password != "") {
+                            listener?.accountStart(account, password)
+                        } else {
+                            ToastUtils.show("请检查账号密码是否输入正确")
+                        }
+                    }
+                }
+        }
+
+        mDialog?.iv_dialog_startGame_cancel?.setOnClickListener {
+            currentPage = 0
+            mPopupWindow?.dismiss()
+            mPopupWindow = null
+            isShowPopupWindow = false
+            dismissLoading()
+        }
+        mDialog?.setOnCancelListener {
+            currentPage = 0
+            mPopupWindow?.dismiss()
+            mPopupWindow = null
+            isShowPopupWindow = false
+            dismissLoading()
+        }
+        mDialog?.show()
+    }
+
+    /**
+     * 改UI
+     */
+    private fun changeView(context: Activity) {
+        if (currentPage == 0) {
+            mDialog?.tv_dialog_startGame_phone?.let {
+                it.visibility = View.VISIBLE
+                it.text = formatPhone()
+            }
+
+            mDialog?.ll_dialog_startGame_account?.let {
+                it.visibility = View.GONE
+            }
+
+            mDialog?.tv_dialog_startGame_btn1?.let {
+                it.text = "已有账号登录"
+                it.setBackgroundResource(R.drawable.bg_green_btn)
+            }
+            mDialog?.tv_dialog_startGame_btn2?.let {
+                it.text = "盒子账号登录"
+                it.setBackgroundResource(R.drawable.bg_start_btn)
+            }
+        } else {
+            mDialog?.tv_dialog_startGame_phone?.let {
+                it.visibility = View.GONE
+            }
+
+            mDialog?.ll_dialog_startGame_account?.let {
+                it.visibility = View.VISIBLE
+            }
+
+            mDialog?.et_dialog_startGame_account?.let {
+                RxTextView.textChanges(it)
+                    .skipInitialValue()
+                    .subscribe {
+                        mDialog?.et_dialog_startGame_password?.setText("")
+                    }
+            }
+
+            mDialog?.iv_dialog_startGame_more?.let {
+                RxView.clicks(it)
+                    .throttleFirst(200, TimeUnit.MILLISECONDS)
+                    .subscribe {
+                        OtherUtils.hindKeyboard(context, mDialog?.et_dialog_startGame_account!!)
+                        if (isShowPopupWindow) {
+                            mPopupWindow?.dismiss()
+                        } else {
+                            mPopupWindow?.showAsDropDown(mDialog?.ll_dialog_startGame_account_view!!)
+                        }
+                        isShowPopupWindow = !isShowPopupWindow
+                    }
+            }
+
+            mDialog?.tv_dialog_startGame_btn1?.let {
+                it.text = "盒子账号登录"
+                it.setBackgroundResource(R.drawable.bg_start_btn)
+            }
+            mDialog?.tv_dialog_startGame_btn2?.let {
+                it.text = "登录"
+                it.setBackgroundResource(R.drawable.bg_green_btn)
+            }
+        }
+    }
+
+    /**
+     * 格式化手机号
+     */
+    private fun formatPhone(): String {
+        val phone = SPUtils.getString(SPArgument.PHONE_NUMBER, null)!!
+        return "${phone.substring(0, 3)}****${phone.substring(7)}"
+    }
+
+    /**
+     * 全部游戏登录回调
+     */
+    interface OnDialogListener4StartGame {
+        fun tejieStart()
+        fun accountStart(account: String, password: String)
     }
 
     interface OnDialogListener {

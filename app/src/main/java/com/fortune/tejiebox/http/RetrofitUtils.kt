@@ -495,5 +495,30 @@ object RetrofitUtils {
          */
         @GET(HttpUrls.NIAN_SHOU_STAR_INFO_NY)
         fun nianShouStarInfo(): Flowable<NewYear4StarBean>
+
+        /**
+         * 获取游戏列表_未上架
+         */
+        @GET(HttpUrls.ALL_GAME)
+        fun gameListNew(
+            @Query("page", encoded = true) page: Int
+        ): Flowable<GameListInfoBean>
+
+        /**
+         * 所有账号
+         */
+        @GET(HttpUrls.ALL_ACCOUNT)
+        fun allAccount(): Flowable<AllAccountBean>
+
+        /**
+         * 校验账号
+         */
+        @FormUrlEncoded
+        @POST(HttpUrls.SAVE_ACCOUNT)
+        fun saveAccount(
+            @Field("account", encoded = true) account: String,
+            @Field("password", encoded = true) password: String
+        ): Flowable<BaseBean>
+
     }
 }

@@ -1,0 +1,160 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="@dimen/dp_300"
+    android:layout_height="wrap_content"
+    android:background="@drawable/bg_white_card">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:visibility="visible">
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_marginTop="@dimen/dp_4"
+            android:layout_height="wrap_content">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_centerInParent="true"
+                android:text="登录"
+                android:textColor="@color/black_1A241F"
+                android:textSize="@dimen/sp_18"
+                android:textStyle="bold" />
+
+            <ImageView
+                android:id="@+id/iv_dialog_startGame_cancel"
+                android:layout_width="@dimen/dp_36"
+                android:layout_height="@dimen/dp_36"
+                android:layout_alignParentEnd="true"
+                android:src="@mipmap/delete_search" />
+
+        </RelativeLayout>
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_horizontal"
+            android:layout_margin="@dimen/dp_5"
+            android:text="该游戏可以使用特戒盒子账号登录\n也可以输入账号密码登录已注册账号"
+            android:textColor="@color/black_1A241F"
+            android:textSize="@dimen/sp_14" />
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/dp_79"
+            android:layout_marginTop="@dimen/dp_10"
+            android:layout_marginBottom="@dimen/dp_10">
+
+            <TextView
+                android:id="@+id/tv_dialog_startGame_phone"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:gravity="center"
+                android:textColor="@color/black_000000"
+                android:textSize="@dimen/sp_20"
+                android:textStyle="bold"
+                android:visibility="gone" />
+
+            <LinearLayout
+                android:id="@+id/ll_dialog_startGame_account"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_marginStart="@dimen/dp_26"
+                android:layout_marginEnd="@dimen/dp_26"
+                android:gravity="center"
+                android:orientation="vertical">
+
+                <LinearLayout
+                    android:id="@+id/ll_dialog_startGame_account_view"
+                    android:layout_width="match_parent"
+                    android:layout_height="@dimen/dp_36"
+                    android:background="@drawable/bg_rectangle_line_black"
+                    android:gravity="center"
+                    android:orientation="horizontal">
+
+                    <EditText
+                        android:id="@+id/et_dialog_startGame_account"
+                        android:layout_width="0dp"
+                        android:layout_height="match_parent"
+                        android:layout_weight="1"
+                        android:background="@null"
+                        android:hint="请输入账号"
+                        android:inputType="textVisiblePassword"
+                        android:maxLines="1"
+                        android:paddingStart="@dimen/dp_5"
+                        android:singleLine="true"
+                        android:textSize="@dimen/sp_14" />
+
+                    <ImageView
+                        android:id="@+id/iv_dialog_startGame_more"
+                        android:layout_width="@dimen/dp_36"
+                        android:layout_height="@dimen/dp_36"
+                        android:padding="@dimen/dp_5"
+                        android:src="@mipmap/down_black" />
+
+                </LinearLayout>
+
+                <View
+                    android:layout_width="0dp"
+                    android:layout_height="0dp"
+                    android:layout_weight="1" />
+
+                <EditText
+                    android:id="@+id/et_dialog_startGame_password"
+                    android:layout_width="match_parent"
+                    android:layout_height="@dimen/dp_36"
+                    android:background="@drawable/bg_rectangle_line_black"
+                    android:hint="请输入密码"
+                    android:inputType="textPassword"
+                    android:maxLines="1"
+                    android:paddingStart="@dimen/dp_5"
+                    android:singleLine="true"
+                    android:textSize="@dimen/sp_14" />
+
+            </LinearLayout>
+        </RelativeLayout>
+
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_margin="@dimen/dp_10"
+            android:gravity="center"
+            android:orientation="horizontal">
+
+            <TextView
+                android:id="@+id/tv_dialog_startGame_btn1"
+                android:layout_width="@dimen/dp_110"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_horizontal"
+                android:background="@drawable/bg_green_btn"
+                android:gravity="center"
+                android:paddingTop="@dimen/dp_5"
+                android:paddingBottom="@dimen/dp_5"
+                android:text="已有账号登录"
+                android:textColor="@color/white_FFFFFF"
+                android:textSize="@dimen/dp_14"
+                android:textStyle="bold" />
+
+            <TextView
+                android:id="@+id/tv_dialog_startGame_btn2"
+                android:layout_width="@dimen/dp_110"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_horizontal"
+                android:layout_marginStart="@dimen/dp_30"
+                android:background="@drawable/bg_start_btn"
+                android:gravity="center"
+                android:paddingTop="@dimen/dp_5"
+                android:paddingBottom="@dimen/dp_5"
+                android:text="盒子直接登录"
+                android:textColor="@color/white_FFFFFF"
+                android:textSize="@dimen/dp_14"
+                android:textStyle="bold" />
+        </LinearLayout>
+
+    </LinearLayout>
+
+</RelativeLayout>

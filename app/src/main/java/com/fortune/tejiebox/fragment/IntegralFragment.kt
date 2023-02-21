@@ -186,6 +186,7 @@ class IntegralFragment : Fragment() {
             }
             .create()
         mView?.rv_integralFragment_recharge?.let {
+            it.isNestedScrollingEnabled = false
             it.adapter = mAdapter
             it.layoutManager = SafeStaggeredGridLayoutManager(3, OrientationHelper.VERTICAL)
         }
@@ -380,6 +381,13 @@ class IntegralFragment : Fragment() {
         val sortedBy = pricelist.sortedBy {
             it.money.toInt()
         }
+//        for (price in sortedBy) {
+//            if (price.money.toInt() <= 50) {
+//                mData.add(price)
+//            }else{
+//                break
+//            }
+//        }
         mData.addAll(sortedBy)
         mAdapter?.notifyDataSetChanged()
     }

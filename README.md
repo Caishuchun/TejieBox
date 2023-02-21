@@ -5,6 +5,10 @@
 2. git config --global http.proxy 127.0.0.1:7890
 3. git config --global https.proxy 127.0.0.1:7890
 
+### V3.2.0
+上架全部游戏
+游戏内增加称号
+
 ### V3.1.6
 ...去新年活动版...
 游戏充值+登录器皮肤

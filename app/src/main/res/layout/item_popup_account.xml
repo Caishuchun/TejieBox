@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="@dimen/dp_36"
+    android:orientation="vertical">
+
+    <TextView
+        android:id="@+id/tv_item_popup_account"
+        android:layout_width="wrap_content"
+        android:layout_height="0dp"
+        android:gravity="center_vertical"
+        android:layout_weight="1"
+        android:paddingStart="@dimen/dp_10"
+        android:textColor="@color/black_000000"
+        android:textSize="@dimen/sp_14" />
+
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/dp_0_5"
+        android:visibility="gone"
+        android:background="@color/black_1A241F" />
+
+</LinearLayout>

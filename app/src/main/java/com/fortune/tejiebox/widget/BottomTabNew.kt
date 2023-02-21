@@ -120,16 +120,10 @@ class BottomTabNew(context: Context, attrs: AttributeSet) : LinearLayout(context
         RxView.clicks(mView.rl_bottomTab_like)
             .throttleFirst(20, TimeUnit.MILLISECONDS)
             .subscribe {
-                MainActivity.mainPage = MainActivity.MainPage.LIKE
+                MainActivity.mainPage = MainActivity.MainPage.ALL
                 if (currentPos != 2) {
-                    if (MyApp.getInstance().isHaveToken()) {
-                        currentPos = 2
-                        changeItemStyle(2)
-                    } else {
-                        MainActivity.getInstance()?.let {
-                            LoginUtils.toQuickLogin(it)
-                        }
-                    }
+                    currentPos = 2
+                    changeItemStyle(2)
                 }
             }
         RxView.clicks(mView.rl_bottomTab_me)

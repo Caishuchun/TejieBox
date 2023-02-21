@@ -37,6 +37,9 @@ class IdCardActivity : BaseActivity() {
 
     private var gameStyle: String? = null
 
+    private var account: String? = null
+    private var password: String? = null
+
     companion object {
         @SuppressLint("StaticFieldLeak")
         private lateinit var instance: IdCardActivity
@@ -47,6 +50,9 @@ class IdCardActivity : BaseActivity() {
         const val GAME_ID = "gameId"
         const val GAME_CHANNEL = "gameChannel"
         const val GAME_STYLE = "gameStyle"
+
+        const val ACCOUNT = "account"
+        const val PASSWORD = "password"
     }
 
     override fun getLayoutId() = R.layout.activity_id_card
@@ -66,6 +72,8 @@ class IdCardActivity : BaseActivity() {
         gameChannel = intent.getStringExtra(GAME_CHANNEL)
         gameStyle = intent.getStringExtra(GAME_STYLE)
 
+        account = intent.getStringExtra(ACCOUNT)
+        password = intent.getStringExtra(PASSWORD)
         when (from) {
             1 -> {
                 //用来展示
@@ -191,15 +199,23 @@ class IdCardActivity : BaseActivity() {
 
                             EventBus.getDefault().post(PlayingDataChange(""))
                             isPlayingGame = true
-                            SPUtils.putValue(
-                                SPArgument.GAME_TIME_INFO,
-                                "$gameId-${System.currentTimeMillis()}"
-                            )
-                            JumpUtils.jump2Game(
-                                this,
-                                gameChannel + Box2GameUtils.getPhoneAndToken(),
-                                gameStyle
-                            )
+                            if (account == null) {
+                                SPUtils.putValue(
+                                    SPArgument.GAME_TIME_INFO,
+                                    "$gameId-${System.currentTimeMillis()}"
+                                )
+                                JumpUtils.jump2Game(
+                                    this,
+                                    gameChannel + Box2GameUtils.getPhoneAndToken(),
+                                    gameStyle
+                                )
+                            } else {
+                                JumpUtils.jump2Game(
+                                    this,
+                                    "$gameChannel|phone=$account|token=$password|logintype=2",
+                                    null
+                                )
+                            }
                             finish()
                         }
                         -1 -> {

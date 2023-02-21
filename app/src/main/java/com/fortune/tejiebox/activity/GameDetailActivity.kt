@@ -516,6 +516,7 @@ class GameDetailActivity : BaseActivity() {
                 Glide.with(this)
                     .load(itemData)
                     .diskCacheStrategy(DiskCacheStrategy.ALL)
+                    .override(600,450)
                     .into(itemView.iv_item_gamePicSmall)
 
                 if (currentPicPosition == position) {
