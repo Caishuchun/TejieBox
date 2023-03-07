@@ -233,7 +233,11 @@ class PlayingAndCollectionFragment : Fragment() {
                             requireActivity().startActivity(intent)
                         } else {
                             //启动弹框啥的
-                            toGetAllAccount(itemData.game_id, itemData.game_channelId)
+                            toGetAllAccount(
+                                itemData.game_id,
+                                itemData.game_name,
+                                itemData.game_channelId
+                            )
                         }
                     }
 
@@ -303,7 +307,7 @@ class PlayingAndCollectionFragment : Fragment() {
     /**
      * 获取全部账号
      */
-    private fun toGetAllAccount(gameId: Int, gameChannelId: String) {
+    private fun toGetAllAccount(gameId: Int, gameName: String, gameChannelId: String) {
         DialogUtils.showBeautifulDialog(requireContext())
         val allAccount = RetrofitUtils.builder().allAccount()
         allAccountObservable = allAccount.subscribeOn(Schedulers.io())
@@ -316,6 +320,7 @@ class PlayingAndCollectionFragment : Fragment() {
                         1 -> {
                             DialogUtils.showStartGameDialog(
                                 requireActivity(),
+                                gameName,
                                 it.data,
                                 object : DialogUtils.OnDialogListener4StartGame {
                                     override fun tejieStart() {
@@ -402,7 +407,7 @@ class PlayingAndCollectionFragment : Fragment() {
                                 startActivity(Intent(requireContext(), ProcessActivity::class.java))
 
                                 EventBus.getDefault().post(PlayingDataChange(""))
-                                if (account==null) {
+                                if (account == null) {
                                     JumpUtils.jump2Game(
                                         requireActivity(),
                                         "$gameChannel${Box2GameUtils.getPhoneAndToken()}",

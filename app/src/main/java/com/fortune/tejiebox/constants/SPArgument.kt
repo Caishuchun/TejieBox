@@ -10,7 +10,8 @@ object SPArgument {
     const val CODE_TIME = "code_time" //获得短信验证码的时间戳
     const val CODE_TIME_4_CHANGE_PHONE = "code_time_4_change_phone" //获得短信验证码的时间戳
     const val IS_LOGIN = "is_login" //是否在登录状态
-    const val IS_NEED_UPDATE_DIALOG = "is_need_update_dialog" //是否在登录状态
+    const val IS_NEED_UPDATE_DIALOG = "is_need_update_dialog" //是否需要显示更新Dialog
+    const val NOTICE_ID = "notice_id" //公告Id
     const val APP_DOWNLOAD_PATH = "app_download_path" //app下载后的地址
     const val ONLY_DEVICE_ID = "only_device_id"//设备唯一标识符
     const val IS_NEED_SHADE_NEW = "is_need_shade_new" //是否需要遮罩层,第二版
@@ -30,4 +31,7 @@ object SPArgument {
     const val LOGIN_ACCOUNT_PASS = "login_account_pass" //登录账号密码
 
     const val IS_SHOW_SHADE = "is_show_shade" //是否显示遮罩层
+
+    const val NEED_JUMP_GAME_ID_JUMP = "needJumpGameId4Jump" //需要跳转的游戏Id_跳转用
+    const val NEED_JUMP_GAME_ID_UPDATE = "needJumpGameId4Update" //需要跳转的游戏Id_传值用
 }

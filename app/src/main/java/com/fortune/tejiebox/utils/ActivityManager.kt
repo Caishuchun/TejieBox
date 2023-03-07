@@ -3,7 +3,7 @@ package com.fortune.tejiebox.utils
 import android.app.Activity
 import android.content.Intent
 import com.fortune.tejiebox.activity.MainActivity
-import com.fortune.tejiebox.activity.SplashActivity
+import com.fortune.tejiebox.activity.NewSplashActivity
 import com.fortune.tejiebox.bean.VersionBean
 import com.fortune.tejiebox.constants.SPArgument
 import com.fortune.tejiebox.event.LoginStatusChange
@@ -65,7 +65,7 @@ object ActivityManager {
         CustomerServiceInfoDataBase.getDataBase(activity).customerServiceInfoDao().clear()
         val glideCacheUtil = GlideCacheUtil()
         glideCacheUtil.clearImageAllCache(activity)
-        val intent = Intent(activity, SplashActivity::class.java)
+        val intent = Intent(activity, NewSplashActivity::class.java)
         intent.flags = Intent.FLAG_ACTIVITY_CLEAR_TASK or Intent.FLAG_ACTIVITY_NEW_TASK
         activity.startActivity(intent)
         activity.finish()

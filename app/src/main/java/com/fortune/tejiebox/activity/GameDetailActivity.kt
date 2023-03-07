@@ -27,6 +27,7 @@ import com.fortune.tejiebox.event.LikeDataChange
 import com.fortune.tejiebox.event.PlayingDataChange
 import com.fortune.tejiebox.http.RetrofitUtils
 import com.fortune.tejiebox.myapp.MyApp
+import com.fortune.tejiebox.service.GameDurationService
 import com.fortune.tejiebox.utils.*
 import com.fortune.tejiebox.widget.CenterLayoutManager
 import com.fortune.tejiebox.widget.SafeLinearLayoutManager
@@ -516,7 +517,7 @@ class GameDetailActivity : BaseActivity() {
                 Glide.with(this)
                     .load(itemData)
                     .diskCacheStrategy(DiskCacheStrategy.ALL)
-                    .override(600,450)
+                    .override(600, 450)
                     .into(itemView.iv_item_gamePicSmall)
 
                 if (currentPicPosition == position) {
@@ -616,6 +617,7 @@ class GameDetailActivity : BaseActivity() {
 
                                 EventBus.getDefault().post(PlayingDataChange(""))
                                 isPlayingGame = true
+                                GameDurationService.startGame(this, gameId)
                                 SPUtils.putValue(
                                     SPArgument.GAME_TIME_INFO,
                                     "$gameId-${System.currentTimeMillis()}"
@@ -939,6 +941,8 @@ class GameDetailActivity : BaseActivity() {
     override fun destroy() {
         mHandler.removeMessages(0)
         EventBus.getDefault().unregister(this)
+
+        GameDurationService.stopGame(this)
 
         gameInfoObservable?.dispose()
         gameInfoObservable = null

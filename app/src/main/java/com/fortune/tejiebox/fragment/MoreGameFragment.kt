@@ -17,6 +17,7 @@ import com.fortune.tejiebox.activity.ProcessActivity
 import com.fortune.tejiebox.adapter.BaseAdapterWithPosition
 import com.fortune.tejiebox.bean.AllAccountBean
 import com.fortune.tejiebox.bean.BaseGameListInfoBean
+import com.fortune.tejiebox.bean.GameInfo4ClipboardBean
 import com.fortune.tejiebox.constants.SPArgument
 import com.fortune.tejiebox.event.PlayingDataChange
 import com.fortune.tejiebox.http.RetrofitUtils
@@ -30,11 +31,12 @@ import com.scwang.smart.refresh.header.MaterialHeader
 import com.scwang.smart.refresh.layout.api.RefreshLayout
 import com.scwang.smart.refresh.layout.listener.OnRefreshLoadMoreListener
 import com.unity3d.player.JumpUtils
+import io.reactivex.Observable
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.Disposable
 import io.reactivex.schedulers.Schedulers
 import kotlinx.android.synthetic.main.fragment_game.view.*
-import kotlinx.android.synthetic.main.item_game_fragment_game.view.*
+import kotlinx.android.synthetic.main.item_game_fragment_more_game.view.*
 import org.greenrobot.eventbus.EventBus
 import java.util.concurrent.TimeUnit
 
@@ -55,6 +57,15 @@ class MoreGameFragment : Fragment() {
     companion object {
         @JvmStatic
         fun newInstance() = MoreGameFragment()
+
+        private var gameIdFromClipboardContent = -1
+        private var gameNameFromClipboardContent = ""
+        private var gameChannelIdFromClipboardContent = ""
+        fun setGameInfo(gameId: Int, gameName: String, gameChannelId: String) {
+            gameIdFromClipboardContent = gameId
+            gameNameFromClipboardContent = gameName
+            gameChannelIdFromClipboardContent = gameChannelId
+        }
     }
 
     override fun onCreateView(
@@ -87,7 +98,11 @@ class MoreGameFragment : Fragment() {
                     .throttleFirst(200, TimeUnit.MILLISECONDS)
                     .subscribe {
                         if (MyApp.getInstance().isHaveToken()) {
-                            toGetAllAccount(itemData.game_id, itemData.game_channelId)
+                            toGetAllAccount(
+                                itemData.game_id,
+                                itemData.game_name,
+                                itemData.game_channelId
+                            )
                         } else {
                             LoginUtils.toQuickLogin(requireActivity())
                         }
@@ -151,7 +166,7 @@ class MoreGameFragment : Fragment() {
     /**
      * 获取全部账号
      */
-    private fun toGetAllAccount(gameId: Int, gameChannelId: String) {
+    private fun toGetAllAccount(gameId: Int, gameName: String, gameChannelId: String) {
         DialogUtils.showBeautifulDialog(requireContext())
         val allAccount = RetrofitUtils.builder().allAccount()
         allAccountObservable = allAccount.subscribeOn(Schedulers.io())
@@ -164,6 +179,7 @@ class MoreGameFragment : Fragment() {
                         1 -> {
                             DialogUtils.showStartGameDialog(
                                 requireActivity(),
+                                gameName,
                                 it.data,
                                 object : DialogUtils.OnDialogListener4StartGame {
                                     override fun tejieStart() {
@@ -313,6 +329,13 @@ class MoreGameFragment : Fragment() {
                                 if (currentPage == 1) {
                                     mData.clear()
                                     mAdapter?.notifyDataSetChanged()
+                                    //第一次跳转过来并加载了数据之后,需要检查剪切板数据
+                                    Observable.timer(1, TimeUnit.SECONDS)
+                                        .subscribeOn(Schedulers.io())
+                                        .observeOn(AndroidSchedulers.mainThread())
+                                        .subscribe {
+                                            toCheckIsNeedOpenGame()
+                                        }
                                 }
                                 if (it.data.list.isNotEmpty()) {
                                     val count = it.data.paging.count
@@ -360,6 +383,42 @@ class MoreGameFragment : Fragment() {
                     ToastUtils.show(HttpExceptionUtils.getExceptionMsg(requireContext(), it))
                 }
             )
+    }
+
+    /**
+     * 检查是否需要开启游戏
+     */
+    private fun toCheckIsNeedOpenGame() {
+        val data = GameInfo4ClipboardBean.getData() ?: return
+        LogUtils.d("剪切板拿到的数据:$data")
+        GameInfo4ClipboardBean.setData(null)
+        ClipboardUtils.clearClipboardContent(requireActivity())
+        val list = arrayListOf<AllAccountBean.Data>()
+        list.add(AllAccountBean.Data(data.account, data.password))
+        DialogUtils.showStartGameDialog(
+            requireActivity(),
+            gameNameFromClipboardContent,
+            list,
+            object : DialogUtils.OnDialogListener4StartGame {
+                override fun tejieStart() {
+                    toStartGame(
+                        gameIdFromClipboardContent,
+                        gameChannelIdFromClipboardContent,
+                        null,
+                        null
+                    )
+                }
+
+                override fun accountStart(account: String, password: String) {
+                    toSaveAccount(
+                        gameIdFromClipboardContent,
+                        gameChannelIdFromClipboardContent,
+                        account,
+                        password
+                    )
+                }
+            }, 1
+        )
     }
 
     override fun onDestroy() {

@@ -11,6 +11,7 @@ import com.fortune.tejiebox.activity.DialogActivity
 import com.fortune.tejiebox.activity.Login4AccountActivity
 import com.fortune.tejiebox.activity.LoginActivity
 import com.fortune.tejiebox.base.BaseAppUpdateSetting
+import com.fortune.tejiebox.bean.GameInfo4ClipboardBean
 import com.fortune.tejiebox.constants.FilesArgument
 import com.fortune.tejiebox.constants.SPArgument
 import com.fortune.tejiebox.event.LoginStatusChange
@@ -398,11 +399,20 @@ object LoginUtils {
         SPUtils.putValue(SPArgument.IS_HAVE_ID, 0)
         SPUtils.putValue(SPArgument.ID_NAME, null)
         SPUtils.putValue(SPArgument.ID_NUM, null)
-        val quickLogin4Ali = RetrofitUtils.builder().quickLogin4Ali(accessCode)
+        val data = GameInfo4ClipboardBean.getData()
+        val gameChannel = data?.channelId
+        var gameId: Int? = SPUtils.getInt(SPArgument.NEED_JUMP_GAME_ID_UPDATE, -1)
+        if (gameId == -1) {
+            gameId = null
+        }
+        val quickLogin4Ali =
+            RetrofitUtils.builder()
+                .quickLogin4Ali(accessCode, GetDeviceId.getDeviceId(activity), gameChannel, gameId)
         quickLogin4AliObservable = quickLogin4Ali.subscribeOn(Schedulers.io())
             .observeOn(AndroidSchedulers.mainThread())
             .subscribe({
                 DialogUtils.dismissLoading()
+                SPUtils.putValue(SPArgument.NEED_JUMP_GAME_ID_UPDATE, -1)
                 LogUtils.d("Result==>${Gson().toJson(it)}")
                 if (it != null) {
                     when (it.code) {

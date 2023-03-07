@@ -4,6 +4,7 @@ import android.annotation.SuppressLint
 import android.os.SystemClock
 import com.fortune.tejiebox.R
 import com.fortune.tejiebox.base.BaseActivity
+import com.fortune.tejiebox.bean.GameInfo4ClipboardBean
 import com.fortune.tejiebox.constants.SPArgument
 import com.fortune.tejiebox.http.RetrofitUtils
 import com.fortune.tejiebox.myapp.MyApp
@@ -100,7 +101,7 @@ class ChangePhone2Activity : BaseActivity() {
      */
     private fun toBindPhone(code: String) {
         DialogUtils.showBeautifulDialog(this)
-        val bingPhone = RetrofitUtils.builder().bingPhone(currentPhone, code)
+        val bingPhone = RetrofitUtils.builder().bingPhone(currentPhone, code, GetDeviceId.getDeviceId(this))
         bindPhoneObservable = bingPhone.subscribeOn(Schedulers.io())
             .observeOn(AndroidSchedulers.mainThread())
             .subscribe({

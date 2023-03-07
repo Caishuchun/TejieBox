@@ -20,13 +20,10 @@ import com.bumptech.glide.request.RequestListener
 import com.bumptech.glide.request.target.Target
 import com.fortune.tejiebox.R
 import com.fortune.tejiebox.activity.GameDetailActivity
-import com.fortune.tejiebox.activity.IdCardActivity
-import com.fortune.tejiebox.activity.ProcessActivity
 import com.fortune.tejiebox.activity.SearchGameActivity
 import com.fortune.tejiebox.adapter.BaseAdapterWithPosition
 import com.fortune.tejiebox.bean.BaseGameListInfoBean
 import com.fortune.tejiebox.constants.SPArgument
-import com.fortune.tejiebox.event.PlayingDataChange
 import com.fortune.tejiebox.http.RetrofitUtils
 import com.fortune.tejiebox.utils.*
 import com.fortune.tejiebox.widget.SafeStaggeredGridLayoutManager
@@ -36,13 +33,11 @@ import com.scwang.smart.refresh.footer.ClassicsFooter
 import com.scwang.smart.refresh.header.MaterialHeader
 import com.scwang.smart.refresh.layout.api.RefreshLayout
 import com.scwang.smart.refresh.layout.listener.OnRefreshLoadMoreListener
-import com.unity3d.player.JumpUtils
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.Disposable
 import io.reactivex.schedulers.Schedulers
 import kotlinx.android.synthetic.main.fragment_game.view.*
 import kotlinx.android.synthetic.main.item_game_fragment_game.view.*
-import org.greenrobot.eventbus.EventBus
 import java.util.concurrent.TimeUnit
 
 class GameFragment : Fragment() {
@@ -58,6 +53,15 @@ class GameFragment : Fragment() {
     companion object {
         @JvmStatic
         fun newInstance() = GameFragment()
+
+        private var mGameId = -1
+
+        /**
+         * 传GameId
+         */
+        fun setGameId(gameId: Int) {
+            mGameId = gameId
+        }
     }
 
     override fun onCreateView(
@@ -243,6 +247,22 @@ class GameFragment : Fragment() {
                                     }
                                     if (currentPage == 1) {
                                         mAdapter?.notifyDataSetChanged()
+                                        mView?.rv_gameFragment_game?.postDelayed(
+                                            {
+                                                if (mGameId != -1) {
+                                                    val intent = Intent(
+                                                        requireActivity(),
+                                                        GameDetailActivity::class.java
+                                                    )
+                                                    intent.putExtra(
+                                                        GameDetailActivity.GAME_ID,
+                                                        mGameId
+                                                    )
+                                                    requireActivity().startActivity(intent)
+                                                    mGameId = -1
+                                                }
+                                            }, 1000
+                                        )
                                     } else {
                                         mAdapter?.notifyItemRangeInserted(
                                             if (oldSize > 1) oldSize - 1 else 0,

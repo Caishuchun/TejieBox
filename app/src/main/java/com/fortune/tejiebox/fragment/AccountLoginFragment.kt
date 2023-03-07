@@ -77,6 +77,7 @@ class AccountLoginFragment : Fragment() {
             RxTextView.textChanges(et)
                 .skipInitialValue()
                 .subscribe {
+                    mView?.et_account_login_pass?.setText("")
                     if (it.length > 16) {
                         ToastUtils.show("登录账号不得超过16位字符")
                         et.setText(it.substring(0, it.length - 1))

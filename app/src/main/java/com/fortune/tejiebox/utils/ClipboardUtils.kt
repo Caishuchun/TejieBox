@@ -17,31 +17,24 @@ object ClipboardUtils {
     /**
      * 获取剪切板数据
      */
-    fun getClipboardContent(activity: Activity): String {
+    fun getClipboardContent(activity: Activity): String? {
         try {
             if (manager == null) {
                 manager = activity.getSystemService(Context.CLIPBOARD_SERVICE) as ClipboardManager
             }
             val primaryClip = manager?.primaryClip
             if (primaryClip == null || primaryClip.itemCount <= 0) {
-                return ""
+                return null
             }
             val item0Content = primaryClip.getItemAt(0)
-            //清空剪切板
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
-                //api28以上
-                manager?.clearPrimaryClip()
-            } else {
-                manager?.setPrimaryClip(ClipData(null))
-            }
             return if (item0Content == null || item0Content.text == null) {
-                ""
+                null
             } else {
                 item0Content.text.toString()
             }
         } catch (e: Exception) {
             e.printStackTrace()
-            return ""
+            return null
         }
     }
 
@@ -56,6 +49,26 @@ object ClipboardUtils {
             val mClipData =
                 ClipData.newPlainText(activity.resources.getString(R.string.app_name), content)
             manager?.setPrimaryClip(mClipData)
+        } catch (e: Exception) {
+            e.printStackTrace()
+        }
+    }
+
+    /**
+     * 清空剪切板
+     */
+    fun clearClipboardContent(activity: Activity){
+        try {
+            if (manager == null) {
+                manager = activity.getSystemService(Context.CLIPBOARD_SERVICE) as ClipboardManager
+            }
+            //清空剪切板
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
+                //api28以上
+                manager?.clearPrimaryClip()
+            } else {
+                manager?.setPrimaryClip(ClipData(null))
+            }
         } catch (e: Exception) {
             e.printStackTrace()
         }

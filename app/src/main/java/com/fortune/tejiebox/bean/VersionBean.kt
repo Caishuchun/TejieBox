@@ -9,7 +9,8 @@ class VersionBean {
         fun setData(data: DataBean) {
             this.mDate = data
         }
-        fun clear(){
+
+        fun clear() {
             this.mDate = null
         }
     }
@@ -65,6 +66,8 @@ class VersionBean {
         var update_url2: String? = null
         var default_page: String? = null
         var channel: Int? = null
-        var activity_is_open:Int? = null
+        var activity_is_open: Int? = null
+        var notice: String? = null
+        var gm_user_fee_duration: Int? = null
     }
 }

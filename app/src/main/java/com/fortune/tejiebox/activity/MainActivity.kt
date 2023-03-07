@@ -6,19 +6,16 @@ import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
 import android.content.IntentFilter
-import android.net.Uri
 import android.os.*
-import android.provider.Settings
 import android.view.View
 import android.view.animation.*
-import androidx.annotation.RequiresApi
-import androidx.core.content.FileProvider
 import androidx.fragment.app.Fragment
 import com.arialyy.aria.core.Aria
-import com.arialyy.aria.core.task.DownloadTask
 import com.fortune.tejiebox.R
 import com.fortune.tejiebox.base.BaseActivity
 import com.fortune.tejiebox.base.BaseAppUpdateSetting
+import com.fortune.tejiebox.bean.AllAccountBean
+import com.fortune.tejiebox.bean.GameInfo4ClipboardBean
 import com.fortune.tejiebox.bean.VersionBean
 import com.fortune.tejiebox.constants.SPArgument
 import com.fortune.tejiebox.event.*
@@ -30,6 +27,7 @@ import com.fortune.tejiebox.room.CustomerServiceInfo
 import com.fortune.tejiebox.room.CustomerServiceInfoDataBase
 import com.fortune.tejiebox.utils.*
 import com.fortune.tejiebox.utils.ActivityManager
+import com.google.gson.Gson
 import com.jakewharton.rxbinding2.view.RxView
 import com.umeng.analytics.MobclickAgent
 import io.reactivex.Observable
@@ -45,7 +43,6 @@ import java.io.File
 import java.text.SimpleDateFormat
 import java.util.*
 import java.util.concurrent.TimeUnit
-import kotlin.system.exitProcess
 
 class MainActivity : BaseActivity() {
 
@@ -56,8 +53,6 @@ class MainActivity : BaseActivity() {
 
     private var canQuit = false
     var currentFragment: Fragment? = null
-    private var downloadPath = "" //下载的安装路径
-    private var isDownloadApp = false //是否在下载app
     private var updateGameTimeInfoObservable: Disposable? = null
     private var canGetIntegralObservable: Disposable? = null
 
@@ -68,6 +63,7 @@ class MainActivity : BaseActivity() {
     private var getSplashUrlObservable: Disposable? = null
     private var getReCustomerInfoObservable: Disposable? = null
     private var textFontChangeObservable: Disposable? = null
+    private var getGameIdObservable: Disposable? = null
 
     companion object {
         @SuppressLint("StaticFieldLeak")
@@ -173,12 +169,18 @@ class MainActivity : BaseActivity() {
 
         ll_shade_root.postDelayed({
             if (MyApp.getInstance().isHaveToken()) {
+                //检查是否能够领取奖励
                 toCheckCanGetIntegral()
+                //如果登录了获取一下客服回复消息
+                toGetCustomerServiceInfo()
             }
         }, 1000)
-        //如果登录了获取一下客服回复消息
-        if (MyApp.getInstance().isHaveToken()) {
-            toGetCustomerServiceInfo()
+
+        val gameId = SPUtils.getInt(SPArgument.NEED_JUMP_GAME_ID_JUMP, -1)
+        if (gameId != -1) {
+            //需要跳转到游戏详情页
+            GameFragment.setGameId(gameId)
+            SPUtils.putValue(SPArgument.NEED_JUMP_GAME_ID_JUMP, -1)
         }
     }
 
@@ -225,19 +227,6 @@ class MainActivity : BaseActivity() {
             })
     }
 
-    /**
-     * apk下载
-     */
-    private fun toDownloadApk(updateUrl: String) {
-        isDownloadApp = true
-        Aria.download(this)
-            .load(updateUrl) //读取下载地址
-            .setFilePath(downloadPath, true) //设置文件保存的完整路径
-            .ignoreFilePathOccupy()
-            .ignoreCheckPermissions()
-            .create()
-    }
-
     override fun onAttachFragment(fragment: Fragment) {
         super.onAttachFragment(fragment)
         if (mainFragment == null && fragment is GameFragment && mainPage == MainPage.MAIN) {
@@ -259,47 +248,34 @@ class MainActivity : BaseActivity() {
 
         val data = VersionBean.getData()
         if (data != null) {
-            val newVersion = data.version_name!!.replace(".", "").toInt()
-            val currentVersion = MyApp.getInstance().getVersion().replace(".", "").toInt()
-            LogUtils.d("toDownLoadApk==>newVersion = $newVersion, currentVersion = $currentVersion")
-            //获取实际的下载地址
-            val updateUrl = if (BaseAppUpdateSetting.isToPromoteVersion) {
-                if (data.update_url2 == null || data.update_url2?.isEmpty() == true) {
-                    data.update_url!!
-                } else {
-                    data.update_url2!!
-                }
-            } else {
-                data.update_url!!
-            }
-            val versionName = updateUrl.substring(updateUrl.lastIndexOf("/") + 1)
-            downloadPath =
-                getExternalFilesDir(Environment.DIRECTORY_DOWNLOADS).toString() + "/" + versionName
-            SPUtils.putValue(SPArgument.APP_DOWNLOAD_PATH, downloadPath)
-            if (newVersion > currentVersion) {
-                SPUtils.putValue(SPArgument.IS_NEED_UPDATE_DIALOG, true)
-                //需要更新的话,直接更新
-                if (isApkDownload(File(downloadPath))) {
-                    installAPK(File(downloadPath))
-                } else {
-                    toDownloadApk(updateUrl)
-                }
-            } else {
-                if (isApkDownload(File(downloadPath))) {
-                    toDeleteApk()
-                }
-                //已经更新过,默认的当然是不显示的
-                val isNeedUpdateDialog = SPUtils.getBoolean(SPArgument.IS_NEED_UPDATE_DIALOG, false)
-                if (isNeedUpdateDialog) {
-                    SPUtils.putValue(SPArgument.IS_NEED_UPDATE_DIALOG, false)
-                    VersionDialog.show(
-                        this@MainActivity,
-                        data.update_msg.toString(),
-                        object : VersionDialog.OnUpdateAPP {
-                            override fun onUpdate() {
-                            }
+            val isNeedUpdateDialog =
+                SPUtils.getBoolean(SPArgument.IS_NEED_UPDATE_DIALOG, false)
+            if (isNeedUpdateDialog) {
+                SPUtils.putValue(SPArgument.IS_NEED_UPDATE_DIALOG, false)
+                VersionDialog.show(
+                    this@MainActivity,
+                    data.update_msg.toString(),
+                    object : VersionDialog.OnUpdateAPP {
+                        override fun onUpdate() {
                         }
-                    )
+                    }
+                )
+            } else {
+                if (data.notice != null && data.notice?.contains("@") == true) {
+                    val noticeId = data.notice!!.split("@")[0].toInt()
+                    val noticeStr = data.notice!!.substring(data.notice!!.indexOf("@") + 1)
+                    val currentNoticeId = SPUtils.getInt(SPArgument.NOTICE_ID, -1)
+                    if (noticeId > currentNoticeId) {
+                        SPUtils.putValue(SPArgument.NOTICE_ID, noticeId)
+                        VersionDialog.show(
+                            this@MainActivity,
+                            noticeStr,
+                            object : VersionDialog.OnUpdateAPP {
+                                override fun onUpdate() {
+                                }
+                            }
+                        )
+                    }
                 }
             }
         }
@@ -329,23 +305,9 @@ class MainActivity : BaseActivity() {
             }
         })
 
-        /**
-         * 当进入APP,检查剪贴板的数据,如果数据对上的话,跳转到相应的游戏详情页
-         */
+        //页面加载结束1s之后
         window.decorView.postDelayed({
-            val isCheckAgreement = SPUtils.getBoolean(SPArgument.IS_CHECK_AGREEMENT, false)
-            if (BaseAppUpdateSetting.isToPromoteVersion && !isCheckAgreement) {
-                return@postDelayed
-            }
-            val gameChannelId = ClipboardUtils.getClipboardContent(this)
-            if (gameChannelId != "" && gameChannelId.startsWith("tejieBox_game_channelId=")) {
-                val intent = Intent(this, GameDetailActivity::class.java)
-                intent.putExtra(
-                    GameDetailActivity.GAME_CHANNEL_ID,
-                    gameChannelId.replace("tejieBox_game_channelId=", "")
-                )
-                startActivity(intent)
-            }
+            toCheckIsNeedOpenGame(MyApp.getInstance().isHaveToken())
         }, 1000)
 
         toCheckIsNeedUpdateGameInfo()
@@ -553,6 +515,7 @@ class MainActivity : BaseActivity() {
                 }
             }
             toGetCustomerServiceInfo()
+            toCheckIsNeedOpenGame(true)
         } else {
             tab_main.showMsgNum(0)
             EventBus.getDefault().post(LikeDataChange(""))
@@ -560,6 +523,53 @@ class MainActivity : BaseActivity() {
             tab_main.setCurrentItem(0)
             toChangeFragment(0)
         }
+    }
+
+    /**
+     * 检查是否需要打开游戏
+     * @param isLogined 是否一登录
+     */
+    private fun toCheckIsNeedOpenGame(isLogined: Boolean = false) {
+        val data = GameInfo4ClipboardBean.getData() ?: return
+        LogUtils.d("剪切板拿到的数据:$data")
+        if (isLogined) {
+            //登录先判断是否能获取到游戏id
+            toGetGameInfo(data.version)
+        } else {
+            //没登录就跳转登录
+            LoginUtils.toQuickLogin(this)
+        }
+    }
+
+    /**
+     * 通过游戏渠道号获取游戏数据
+     */
+    private fun toGetGameInfo(channelId: String) {
+        val getGameId = RetrofitUtils.builder().getGameId(channelId)
+        getGameIdObservable = getGameId.subscribeOn(Schedulers.io())
+            .observeOn(AndroidSchedulers.mainThread())
+            .subscribe(
+                {
+                    if (it.code == 1 && it.data != null && it.data.game_id != null) {
+                        if (it.data.game_id < 10000) {
+                            //上架游戏
+                        } else {
+                            //全部游戏
+                            if (it.data.game_channelId != null) {
+                                tab_main.setCurrentItem(2)
+                                toChangeFragment(2)
+                                MoreGameFragment.setGameInfo(
+                                    it.data.game_id,
+                                    it.data.game_name ?: "特戒盒子游戏",
+                                    it.data.game_channelId
+                                )
+                            }
+                        }
+                    }
+                }, {
+                    GameInfo4ClipboardBean.setData(null)
+                    ClipboardUtils.clearClipboardContent(this)
+                })
     }
 
     @Subscribe(sticky = true, threadMode = ThreadMode.MAIN)
@@ -703,11 +713,7 @@ class MainActivity : BaseActivity() {
 
     override fun destroy() {
         EventBus.getDefault().unregister(this)
-        downloadPath = ""
         SPUtils.putValue(SPArgument.APP_DOWNLOAD_PATH, null)
-        isDownloadApp = false
-        Aria.download(this).stopAllTask()
-        Aria.download(this).resumeAllTask()
         unregisterReceiver(timeChangeReceiver)
 
         updateGameTimeInfoObservable?.dispose()
@@ -725,131 +731,9 @@ class MainActivity : BaseActivity() {
 
         textFontChangeObservable?.dispose()
         textFontChangeObservable = null
-    }
 
-    override fun onTaskResume(task: DownloadTask?) {
-        if (isDownloadApp) {
-            if (!ApkDownloadDialog.isShowing() && !isFinishing) {
-                ApkDownloadDialog.showDialog(this)
-            }
-            ApkDownloadDialog.setProgress(task?.percent ?: 0)
-        }
-    }
-
-    override fun onTaskStart(task: DownloadTask?) {
-        if (isDownloadApp) {
-            if (!ApkDownloadDialog.isShowing()) {
-                ApkDownloadDialog.showDialog(this)
-            }
-            ApkDownloadDialog.setProgress(task?.percent ?: 0)
-        }
-    }
-
-    override fun onTaskStop(task: DownloadTask?) {
-    }
-
-    override fun onTaskCancel(task: DownloadTask?) {
-        if (isDownloadApp) {
-            ApkDownloadDialog.dismissLoading()
-            isDownloadApp = false
-        }
-    }
-
-    override fun onTaskFail(task: DownloadTask?, e: Exception?) {
-        if (isDownloadApp) {
-            ApkDownloadDialog.dismissLoading()
-            isDownloadApp = false
-        }
-    }
-
-    @SuppressLint("CheckResult")
-    override fun onTaskComplete(task: DownloadTask?) {
-        if (isDownloadApp) {
-            isDownloadApp = false
-            ApkDownloadDialog.setProgress(100)
-            ApkDownloadDialog.dismissLoading()
-            Aria.download(this).stopAllTask()
-            Aria.download(this).removeAllTask(false)
-            if (isApkDownload(File(downloadPath)) && !MyApp.isBackground) {
-                installAPK(File(downloadPath))
-            }
-        }
-    }
-
-    override fun onTaskRunning(task: DownloadTask?) {
-        if (isDownloadApp) {
-            if (!ApkDownloadDialog.isShowing()) {
-                ApkDownloadDialog.showDialog(this)
-            }
-            ApkDownloadDialog.setProgress(task?.percent!!)
-        }
-    }
-
-    /**
-     * 判断文件是否完全下载下来
-     */
-    private fun isApkDownload(file: File) = file.exists() && file.isFile
-
-    /**
-     * 去删除安装包
-     */
-    private fun toDeleteApk() {
-        Thread {
-            DeleteApkUtils.deleteApk(File(downloadPath))
-        }.start()
-    }
-
-    /**
-     *下载到本地后执行安装
-     */
-    private fun installAPK(file: File) {
-        //版本更新的时候,删除所有的启动图
-        toDeleteAllSplashImg()
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            val canRequestPackageInstalls = packageManager.canRequestPackageInstalls()
-            if (canRequestPackageInstalls) {
-                toInstallApp(file)
-            } else {
-                val uri = Uri.parse("package:$packageName")
-                val intent = Intent(Settings.ACTION_MANAGE_UNKNOWN_APP_SOURCES, uri)
-                startActivityForResult(intent, 100)
-                return
-            }
-        } else {
-            toInstallApp(file)
-        }
-    }
-
-    @RequiresApi(Build.VERSION_CODES.O)
-    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
-        super.onActivityResult(requestCode, resultCode, data)
-        if (requestCode == 100 && packageManager.canRequestPackageInstalls()) {
-            downloadPath = SPUtils.getString(SPArgument.APP_DOWNLOAD_PATH, "")!!
-            if (isApkDownload(File(downloadPath))) {
-                toInstallApp(File(downloadPath))
-            }
-        } else if (requestCode == 100 && !packageManager.canRequestPackageInstalls()) {
-            ToastUtils.show(getString(R.string.author_fail))
-        }
-    }
-
-    /**
-     * 开始安装
-     */
-    private fun toInstallApp(file: File) {
-        val intent = Intent()
-        intent.action = Intent.ACTION_VIEW
-        intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK
-        val apkUri = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
-            intent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
-            FileProvider.getUriForFile(this, "$packageName.provider", file)
-        } else {
-            Uri.fromFile(file)
-        }
-        intent.setDataAndType(apkUri, "application/vnd.android.package-archive")
-        startActivity(intent)
-        android.os.Process.killProcess(android.os.Process.myPid())
-        exitProcess(0)
+        getGameIdObservable?.dispose()
+        getGameIdObservable = null
     }
 
     /**

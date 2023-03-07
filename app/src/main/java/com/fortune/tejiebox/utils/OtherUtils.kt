@@ -25,7 +25,6 @@ import java.util.regex.Pattern
  * @param isGotOutOfLine 判断文字是否违规
  * @param showSoftKeyboard 显示软键盘
  * @param hindKeyboard 隐藏软键盘
- * @param copy 复制到粘贴板
  * @param share 分享
  * @param sendSMS 发送短信
  * @param px2dp px转dp
@@ -169,17 +168,6 @@ object OtherUtils {
         if (active) {
             inputMethodManager.hideSoftInputFromWindow(view.windowToken, 0)
         }
-    }
-
-    /**
-     * 复制到粘贴板
-     */
-    fun copy(context: Context, msg: String) {
-        val clipData = ClipData.newPlainText("", msg)
-        val clipboardManager =
-            context.getSystemService(Context.CLIPBOARD_SERVICE) as ClipboardManager
-        clipboardManager.setPrimaryClip(clipData)
-        ToastUtils.show(context.getString(R.string.copy_success))
     }
 
     /**

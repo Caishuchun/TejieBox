@@ -164,4 +164,10 @@ object HttpUrls {
 
     //账号校验
     const val SAVE_ACCOUNT = "/android/v2.userGameAccount/saveOrUpdate"
+
+    //根据游戏渠道获取全部游戏的游戏id等信息
+    const val GET_GAME_ID = "android/v2.game/findGameId"
+
+    //用户游戏时长首次上报
+    const val UPDATE_GAME_DURATION = "/android/v2.game/fee"
 }

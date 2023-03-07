@@ -10,6 +10,7 @@ import com.fortune.tejiebox.constants.SPArgument
 import com.fortune.tejiebox.event.IsHaveIdChange
 import com.fortune.tejiebox.event.PlayingDataChange
 import com.fortune.tejiebox.http.RetrofitUtils
+import com.fortune.tejiebox.service.GameDurationService
 import com.fortune.tejiebox.utils.*
 import com.google.gson.Gson
 import com.jakewharton.rxbinding2.view.RxView
@@ -198,6 +199,9 @@ class IdCardActivity : BaseActivity() {
                             startActivity(Intent(this, ProcessActivity::class.java))
 
                             EventBus.getDefault().post(PlayingDataChange(""))
+                            if (gameId!! < 10000) {
+                                GameDurationService.startGame(this, gameId!!)
+                            }
                             isPlayingGame = true
                             if (account == null) {
                                 SPUtils.putValue(
@@ -216,7 +220,7 @@ class IdCardActivity : BaseActivity() {
                                     null
                                 )
                             }
-                            finish()
+//                            finish()
                         }
                         -1 -> {
                             ToastUtils.show(it.msg)

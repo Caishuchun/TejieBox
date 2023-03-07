@@ -4,6 +4,8 @@
 1. git config http.sslVerify "false" 
 2. git config --global http.proxy 127.0.0.1:7890
 3. git config --global https.proxy 127.0.0.1:7890
+### V3.2.2
+剪切板数据跳转+APP升级+微信支付修复
 
 ### V3.2.0
 上架全部游戏

@@ -13,6 +13,7 @@ import com.fortune.tejiebox.activity.DialogActivity
 import com.fortune.tejiebox.activity.LoginActivity
 import com.fortune.tejiebox.activity.MainActivity
 import com.fortune.tejiebox.base.BaseAppUpdateSetting
+import com.fortune.tejiebox.bean.GameInfo4ClipboardBean
 import com.fortune.tejiebox.constants.SPArgument
 import com.fortune.tejiebox.event.LoginChangePage
 import com.fortune.tejiebox.event.LoginStatusChange
@@ -148,8 +149,20 @@ class LoginSecondFragment() : Fragment() {
      * 短信开始登录
      */
     private fun toLogin(code: String) {
+        val data = GameInfo4ClipboardBean.getData()
+        val gameChannel = data?.channelId
+        var gameId: Int? = SPUtils.getInt(SPArgument.NEED_JUMP_GAME_ID_UPDATE, -1)
+        if (gameId == -1) {
+            gameId = null
+        }
         DialogUtils.showBeautifulDialog(requireContext())
-        val login = RetrofitUtils.builder().login(phone!!, code.toInt())
+        val login = RetrofitUtils.builder().login(
+            phone!!,
+            code.toInt(),
+            GetDeviceId.getDeviceId(requireContext()),
+            gameChannel,
+            gameId
+        )
         SPUtils.putValue(SPArgument.LOGIN_TOKEN, null)
         SPUtils.putValue(SPArgument.PHONE_NUMBER, null)
         SPUtils.putValue(SPArgument.LOGIN_ACCOUNT, null)
@@ -162,6 +175,7 @@ class LoginSecondFragment() : Fragment() {
             .subscribe({
                 LogUtils.d("${javaClass.simpleName}=success==>${Gson().toJson(it)}")
                 DialogUtils.dismissLoading()
+                SPUtils.putValue(SPArgument.NEED_JUMP_GAME_ID_UPDATE, -1)
                 if (it != null) {
                     when (it.code) {
                         1 -> {

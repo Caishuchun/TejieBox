@@ -20,6 +20,7 @@ import com.fortune.tejiebox.event.PlayingDataChange
 import com.fortune.tejiebox.http.RetrofitUtils
 import com.fortune.tejiebox.myapp.MyApp
 import com.fortune.tejiebox.room.*
+import com.fortune.tejiebox.service.GameDurationService
 import com.fortune.tejiebox.utils.*
 import com.fortune.tejiebox.widget.SafeLinearLayoutManager
 import com.fortune.tejiebox.widget.SafeStaggeredGridLayoutManager
@@ -656,6 +657,7 @@ class SearchGameActivity : BaseActivity() {
                             if (MyApp.getInstance().isHaveToken()) {
                                 toGetAllAccount(
                                     itemData.game_id,
+                                    itemData.game_name,
                                     itemData.game_channelId
                                 )
                             } else {
@@ -670,6 +672,7 @@ class SearchGameActivity : BaseActivity() {
                         if (MyApp.getInstance().isHaveToken()) {
                             if (itemData.game_id < 10000) {
                                 toAddToHotSearch(itemData.game_name)
+                                GameDurationService.startGame(this, itemData.game_id)
                                 toStartGame(
                                     itemData.game_id,
                                     itemData.game_channelId,
@@ -679,6 +682,7 @@ class SearchGameActivity : BaseActivity() {
                                 //全部游戏,展示Dialog
                                 toGetAllAccount(
                                     itemData.game_id,
+                                    itemData.game_name,
                                     itemData.game_channelId
                                 )
                             }
@@ -729,11 +733,10 @@ class SearchGameActivity : BaseActivity() {
         }
     }
 
-
     /**
      * 获取全部账号
      */
-    private fun toGetAllAccount(gameId: Int, gameChannelId: String) {
+    private fun toGetAllAccount(gameId: Int, gameName: String, gameChannelId: String) {
         DialogUtils.showBeautifulDialog(this)
         val allAccount = RetrofitUtils.builder().allAccount()
         allAccountObservable = allAccount.subscribeOn(Schedulers.io())
@@ -746,6 +749,7 @@ class SearchGameActivity : BaseActivity() {
                         1 -> {
                             DialogUtils.showStartGameDialog(
                                 this,
+                                gameName,
                                 it.data,
                                 object : DialogUtils.OnDialogListener4StartGame {
                                     override fun tejieStart() {
@@ -1080,6 +1084,8 @@ class SearchGameActivity : BaseActivity() {
     }
 
     override fun destroy() {
+        GameDurationService.stopGame(this)
+
         getHotSearchHisObservable?.dispose()
         getSearchSugrecObservable?.dispose()
         searchObservable?.dispose()

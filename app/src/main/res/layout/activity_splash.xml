@@ -5,7 +5,7 @@
     android:layout_height="match_parent"
     android:background="@color/color_transparent"
     android:orientation="vertical"
-    tools:context=".activity.SplashActivity">
+    tools:context=".activity.NewSplashActivity">
 
     <ImageView
         android:id="@+id/iv_splash_bg"
@@ -24,7 +24,7 @@
         android:layout_marginEnd="@dimen/dp_10"
         android:background="@drawable/bg_splash_countdown"
         android:gravity="center"
-         android:text="3"
+        android:text="3"
         android:textColor="@color/white_FFFFFF"
         android:textSize="@dimen/sp_16" />
 
@@ -35,4 +35,29 @@
         android:layout_centerHorizontal="true"
         android:layout_marginBottom="@dimen/dp_20"
         android:src="@mipmap/splash_logo" />
+
+    <ProgressBar
+        android:id="@+id/pb_splash_download"
+        android:visibility="gone"
+        style="?android:attr/progressBarStyleHorizontal"
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/dp_20"
+        android:layout_alignParentBottom="true"
+        android:layout_marginBottom="@dimen/dp_50"
+        android:max="100"
+        android:progress="0"
+        android:progressDrawable="@drawable/bg_pb_download" />
+
+    <TextView
+        android:visibility="gone"
+        android:id="@+id/tv_splash_download"
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/dp_20"
+        android:layout_alignParentBottom="true"
+        android:layout_centerHorizontal="true"
+        android:layout_marginBottom="@dimen/dp_50"
+        android:gravity="center"
+        android:text="检查更新 0%"
+        android:textColor="@color/white_FFFFFF"
+        android:textSize="@dimen/sp_14" />
 </RelativeLayout>

@@ -91,7 +91,10 @@ object RetrofitUtils {
         @FormUrlEncoded
         @POST(HttpUrls.QUICK_LOGIN_ALI)
         fun quickLogin4Ali(
-            @Field("access_token", encoded = true) access_token: String
+            @Field("access_token", encoded = true) access_token: String,
+            @Field("device_id", encoded = true) device_id: String? = null,
+            @Field("game_channel", encoded = true) game_channel: String? = null,
+            @Field("game_id", encoded = true) game_id: Int? = null
         ): Flowable<LoginBean>
 
         /**
@@ -111,7 +114,10 @@ object RetrofitUtils {
         @POST(HttpUrls.LOGIN)
         fun login(
             @Field("phone", encoded = true) phone: String,
-            @Field("captcha", encoded = true) captcha: Int
+            @Field("captcha", encoded = true) captcha: Int,
+            @Field("device_id", encoded = true) device_id: String? = null,
+            @Field("game_channel", encoded = true) game_channel: String? = null,
+            @Field("game_id", encoded = true) game_id: Int? = null
         ): Flowable<LoginBean>
 
         /**
@@ -436,7 +442,8 @@ object RetrofitUtils {
         @POST(HttpUrls.BIND_PHONE)
         fun bingPhone(
             @Field("phone", encoded = true) phone: String,
-            @Field("code", encoded = true) code: String
+            @Field("code", encoded = true) code: String,
+            @Field("device_id", encoded = true) device_id: String
         ): Flowable<BaseBean>
 
         /**
@@ -520,5 +527,21 @@ object RetrofitUtils {
             @Field("password", encoded = true) password: String
         ): Flowable<BaseBean>
 
+        /**
+         * 根据游戏渠道获取全部游戏的游戏id等信息
+         */
+        @GET(HttpUrls.GET_GAME_ID)
+        fun getGameId(
+            @Query("game_channel", encoded = true) game_channel: String
+        ): Flowable<GetGameIdBean>
+
+        /**
+         * 校验账号
+         */
+        @FormUrlEncoded
+        @POST(HttpUrls.UPDATE_GAME_DURATION)
+        fun updateGameDuration(
+            @Field("game_id", encoded = true) game_id: Int
+        ): Flowable<BaseBean>
     }
 }

@@ -53,6 +53,10 @@
         android:usesCleartextTraffic="true"
         tools:ignore="LockedOrientationActivity,UnusedAttribute"
         tools:replace="android:icon,android:theme,android:name,android:allowBackup">
+        <service
+            android:name=".service.GameDurationService"
+            android:exported="false"/>
+
         <activity
             android:name=".activity.AccountBindActivity"
             android:screenOrientation="portrait" />
@@ -122,7 +126,7 @@
             android:name=".activity.LoginActivity"
             android:screenOrientation="portrait" />
         <activity
-            android:name=".activity.SplashActivity"
+            android:name=".activity.NewSplashActivity"
             android:screenOrientation="portrait"
             android:theme="@style/SplashTheme">
             <intent-filter>

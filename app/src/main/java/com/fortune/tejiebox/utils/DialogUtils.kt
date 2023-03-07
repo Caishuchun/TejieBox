@@ -231,10 +231,12 @@ object DialogUtils {
     @SuppressLint("SetTextI18n", "CheckResult")
     fun showStartGameDialog(
         context: Activity,
+        gameName: String,
         data: List<AllAccountBean.Data>?,
-        listener: OnDialogListener4StartGame?
+        listener: OnDialogListener4StartGame?,
+        page: Int = 0
     ) {
-        currentPage = 0
+        currentPage = page
         mPopupWindow?.dismiss()
         mPopupWindow = null
         isShowPopupWindow = false
@@ -247,6 +249,7 @@ object DialogUtils {
         mDialog?.setCancelable(false)
         mDialog?.setCanceledOnTouchOutside(false)
 
+        mDialog?.tv_dialog_startGame_gameName?.text = gameName
         if (data == null || data.isEmpty()) {
             mDialog?.iv_dialog_startGame_more?.visibility = View.GONE
         } else {
