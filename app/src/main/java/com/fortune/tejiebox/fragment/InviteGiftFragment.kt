@@ -351,11 +351,18 @@ class InviteGiftFragment : Fragment() {
                     when (it.getCode()) {
                         1 -> {
                             if (it.getData() != null && it.getData()?.url != null) {
-                                ClipboardUtils.setClipboardContent(
+//                                ClipboardUtils.setClipboardContent(
+//                                    requireActivity(),
+//                                    "免费充值天天送，好玩的服处处有 点击下载${resources.getString(R.string.app_name)}: ${it.getData()?.url!!}"
+//                                )
+                                ShareJumpUtils.showDefaultDialog(
                                     requireActivity(),
-                                    "免费充值天天送，好玩的服处处有 点击下载${resources.getString(R.string.app_name)}: ${it.getData()?.url!!}"
+                                    message = "免费充值天天送，好玩的服处处有 点击下载${resources.getString(R.string.app_name)}: ${it.getData()?.url!!}",
                                 )
-                                ShareJumpUtils.showDefaultDialog(requireActivity())
+//                                val intent =
+//                                    Intent(requireContext(), InvitePageActivity::class.java)
+//                                intent.putExtra(InvitePageActivity.INVITE_URL, it.getData()?.url)
+//                                startActivity(intent)
                             }
                         }
                         -1 -> {

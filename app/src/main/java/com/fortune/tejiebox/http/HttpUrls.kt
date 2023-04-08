@@ -170,4 +170,13 @@ object HttpUrls {
 
     //用户游戏时长首次上报
     const val UPDATE_GAME_DURATION = "/android/v2.game/fee"
+
+    //修改密码_原密码校验
+    const val CHANGE_PASS_USE_OLD = "/android/v2.user/initialChangePassword"
+
+    //修改密码_发送验证码
+    const val CHANGE_PASS_SEND_CODE = "/android/v2.user/sendChangePasswordCode"
+
+    //修改密码_验证码校验
+    const val CHANGE_PASS_USE_CODE = "/android/v2.user/codeChangePassword"
 }

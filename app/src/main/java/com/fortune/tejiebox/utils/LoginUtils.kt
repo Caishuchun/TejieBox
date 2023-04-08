@@ -6,8 +6,10 @@ import android.content.Intent
 import android.graphics.Color
 import android.view.Gravity
 import android.view.LayoutInflater
+import com.fm.openinstall.OpenInstall
 import com.fortune.tejiebox.R
 import com.fortune.tejiebox.activity.DialogActivity
+import com.fortune.tejiebox.activity.InviteCodeActivity
 import com.fortune.tejiebox.activity.Login4AccountActivity
 import com.fortune.tejiebox.activity.LoginActivity
 import com.fortune.tejiebox.base.BaseAppUpdateSetting
@@ -362,7 +364,13 @@ object LoginUtils {
     /**
      * 隐藏登录加载和退出登录页面
      */
-    private fun hideLoadingAndQuitLoginPage() {
+    private fun hideLoadingAndQuitLoginPage(
+        activity: Activity? = null,
+        isFirstLogin: Boolean = false
+    ) {
+//        if (isFirstLogin && BaseAppUpdateSetting.isInviteVersion) {
+//            activity?.startActivity(Intent(activity, InviteCodeActivity::class.java))
+//        }
         helper?.hideLoginLoading()
         helper?.quitLoginPage()
     }
@@ -401,13 +409,20 @@ object LoginUtils {
         SPUtils.putValue(SPArgument.ID_NUM, null)
         val data = GameInfo4ClipboardBean.getData()
         val gameChannel = data?.channelId
+        val gameVersion = data?.version
         var gameId: Int? = SPUtils.getInt(SPArgument.NEED_JUMP_GAME_ID_UPDATE, -1)
         if (gameId == -1) {
             gameId = null
         }
-        val quickLogin4Ali =
-            RetrofitUtils.builder()
-                .quickLogin4Ali(accessCode, GetDeviceId.getDeviceId(activity), gameChannel, gameId)
+        val inviteInfo = SPUtils.getString(SPArgument.OPEN_INSTALL_INFO)
+        val quickLogin4Ali = RetrofitUtils.builder().quickLogin4Ali(
+            access_token = accessCode,
+            device_id = GetDeviceId.getDeviceId(activity),
+            game_channel = gameChannel,
+            game_id = gameId,
+            game_version = gameVersion,
+            i = inviteInfo
+        )
         quickLogin4AliObservable = quickLogin4Ali.subscribeOn(Schedulers.io())
             .observeOn(AndroidSchedulers.mainThread())
             .subscribe({
@@ -417,6 +432,7 @@ object LoginUtils {
                 if (it != null) {
                     when (it.code) {
                         1 -> {
+                            SPUtils.putValue(SPArgument.OPEN_INSTALL_USED, true)
                             SPUtils.putValue(SPArgument.IS_CHECK_AGREEMENT, true)
                             SPUtils.putValue(SPArgument.LOGIN_TOKEN, it.data?.token)
                             SPUtils.putValue(SPArgument.PHONE_NUMBER, it.data?.phone)
@@ -445,6 +461,8 @@ object LoginUtils {
                                         null
                                     )
                                 }
+                                //openInstall 注册统计
+                                OpenInstall.reportRegister()
                             }
 
                             EventBus.getDefault().postSticky(
@@ -455,7 +473,7 @@ object LoginUtils {
                                     isHaveRewardInteger
                                 )
                             )
-                            hideLoadingAndQuitLoginPage()
+                            hideLoadingAndQuitLoginPage(activity, it.data?.first_login == 1)
                         }
                         else -> {
                             helper?.hideLoginLoading()

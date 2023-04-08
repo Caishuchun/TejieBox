@@ -69,6 +69,10 @@
 
     </LinearLayout>
 
+    <include
+        layout="@layout/item_invite_time"
+        android:visibility="gone" />
+
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/rv_inviteGift"
         android:layout_width="match_parent"

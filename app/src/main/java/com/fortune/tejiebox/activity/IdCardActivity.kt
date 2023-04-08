@@ -10,7 +10,6 @@ import com.fortune.tejiebox.constants.SPArgument
 import com.fortune.tejiebox.event.IsHaveIdChange
 import com.fortune.tejiebox.event.PlayingDataChange
 import com.fortune.tejiebox.http.RetrofitUtils
-import com.fortune.tejiebox.service.GameDurationService
 import com.fortune.tejiebox.utils.*
 import com.google.gson.Gson
 import com.jakewharton.rxbinding2.view.RxView
@@ -35,6 +34,7 @@ class IdCardActivity : BaseActivity() {
     private var idCardObservable: Disposable? = null
     private var addPlayingGameObservable: Disposable? = null
     private var isPlayingGame = false
+    private var updateGameTimeInfoObservable: Disposable? = null
 
     private var gameStyle: String? = null
 
@@ -60,6 +60,7 @@ class IdCardActivity : BaseActivity() {
 
     @SuppressLint("CheckResult")
     override fun doSomething() {
+        instance = this
         StatusBarUtils.setTextDark(this, true)
 
         RxView.clicks(iv_idCard_back)
@@ -200,14 +201,14 @@ class IdCardActivity : BaseActivity() {
 
                             EventBus.getDefault().post(PlayingDataChange(""))
                             if (gameId!! < 10000) {
-                                GameDurationService.startGame(this, gameId!!)
-                            }
-                            isPlayingGame = true
-                            if (account == null) {
                                 SPUtils.putValue(
                                     SPArgument.GAME_TIME_INFO,
                                     "$gameId-${System.currentTimeMillis()}"
                                 )
+                                DurationUtils.startTiming(gameId!!)
+                            }
+                            isPlayingGame = true
+                            if (account == null) {
                                 JumpUtils.jump2Game(
                                     this,
                                     gameChannel + Box2GameUtils.getPhoneAndToken(),
@@ -241,16 +242,44 @@ class IdCardActivity : BaseActivity() {
     }
 
     override fun destroy() {
+        DurationUtils.stopTiming()
+
         idCardObservable?.dispose()
         idCardObservable = null
 
         addPlayingGameObservable?.dispose()
         addPlayingGameObservable = null
+
+        updateGameTimeInfoObservable?.dispose()
+        updateGameTimeInfoObservable = null
     }
 
     override fun onResume() {
         super.onResume()
         MobclickAgent.onResume(this)
+        if (isPlayingGame) {
+            isPlayingGame = false
+            LogUtils.d("=====退出游戏")
+            DurationUtils.stopTiming()
+            val gameTimeInfo = SPUtils.getString(SPArgument.GAME_TIME_INFO)
+            if (null != gameTimeInfo && gameTimeInfo.split("-").size >= 2) {
+                val split = gameTimeInfo.split("-")
+                val gameId = split[0].toInt()
+                val startTime = split[1].toLong()
+                val endTime = System.currentTimeMillis()
+//                if (endTime - startTime >= 1 * 60 * 1000) {
+                val updateGameTimeInfo = RetrofitUtils.builder().updateGameTimeInfo(
+                    gameId,
+                    startTime.toString(),
+                    endTime.toString()
+                )
+                updateGameTimeInfoObservable = updateGameTimeInfo.subscribeOn(Schedulers.io())
+                    .observeOn(AndroidSchedulers.mainThread())
+                    .subscribe({}, {})
+//                }
+            }
+        }
+        SPUtils.putValue(SPArgument.GAME_TIME_INFO, null)
     }
 
     override fun onPause() {

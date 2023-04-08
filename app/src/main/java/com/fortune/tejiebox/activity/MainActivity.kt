@@ -6,16 +6,20 @@ import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
 import android.content.IntentFilter
+import android.net.Uri
 import android.os.*
 import android.view.View
 import android.view.animation.*
 import androidx.fragment.app.Fragment
 import com.arialyy.aria.core.Aria
+import com.fm.openinstall.OpenInstall
+import com.fm.openinstall.listener.AppInstallAdapter
+import com.fm.openinstall.model.AppData
 import com.fortune.tejiebox.R
 import com.fortune.tejiebox.base.BaseActivity
 import com.fortune.tejiebox.base.BaseAppUpdateSetting
-import com.fortune.tejiebox.bean.AllAccountBean
 import com.fortune.tejiebox.bean.GameInfo4ClipboardBean
+import com.fortune.tejiebox.bean.OpenInstallBean
 import com.fortune.tejiebox.bean.VersionBean
 import com.fortune.tejiebox.constants.SPArgument
 import com.fortune.tejiebox.event.*
@@ -39,7 +43,11 @@ import kotlinx.android.synthetic.main.activity_search_game.*
 import org.greenrobot.eventbus.EventBus
 import org.greenrobot.eventbus.Subscribe
 import org.greenrobot.eventbus.ThreadMode
+import org.json.JSONObject
 import java.io.File
+import java.net.URL
+import java.net.URLDecoder
+import java.net.URLEncoder
 import java.text.SimpleDateFormat
 import java.util.*
 import java.util.concurrent.TimeUnit
@@ -64,6 +72,8 @@ class MainActivity : BaseActivity() {
     private var getReCustomerInfoObservable: Disposable? = null
     private var textFontChangeObservable: Disposable? = null
     private var getGameIdObservable: Disposable? = null
+
+    private var openInstallType = -1
 
     companion object {
         @SuppressLint("StaticFieldLeak")
@@ -176,12 +186,12 @@ class MainActivity : BaseActivity() {
             }
         }, 1000)
 
-        val gameId = SPUtils.getInt(SPArgument.NEED_JUMP_GAME_ID_JUMP, -1)
-        if (gameId != -1) {
-            //需要跳转到游戏详情页
-            GameFragment.setGameId(gameId)
-            SPUtils.putValue(SPArgument.NEED_JUMP_GAME_ID_JUMP, -1)
-        }
+//        val gameId = SPUtils.getInt(SPArgument.NEED_JUMP_GAME_ID_JUMP, -1)
+//        if (gameId != -1) {
+//            //需要跳转到游戏详情页
+//            GameFragment.setGameId(gameId)
+//            SPUtils.putValue(SPArgument.NEED_JUMP_GAME_ID_JUMP, -1)
+//        }
     }
 
     /**
@@ -467,17 +477,17 @@ class MainActivity : BaseActivity() {
             val gameId = split[0].toInt()
             val startTime = split[1].toLong()
             val endTime = split[2].toLong()
-            if (endTime - startTime >= 1 * 60 * 1000) {
-                val updateGameTimeInfo = RetrofitUtils.builder().updateGameTimeInfo(
-                    gameId,
-                    startTime.toString(),
-                    endTime.toString()
-                )
-                updateGameTimeInfoObservable = updateGameTimeInfo.subscribeOn(Schedulers.io())
-                    .observeOn(AndroidSchedulers.mainThread())
-                    .subscribe({
-                    }, {})
-            }
+//            if (endTime - startTime >= 1 * 60 * 1000) {
+            val updateGameTimeInfo = RetrofitUtils.builder().updateGameTimeInfo(
+                gameId,
+                startTime.toString(),
+                endTime.toString()
+            )
+            updateGameTimeInfoObservable = updateGameTimeInfo.subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe({
+                }, {})
+//            }
         }
         SPUtils.putValue(SPArgument.GAME_TIME_INFO, null)
     }
@@ -530,14 +540,132 @@ class MainActivity : BaseActivity() {
      * @param isLogined 是否一登录
      */
     private fun toCheckIsNeedOpenGame(isLogined: Boolean = false) {
-        val data = GameInfo4ClipboardBean.getData() ?: return
-        LogUtils.d("剪切板拿到的数据:$data")
-        if (isLogined) {
-            //登录先判断是否能获取到游戏id
-            toGetGameInfo(data.version)
+//        val data = GameInfo4ClipboardBean.getData() ?: return
+//        LogUtils.d("剪切板拿到的数据:$data")
+//        if (isLogined) {
+//            //登录先判断是否能获取到游戏id
+//            toGetGameInfo(data.version)
+//        } else {
+//            //没登录就跳转登录
+//            LoginUtils.toQuickLogin(this)
+//        }
+        //本地取数据
+        val openInstallUsed = SPUtils.getBoolean(SPArgument.OPEN_INSTALL_USED, false)
+        if (openInstallUsed && openInstallType != 2) {
+            // 使用了
+            SPUtils.putValue(SPArgument.OPEN_INSTALL_INFO, null)
         } else {
-            //没登录就跳转登录
-            LoginUtils.toQuickLogin(this)
+            // 未使用
+            val openInstallInfo = SPUtils.getString(SPArgument.OPEN_INSTALL_INFO)
+//            dealOpenInstallInfo(openInstallInfo, isLogined)
+            if (openInstallInfo == null) {
+                // 从openInstall取数据
+                LogUtils.d("==========================获取参数")
+                OpenInstall.getInstall(object : AppInstallAdapter() {
+                    override fun onInstall(appData: AppData) {
+                        LogUtils.d(
+                            "==========================${Gson().toJson(appData)}"
+                        )
+                        if (appData.data != "") {
+                            //data不为空
+                            val dataInfo =
+                                Gson().fromJson(appData.data, OpenInstallBean::class.java)
+                            dealOpenInstallInfo(dataInfo.i, isLogined)
+                        } else {
+                            LogUtils.d("==========================没有数据")
+                        }
+                    }
+                })
+            } else {
+                dealOpenInstallInfo(openInstallInfo, isLogined)
+            }
+        }
+    }
+
+    /**
+     * 处理openInstall 传来的值
+     */
+    private fun dealOpenInstallInfo(data: String?, isLogined: Boolean) {
+        if (data.isNullOrEmpty()) {
+            return
+        }
+        var info = data
+        try {
+            info = Uri.decode(info)
+            LogUtils.d("==========================info:$info")
+            SPUtils.putValue(SPArgument.OPEN_INSTALL_INFO, info)
+            val needInfo = AESUtils.decrypt(info)
+            if (needInfo != null) {
+                LogUtils.d("==========================needInfo:$needInfo")
+                val jsonObject = JSONObject(needInfo)
+                val keys = jsonObject.keys()
+                val map = HashMap<String, Any>()
+                for (key in keys) {
+                    val value = jsonObject[key]
+                    map[key] = value
+                }
+                LogUtils.d("==========================map:$map")
+                when {
+                    map["type"] == 1 -> {
+                        //1.用户分享下载
+                        LogUtils.d("==========================map[\"type\"] == 1")
+                        //需要使用加密串在注册登录时使用
+                        openInstallType = 1
+                        if (!isLogined) {
+                            LoginUtils.toQuickLogin(this)
+                        }
+                    }
+                    map["type"] == 2 -> {
+                        //2.游戏内跳转下载
+                        LogUtils.d("==========================map[\"type\"] == 2")
+                        openInstallType = 2
+                        //需要在首页的时候进行判断, 跳转
+                        if (!isLogined) {
+                            LoginUtils.toQuickLogin(this)
+                        } else {
+                            val gameInfo4ClipboardBean = GameInfo4ClipboardBean(
+                                map["game_channel"] as String,
+                                map["account"] as String,
+                                map["password"] as String,
+                                map["game_version"] as String,
+                                map["server_id"] as String,
+                                map["role_id"] as String,
+                            )
+                            if (gameInfo4ClipboardBean.channelId.length > 6) {
+                                val channelIdHead = gameInfo4ClipboardBean.channelId.substring(0, 6)
+                                if (channelIdHead.toLowerCase().contains("box")) {
+                                    return
+                                }
+                            }
+                            GameInfo4ClipboardBean.setData(gameInfo4ClipboardBean)
+                            SPUtils.putValue(SPArgument.OPEN_INSTALL_USED, true)
+                            toGetGameInfo(gameInfo4ClipboardBean.version)
+                        }
+                    }
+                    map["type"] == 3 -> {
+                        //3.GM分享
+                        LogUtils.d("==========================map[\"type\"] == 3")
+                        openInstallType = 3
+                        //跳转到游戏详情页面
+                        var gameId = SPUtils.getInt(SPArgument.NEED_JUMP_GAME_ID_JUMP, -1)
+                        if (gameId == -1) {
+                            //需要跳转到游戏详情页
+                            gameId = map["game_id"] as Int
+                            SPUtils.putValue(SPArgument.NEED_JUMP_GAME_ID_JUMP, gameId)
+                            SPUtils.putValue(SPArgument.NEED_JUMP_GAME_ID_UPDATE, gameId)
+                            mainFragment?.openGameDetailActivity(gameId)
+                        }
+                    }
+                    else -> {
+                        LogUtils.d("==========================type异常, 不是123")
+                    }
+                }
+            } else {
+                LogUtils.d("==========================数据为空")
+            }
+        } catch (e: Exception) {
+            LogUtils.d("==========================解密失败")
+            LogUtils.d("==========================${e.message}")
         }
     }
 
@@ -568,7 +696,7 @@ class MainActivity : BaseActivity() {
                     }
                 }, {
                     GameInfo4ClipboardBean.setData(null)
-                    ClipboardUtils.clearClipboardContent(this)
+//                    ClipboardUtils.clearClipboardContent(this)
                 })
     }
 

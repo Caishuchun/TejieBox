@@ -24,6 +24,7 @@ import com.fortune.tejiebox.constants.SPArgument
 import com.fortune.tejiebox.widget.SafeLinearLayoutManager
 import com.jakewharton.rxbinding2.view.RxView
 import com.jakewharton.rxbinding2.widget.RxTextView
+import com.snail.antifake.jni.EmulatorDetectUtil
 import io.reactivex.disposables.Disposable
 import kotlinx.android.synthetic.main.dialog_beautiful.*
 import kotlinx.android.synthetic.main.dialog_loading.*
@@ -248,6 +249,14 @@ object DialogUtils {
         mDialog?.setContentView(R.layout.layout_dialog_start_game)
         mDialog?.setCancelable(false)
         mDialog?.setCanceledOnTouchOutside(false)
+        val emulator = EmulatorDetectUtil.isEmulator(context)
+        mDialog?.tv_dialog_startGame_tips?.let {
+            it.visibility = if (emulator) {
+                View.VISIBLE
+            } else {
+                View.GONE
+            }
+        }
 
         mDialog?.tv_dialog_startGame_gameName?.text = gameName
         if (data == null || data.isEmpty()) {

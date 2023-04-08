@@ -3,7 +3,6 @@ package com.fortune.tejiebox.activity
 import android.Manifest
 import android.annotation.SuppressLint
 import android.content.Intent
-import android.graphics.Bitmap
 import android.graphics.BitmapFactory
 import android.graphics.Color
 import android.net.Uri
@@ -15,6 +14,10 @@ import androidx.annotation.RequiresApi
 import androidx.core.content.FileProvider
 import com.arialyy.aria.core.Aria
 import com.arialyy.aria.core.task.DownloadTask
+import com.bumptech.glide.Glide
+import com.fm.openinstall.OpenInstall
+import com.fm.openinstall.listener.AppWakeUpAdapter
+import com.fm.openinstall.model.AppData
 import com.fortune.tejiebox.R
 import com.fortune.tejiebox.base.BaseActivity
 import com.fortune.tejiebox.base.BaseAppUpdateSetting
@@ -25,6 +28,7 @@ import com.fortune.tejiebox.http.RetrofitUtils
 import com.fortune.tejiebox.myapp.MyApp
 import com.fortune.tejiebox.utils.*
 import com.google.gson.Gson
+import com.luck.picture.lib.utils.SpUtils
 import com.umeng.analytics.MobclickAgent
 import io.reactivex.Observable
 import io.reactivex.android.schedulers.AndroidSchedulers
@@ -65,17 +69,34 @@ class NewSplashActivity : BaseActivity() {
         Aria.download(this).register()
         setTheme(R.style.NormalTheme)
         instance = this
-
+        wakeUpAdapter?.let { OpenInstall.getWakeUp(intent, it) }
         toSetSplashBg()
+        SPUtils.putValue(SPArgument.ONLY_DEVICE_ID_NEW, GetDeviceId.getDeviceId(this))
         toAgreeAgreement()
-        window.decorView.postDelayed(
-            {
-                toGetClipboardContent()
-            }, 2500
-        )
-
-//        val encrypt = AESUtils.encrypt("k2sanguoqunxiazhuan|w123|w123|k22023228|1|1")
+//        val deviceId = GetDeviceId.getDeviceId(this)
+//        LogUtils.d("===============$deviceId")
+//        val encrypt = AESUtils.encrypt("k202301|csc0913|csc0913|k2hz001|5|168513")
+//        val encrypt = AESUtils.encrypt("678910|csc0913|csc0913|ltdjp|5|168513")
+//        val encrypt = AESUtils.encrypt("vm1000|w123|w123|vm1000|1|1")
+//        val encrypt = AESUtils.encrypt("{\"type\":1,\"share_id\":\"QY\"}")
+//        val encrypt = AESUtils.encrypt("{\"type\":3,\"game_id\":1344}")
+//        val encrypt = AESUtils.encrypt("{\"type\":2,\"game_channel\":\"vm1000\",\"account\":\"w123\",\"password\":\"w123\",\"game_version\":\"vm1000\",\"server_id\":\"1\",\"role_id\":\"1\"}")
 //        LogUtils.d("++++++++++++++$encrypt")
+    }
+
+    override fun onNewIntent(intent: Intent?) {
+        super.onNewIntent(intent)
+        wakeUpAdapter?.let { OpenInstall.getWakeUp(intent, it) }
+    }
+
+    /**
+     * OpenInstall 一键拉起功能
+     */
+    private var wakeUpAdapter: AppWakeUpAdapter? = object : AppWakeUpAdapter() {
+        override fun onWakeUp(appData: AppData) {
+            LogUtils.d("==========================一键拉起")
+            LogUtils.d("==========================channel:${appData.channel},bindData:${appData.data}")
+        }
     }
 
     /**
@@ -96,10 +117,15 @@ class NewSplashActivity : BaseActivity() {
             }
             SPUtils.putValue(SPArgument.NEED_JUMP_GAME_ID_JUMP, gameId)
             SPUtils.putValue(SPArgument.NEED_JUMP_GAME_ID_UPDATE, gameId)
-            ClipboardUtils.clearClipboardContent(this)
+//            ClipboardUtils.clearClipboardContent(this)
         } else {
             //判断是不是要去全部游戏
-            val decrypt = AESUtils.decrypt(clipboardContent) ?: return
+            val decrypt = try {
+                AESUtils.decrypt(clipboardContent) ?: return
+            } catch (e: Exception) {
+                return
+            }
+            LogUtils.d("=======$decrypt")
             val gameInfo = decrypt.split("|")
             if (gameInfo.size < 6) return
             val gameInfo4ClipboardBean = GameInfo4ClipboardBean(
@@ -146,43 +172,34 @@ class NewSplashActivity : BaseActivity() {
      * 设置封面背景图片
      */
     private fun toSetSplashBg() {
-        val bitmap = toGetSplashBg()
-        val width = bitmap.width
-        val height = bitmap.height
-//        LogUtils.d("0.0==>bitmap=>width:$width,height:$height")
-        val screenWidth = PhoneInfoUtils.getWidth(this)
-        val screenHeight = PhoneInfoUtils.getHeight(this)
-//        LogUtils.d("0.0==>screen=>width:$screenWidth,height:$screenHeight")
-        val layoutParams = iv_splash_bg.layoutParams
-        layoutParams.width = screenWidth
-        val scaleHeight = (screenWidth.toFloat() / width * height).toInt()
-        layoutParams.height = scaleHeight
-//        LogUtils.d("0.0==>result=>width:$screenWidth,height:$scaleHeight")
-        iv_splash_bg.layoutParams = layoutParams
-        iv_splash_bg.setImageBitmap(bitmap)
-    }
-
-
-    /**
-     * 获取封面背景图片
-     */
-    private fun toGetSplashBg(): Bitmap {
-        var bitmap: Bitmap? = null
         val splashDir = getExternalFilesDir("splash")
         if (splashDir == null || !splashDir.exists() || !splashDir.isDirectory) {
-            return resource2Bitmap()
+            Glide.with(this)
+                .load(
+                    if (BaseAppUpdateSetting.isToPromoteVersion) R.mipmap.bg_splash_tejie
+                    else R.mipmap.bg_splash_tejiebox
+                )
+                .into(iv_splash_bg)
+            return
         }
-        val splashImg = splashDir.listFiles()
-        if (splashImg.isEmpty()) {
-            return resource2Bitmap()
+        val splashImages = splashDir.listFiles()
+        if (splashImages.isEmpty()) {
+            Glide.with(this)
+                .load(
+                    if (BaseAppUpdateSetting.isToPromoteVersion) R.mipmap.bg_splash_tejie
+                    else R.mipmap.bg_splash_tejiebox
+                )
+                .into(iv_splash_bg)
+            return
         }
-        val imgIndex = (splashImg.indices).random()
-        return try {
-            bitmap = BitmapFactory.decodeFile(splashImg[imgIndex].path)
-            bitmap
-        } catch (e: Exception) {
-            resource2Bitmap()
-        }
+        val imgIndex = (splashImages.indices).random()
+        Glide.with(this)
+            .load(splashImages[imgIndex].path)
+            .error(
+                if (BaseAppUpdateSetting.isToPromoteVersion) R.mipmap.bg_splash_tejie
+                else R.mipmap.bg_splash_tejiebox
+            )
+            .into(iv_splash_bg)
     }
 
     /**
@@ -250,6 +267,9 @@ class NewSplashActivity : BaseActivity() {
      */
     @SuppressLint("CheckResult")
     fun toCountDown() {
+        //初始化openinstall
+        LogUtils.d("==========================初始化")
+        OpenInstall.init(this)
         countDownTimeObservable = Observable.interval(0, 1, TimeUnit.SECONDS)
             .subscribeOn(Schedulers.io())
             .observeOn(AndroidSchedulers.mainThread())
@@ -289,9 +309,8 @@ class NewSplashActivity : BaseActivity() {
                     if (it.getCode() == 1) {
                         VersionBean.setData(it.getData()!!)
                         toCheckVersion(it.getData()!!)
-                    } else if (it.getCode() == -1) {
-                        ToastUtils.show(it.getMsg()!!)
-                        ActivityManager.toSplashActivity(this)
+                    } else {
+                        toCountDown()
                     }
                 }
             }, {
@@ -326,6 +345,7 @@ class NewSplashActivity : BaseActivity() {
             //需要更新的话,直接更新
             if (isApkDownload(File(downloadPath))) {
                 installAPK(File(downloadPath))
+//                toCountDown()
             } else {
                 toDownloadApk(updateUrl)
             }
@@ -484,9 +504,16 @@ class NewSplashActivity : BaseActivity() {
      */
     @SuppressLint("CheckResult")
     private fun toMain() {
+        //检查邀请码是否填写过了
+//        val inviteCodeUsed = SPUtils.getBoolean(SPArgument.INVITE_CODE_USED, true)
+//        if (inviteCodeUsed) {
         SPUtils.putValue(SPArgument.IS_LOGIN, true)
         startActivity(Intent(this, MainActivity::class.java))
         finish()
+//        } else {
+//            startActivity(Intent(this, InviteCodeActivity::class.java))
+//            finish()
+//        }
     }
 
     override fun destroy() {
@@ -495,10 +522,16 @@ class NewSplashActivity : BaseActivity() {
 
         checkVersionObservable = null
         countDownTimeObservable = null
+
+        wakeUpAdapter = null
     }
 
     override fun onResume() {
         super.onResume()
+        val file = File(downloadPath)
+        if (file.exists()) {
+            installAPK(file)
+        }
         MobclickAgent.onResume(this)
     }
 

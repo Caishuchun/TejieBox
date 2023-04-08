@@ -1,8 +1,7 @@
 package com.fortune.tejiebox.utils
 
 import android.annotation.SuppressLint
-import java.io.UnsupportedEncodingException
-import java.util.*
+import android.util.Base64
 import javax.crypto.Cipher
 import javax.crypto.spec.SecretKeySpec
 
@@ -90,23 +89,25 @@ object AESUtils {
     }
 
     // Base64解密
-    @Throws(UnsupportedEncodingException::class)
+    @Throws(Exception::class)
     private fun base64Decode(str: ByteArray?): ByteArray? {
-        val decoder: Base64.Decoder = Base64.getDecoder()
+//        val decoder: Base64.Decoder = Base64.getDecoder()
         return try {
-            decoder.decode(str)
+            Base64.decode(str, Base64.DEFAULT)
+//            decoder.decode(str)
         } catch (e: Exception) {
             null
         }
     }
 
     // Base64加密
-    @Throws(UnsupportedEncodingException::class)
+    @Throws(Exception::class)
     private fun base64Encode(str: ByteArray): ByteArray? {
         if (str.isNotEmpty()) {
-            val encoder: Base64.Encoder = Base64.getEncoder()
+//            val encoder: Base64.Encoder = Base64.getEncoder()
             return try {
-                encoder.encode(str)
+                Base64.encode(str, Base64.DEFAULT)
+//                encoder.encode(str)
             } catch (e: Exception) {
                 null
             }

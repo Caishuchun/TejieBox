@@ -23,7 +23,6 @@ import com.fortune.tejiebox.activity.GameDetailActivity
 import com.fortune.tejiebox.activity.SearchGameActivity
 import com.fortune.tejiebox.adapter.BaseAdapterWithPosition
 import com.fortune.tejiebox.bean.BaseGameListInfoBean
-import com.fortune.tejiebox.constants.SPArgument
 import com.fortune.tejiebox.http.RetrofitUtils
 import com.fortune.tejiebox.utils.*
 import com.fortune.tejiebox.widget.SafeStaggeredGridLayoutManager
@@ -103,10 +102,11 @@ class GameFragment : Fragment() {
 
                 //Tag是为了防止图片重复
                 itemView.iv_item_gameFragment_icon.setTag(R.id.image, position)
+                itemView.iv_item_gameFragment_icon.setImageResource(R.mipmap.bg_gray_6)
                 Glide.with(this)
                     .load(itemData.game_cover)
                     .placeholder(R.mipmap.bg_gray_6)
-                    .skipMemoryCache(true)
+                    .skipMemoryCache(false)
                     .listener(object : RequestListener<Drawable> {
                         override fun onLoadFailed(
                             e: GlideException?,
@@ -159,11 +159,13 @@ class GameFragment : Fragment() {
             .create(true)
 
         mView?.rv_gameFragment_game?.let {
+            //取消默认动画
+            (it.itemAnimator as SimpleItemAnimator).supportsChangeAnimations = false
+
             it.setHasFixedSize(true)
             it.setItemViewCacheSize(20)
             it.isDrawingCacheEnabled = true
             it.drawingCacheQuality = View.DRAWING_CACHE_QUALITY_HIGH
-            (it.itemAnimator as SimpleItemAnimator).supportsChangeAnimations = false //取消默认动画
             it.adapter = mAdapter
             it.layoutManager = SafeStaggeredGridLayoutManager(4, OrientationHelper.VERTICAL)
         }
@@ -216,7 +218,7 @@ class GameFragment : Fragment() {
      * 获取游戏列表
      */
     private fun getGameList(needLoading: Boolean) {
-        if (needLoading) {
+        if (needLoading && isAdded) {
             DialogUtils.showBeautifulDialog(requireContext())
         }
         val gameList = RetrofitUtils.builder().gameList(currentPage)
@@ -233,7 +235,8 @@ class GameFragment : Fragment() {
                             1 -> {
                                 if (currentPage == 1) {
                                     mData.clear()
-                                    mAdapter?.notifyDataSetChanged()
+                                    mAdapter?.notifyItemRangeChanged(0, mData.size)
+//                                    mAdapter?.notifyDataSetChanged()
                                 }
                                 if (it.data.list.isNotEmpty()) {
                                     val count = it.data.paging.count
@@ -246,7 +249,7 @@ class GameFragment : Fragment() {
                                         }
                                     }
                                     if (currentPage == 1) {
-                                        mAdapter?.notifyDataSetChanged()
+                                        mAdapter?.notifyItemRangeChanged(0, mData.size)
                                         mView?.rv_gameFragment_game?.postDelayed(
                                             {
                                                 if (mGameId != -1) {
@@ -301,6 +304,15 @@ class GameFragment : Fragment() {
                     ToastUtils.show(HttpExceptionUtils.getExceptionMsg(requireContext(), it))
                 }
             )
+    }
+
+    /**
+     * 打开游戏详情页
+     */
+    fun openGameDetailActivity(gameId: Int) {
+        val intent = Intent(requireActivity(), GameDetailActivity::class.java)
+        intent.putExtra(GameDetailActivity.GAME_ID, gameId)
+        requireActivity().startActivity(intent)
     }
 
     override fun onDestroy() {

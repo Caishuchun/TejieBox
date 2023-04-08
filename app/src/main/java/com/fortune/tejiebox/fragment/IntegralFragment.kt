@@ -133,7 +133,7 @@ class IntegralFragment : Fragment() {
             Glide.with(this)
                 .load(gameIcon)
                 .placeholder(R.drawable.bg_gray_6)
-                .skipMemoryCache(true)
+                .skipMemoryCache(false)
                 .diskCacheStrategy(DiskCacheStrategy.AUTOMATIC)
                 .into(it)
         }

@@ -20,6 +20,11 @@ object BaseAppUpdateSetting {
     const val appType = true
 
     /**
+     * 是否是专属邀请版本
+     */
+    const val isInviteVersion = true
+
+    /**
      * 网络请求标志, 热更包版本
      * @param patch ""表示基础版本,".1"/".11"表示热更版本
      */

@@ -16,7 +16,7 @@ object GetDeviceId {
     private const val CACHE_IMAGE_DIR = "tejie/cache/devices"
 
     //保存的文件 采用隐藏文件的形式进行保存
-    private const val DEVICES_FILE_NAME = ".DEVICES"
+    private const val DEVICES_FILE_NAME = ".DEVICES_ID"
 
     /**
      * 获取设备唯一标识符
@@ -25,7 +25,7 @@ object GetDeviceId {
      */
     fun getDeviceId(context: Context): String {
         //先读Sp
-        var deviceId = SPUtils.getString(SPArgument.ONLY_DEVICE_ID, null)
+        var deviceId = SPUtils.getString(SPArgument.ONLY_DEVICE_ID_NEW, null)
         if (deviceId != null) {
             return deviceId
         }
@@ -58,14 +58,15 @@ object GetDeviceId {
             deviceId = uuid.toString().replace("-", "")
             s.append(deviceId)
         }
-
+        s.append(System.currentTimeMillis().toString())
         //为了统一格式对设备的唯一标识进行md5加密 最终生成32位字符串
         val md5 = getMD5(s.toString(), false)
-        val onlyDeviceId = getShortUrl(md5)
+        val onlyDeviceId = "android-$md5"
+//        val onlyDeviceId = getShortUrl(md5)
         if (s.isNotEmpty()) {
             //持久化操作, 进行保存到SD卡中
             saveDeviceID(onlyDeviceId, context)
-            SPUtils.putValue(SPArgument.ONLY_DEVICE_ID, onlyDeviceId)
+            SPUtils.putValue(SPArgument.ONLY_DEVICE_ID_NEW, onlyDeviceId)
         }
         return onlyDeviceId
     }

@@ -15,6 +15,7 @@ class ProcessActivity : BaseActivity() {
     override fun getLayoutId() = R.layout.activity_process
 
     override fun doSomething() {
+        instance = this
         finish()
     }
 

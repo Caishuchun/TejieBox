@@ -50,15 +50,13 @@ object RetrofitUtils {
                             MyApp.getInstance().getVersion()
                         }${BaseAppUpdateSetting.patch}"
                     )
-                    .addHeader(
-                        "App-Version",
-                        MyApp.getInstance().getVersion()
-                    )
+                    .addHeader("App-Version", MyApp.getInstance().getVersion())
                     .addHeader("cookie", "locale=$locale")
                     .addHeader("Connection", "Upgrade, HTTP2-Settings")
                     .addHeader("Content-Type", "application/json")
                     .addHeader("Upgrade", "h2c")
                     .addHeader("Accept-Encoding", "identity")
+                    .addHeader("mac", SPUtils.getString(SPArgument.ONLY_DEVICE_ID_NEW) ?: "android_mac")
 //                    .addHeader(
 //                        "box-type",
 //                        if (BaseAppUpdateSetting.isToPromoteVersion) "1" else ""
@@ -94,7 +92,9 @@ object RetrofitUtils {
             @Field("access_token", encoded = true) access_token: String,
             @Field("device_id", encoded = true) device_id: String? = null,
             @Field("game_channel", encoded = true) game_channel: String? = null,
-            @Field("game_id", encoded = true) game_id: Int? = null
+            @Field("game_id", encoded = true) game_id: Int? = null,
+            @Field("game_version", encoded = true) game_version: String? = null,
+            @Field("i", encoded = true) i: String? = null
         ): Flowable<LoginBean>
 
         /**
@@ -117,7 +117,9 @@ object RetrofitUtils {
             @Field("captcha", encoded = true) captcha: Int,
             @Field("device_id", encoded = true) device_id: String? = null,
             @Field("game_channel", encoded = true) game_channel: String? = null,
-            @Field("game_id", encoded = true) game_id: Int? = null
+            @Field("game_id", encoded = true) game_id: Int? = null,
+            @Field("game_version", encoded = true) game_version: String? = null,
+            @Field("i", encoded = true) i: String? = null
         ): Flowable<LoginBean>
 
         /**
@@ -536,12 +538,38 @@ object RetrofitUtils {
         ): Flowable<GetGameIdBean>
 
         /**
-         * 校验账号
+         * 同步时间
          */
         @FormUrlEncoded
         @POST(HttpUrls.UPDATE_GAME_DURATION)
         fun updateGameDuration(
             @Field("game_id", encoded = true) game_id: Int
+        ): Flowable<BaseBean>
+
+        /**
+         * 修改密码_旧密码校验
+         */
+        @FormUrlEncoded
+        @POST(HttpUrls.CHANGE_PASS_USE_OLD)
+        fun changePassUseOldPass(
+            @Field("initial_password", encoded = true) initial_password: String,
+            @Field("new_password", encoded = true) new_password: String
+        ): Flowable<BaseBean>
+
+        /**
+         * 修改密码_发送验证码
+         */
+        @GET(HttpUrls.CHANGE_PASS_SEND_CODE)
+        fun changePassSendCode(): Flowable<BaseBean>
+
+        /**
+         * 修改密码_验证码校验
+         */
+        @FormUrlEncoded
+        @POST(HttpUrls.CHANGE_PASS_USE_CODE)
+        fun changePassUseCode(
+            @Field("password", encoded = true) password: String,
+            @Field("captcha", encoded = true) captcha: String
         ): Flowable<BaseBean>
     }
 }

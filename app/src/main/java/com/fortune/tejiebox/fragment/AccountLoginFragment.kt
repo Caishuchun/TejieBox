@@ -8,6 +8,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
+import com.fm.openinstall.OpenInstall
 import com.fortune.tejiebox.R
 import com.fortune.tejiebox.activity.DialogActivity
 import com.fortune.tejiebox.activity.Login4AccountActivity
@@ -233,6 +234,8 @@ class AccountLoginFragment : Fragment() {
                                     null
                                 )
                             }
+                            //注册统计
+                            OpenInstall.reportRegister()
                         }
 
                         EventBus.getDefault().postSticky(

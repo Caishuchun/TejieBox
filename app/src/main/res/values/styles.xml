@@ -18,7 +18,7 @@
 
     <!--启动页界面主题样式-->
     <style name="SplashTheme" parent="NormalTheme">
-        <item name="android:windowBackground">@drawable/splash</item>
+        <item name="android:windowBackground">@drawable/splash_app_start</item>
     </style>
 
     <!-- 等待对话框样式 -->
@@ -62,6 +62,16 @@
     <style name="ActivityTheme4Process" parent="NormalTheme">
         <!--设置背景颜色-->
         <item name="android:windowBackground">@drawable/splash_tj</item>
+        <!--设置布局背景-->
+        <item name="android:background">@android:color/black</item>
+        <!--设置主题-->
+        <item name="android:windowContentOverlay">@android:color/black</item>
+        <!--设置背景模糊的透明度-->
+        <item name="android:backgroundDimAmount">0</item>
+        <!--设置是否没有标题-->
+        <item name="android:windowNoTitle">true</item>
+        <!--设置是否半透明-->
+        <item name="android:windowIsTranslucent">false</item>
     </style>
 
     <!--加载进度条-->

@@ -32,7 +32,7 @@ class ShowPicAdapter(context: Context, picLists: List<String>) : PagerAdapter() 
         Glide.with(mContext)
             .load(mLists[position])
             .override(Target.SIZE_ORIGINAL, Target.SIZE_ORIGINAL)
-            .skipMemoryCache(true)
+            .skipMemoryCache(false)
             .diskCacheStrategy(DiskCacheStrategy.AUTOMATIC)
             .into(view.iv_pic)
 

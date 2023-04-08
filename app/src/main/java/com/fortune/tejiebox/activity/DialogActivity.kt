@@ -105,6 +105,7 @@ class DialogActivity : BaseActivity() {
 
     @SuppressLint("CheckResult")
     override fun doSomething() {
+        instance = this
         EventBus.getDefault().register(this)
         if (canCancel) {
             RxView.clicks(rl_dialog_root)

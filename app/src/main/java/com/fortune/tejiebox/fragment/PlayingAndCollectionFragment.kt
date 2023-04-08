@@ -150,22 +150,21 @@ class PlayingAndCollectionFragment : Fragment() {
             .setData(mData)
             .setLayoutId(R.layout.item_game_fragment_game)
             .addBindView { itemView, itemData, position ->
+                if (isShake) {
+                    FlipAnimUtils.startShakeByPropertyAnim(
+                        itemView,
+                        1f, 1f,
+                        2f,
+                        1000
+                    )
+                    itemView.iv_item_gameFragment_delete.visibility = View.VISIBLE
+                    mView?.tv_gameFragment_cancel?.let { it.text = "取消" }
+                } else {
+                    FlipAnimUtils.stopShakeByPropertyAnim(itemView)
+                    itemView.iv_item_gameFragment_delete.visibility = View.GONE
+                    mView?.tv_gameFragment_cancel?.let { it.text = "删除" }
+                }
                 if (itemData.game_id < 10000) {
-                    if (isShake) {
-                        FlipAnimUtils.startShakeByPropertyAnim(
-                            itemView,
-                            1f, 1f,
-                            2f,
-                            1000
-                        )
-                        itemView.iv_item_gameFragment_delete.visibility = View.VISIBLE
-                        mView?.tv_gameFragment_cancel?.let { it.text = "取消" }
-                    } else {
-                        FlipAnimUtils.stopShakeByPropertyAnim(itemView)
-                        itemView.iv_item_gameFragment_delete.visibility = View.GONE
-                        mView?.tv_gameFragment_cancel?.let { it.text = "删除" }
-                    }
-
                     itemView.runView_item_gameFragment.visibility = View.GONE
                     itemView.iv_item_gameFragment_type.visibility = View.GONE
 
@@ -174,7 +173,7 @@ class PlayingAndCollectionFragment : Fragment() {
                     Glide.with(this)
                         .load(itemData.game_cover)
                         .placeholder(R.mipmap.bg_gray_6)
-                        .skipMemoryCache(true)
+                        .skipMemoryCache(false)
                         .listener(object : RequestListener<Drawable> {
                             override fun onLoadFailed(
                                 e: GlideException?,
@@ -258,9 +257,11 @@ class PlayingAndCollectionFragment : Fragment() {
                             "确认",
                             object : DialogUtils.OnDialogListener {
                                 override fun next() {
-                                    mData.removeAt(position)
-                                    toDeleteCurrentGame(itemData.game_id)
-                                    mAdapter?.notifyItemRemoved(position)
+                                    if (mData.size != 0) {
+                                        mData.removeAt(position)
+                                        toDeleteCurrentGame(itemData.game_id)
+                                        mAdapter?.notifyItemRangeChanged(0, mData.size)
+                                    }
                                     if (mData.size == 0) {
                                         isShake = false
                                         mView?.tv_gameFragment_cancel?.let {
@@ -308,7 +309,8 @@ class PlayingAndCollectionFragment : Fragment() {
      * 获取全部账号
      */
     private fun toGetAllAccount(gameId: Int, gameName: String, gameChannelId: String) {
-        DialogUtils.showBeautifulDialog(requireContext())
+        if (isAdded)
+            DialogUtils.showBeautifulDialog(requireContext())
         val allAccount = RetrofitUtils.builder().allAccount()
         allAccountObservable = allAccount.subscribeOn(Schedulers.io())
             .observeOn(AndroidSchedulers.mainThread())
@@ -392,7 +394,7 @@ class PlayingAndCollectionFragment : Fragment() {
      */
     private fun toStartGame(gameId: Int, gameChannel: String, account: String?, password: String?) {
         val isHaveId = SPUtils.getInt(SPArgument.IS_HAVE_ID)
-        if (isHaveId == 1) {
+        if (isHaveId == 1 && isAdded) {
             DialogUtils.showBeautifulDialog(requireContext())
             val addPlayingGame = RetrofitUtils.builder().addPlayingGame(gameId, 1)
             addPlayingGameObservable = addPlayingGame.subscribeOn(Schedulers.io())
@@ -494,7 +496,7 @@ class PlayingAndCollectionFragment : Fragment() {
      * 获取收藏列表
      */
     private fun getLikeList(isNeedDialog: Boolean) {
-        if (isNeedDialog) {
+        if (isNeedDialog && isAdded) {
             DialogUtils.showBeautifulDialog(requireContext())
         }
         val likeGame = RetrofitUtils.builder().likeGame()
@@ -544,7 +546,7 @@ class PlayingAndCollectionFragment : Fragment() {
      * 获取在玩列表
      */
     private fun getPlayingList(isNeedDialog: Boolean) {
-        if (isNeedDialog) {
+        if (isNeedDialog && isAdded) {
             DialogUtils.showBeautifulDialog(requireContext())
         }
         val playingGame = RetrofitUtils.builder().playingGame()

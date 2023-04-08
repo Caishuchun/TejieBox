@@ -389,10 +389,13 @@ class MoreGameFragment : Fragment() {
      * 检查是否需要开启游戏
      */
     private fun toCheckIsNeedOpenGame() {
+        if (gameNameFromClipboardContent == "") {
+            return
+        }
         val data = GameInfo4ClipboardBean.getData() ?: return
         LogUtils.d("剪切板拿到的数据:$data")
         GameInfo4ClipboardBean.setData(null)
-        ClipboardUtils.clearClipboardContent(requireActivity())
+//        ClipboardUtils.clearClipboardContent(requireActivity())
         val list = arrayListOf<AllAccountBean.Data>()
         list.add(AllAccountBean.Data(data.account, data.password))
         DialogUtils.showStartGameDialog(

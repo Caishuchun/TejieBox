@@ -10,8 +10,8 @@ android {
         applicationId "com.fortune.tejiebox"
         minSdkVersion 21
         targetSdkVersion 29
-        versionCode 20230307
-        versionName "3.2.2"
+        versionCode 20230308
+        versionName "3.2.3"
         multiDexEnabled true
         aaptOptions {
             cruncherEnabled = false
@@ -100,6 +100,7 @@ dependencies {
     implementation files('libs/auth_number_product-2.12.9-log-online-standard-release.aar')
     implementation files('libs/isoparser-1.0.6.jar')
     implementation files('libs/aspectjrt-1.7.3.jar')
+    implementation files('libs/OpenInstall_v2.8.0.jar')
 
     implementation 'androidx.multidex:multidex:2.0.0'
     implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:$kotlin_version"
@@ -168,4 +169,6 @@ dependencies {
     implementation 'io.github.lucksiege:pictureselector:v3.10.6'
     // 图片压缩 (按需引入)
     implementation 'io.github.lucksiege:compress:v3.10.7'
+    //二维码
+    implementation 'com.google.zxing:core:3.3.0'
 }

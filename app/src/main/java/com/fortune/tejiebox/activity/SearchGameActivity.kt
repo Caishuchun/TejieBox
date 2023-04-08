@@ -20,7 +20,6 @@ import com.fortune.tejiebox.event.PlayingDataChange
 import com.fortune.tejiebox.http.RetrofitUtils
 import com.fortune.tejiebox.myapp.MyApp
 import com.fortune.tejiebox.room.*
-import com.fortune.tejiebox.service.GameDurationService
 import com.fortune.tejiebox.utils.*
 import com.fortune.tejiebox.widget.SafeLinearLayoutManager
 import com.fortune.tejiebox.widget.SafeStaggeredGridLayoutManager
@@ -96,6 +95,7 @@ class SearchGameActivity : BaseActivity() {
 
     @SuppressLint("CheckResult")
     private fun initSearchHis() {
+        instance = this
         val dataBase = SearchHisDataBase.getDataBase(this.applicationContext)
         searchHisDao = dataBase.searchHisDao()
 
@@ -606,12 +606,14 @@ class SearchGameActivity : BaseActivity() {
                 if (itemData.game_id < 10000) {
                     Glide.with(this)
                         .load(itemData.game_cover)
-                        .skipMemoryCache(true)
+                        .placeholder(R.mipmap.game_icon)
+                        .skipMemoryCache(false)
                         .diskCacheStrategy(DiskCacheStrategy.AUTOMATIC)
                         .into(itemView.iv_item_mainFragment_icon)
 
-                    itemView.fl_item_mainFragment_flow.visibility = View.VISIBLE
+                    itemView.tv_item_mainFragment_gameDes.visibility = View.VISIBLE
                     itemView.tv_item_mainFragment_gameDes.text = itemData.game_desc
+                    itemView.fl_item_mainFragment_flow.visibility = View.VISIBLE
 
                     val typeView =
                         LayoutInflater.from(this)
@@ -619,6 +621,7 @@ class SearchGameActivity : BaseActivity() {
                     typeView.tv_tag.text = itemData.game_type
                     typeView.tv_tag.setTextColor(Color.parseColor("#5F60FF"))
                     typeView.tv_tag.setBackgroundResource(R.drawable.bg_tag1)
+                    itemView.flowLayout_item_mainFragment.removeAllViews()
                     itemView.flowLayout_item_mainFragment.addView(typeView)
                     val size = itemData.game_tag.size
                     for (index in 0 until size) {
@@ -639,6 +642,7 @@ class SearchGameActivity : BaseActivity() {
                         itemView.flowLayout_item_mainFragment.addView(tagView)
                     }
                 } else {
+                    itemView.iv_item_mainFragment_icon.setImageResource(R.mipmap.game_icon)
                     itemView.tv_item_mainFragment_gameDes.visibility = View.GONE
                     itemView.fl_item_mainFragment_flow.visibility = View.GONE
                 }
@@ -672,7 +676,6 @@ class SearchGameActivity : BaseActivity() {
                         if (MyApp.getInstance().isHaveToken()) {
                             if (itemData.game_id < 10000) {
                                 toAddToHotSearch(itemData.game_name)
-                                GameDurationService.startGame(this, itemData.game_id)
                                 toStartGame(
                                     itemData.game_id,
                                     itemData.game_channelId,
@@ -890,15 +893,17 @@ class SearchGameActivity : BaseActivity() {
 
                                 EventBus.getDefault().post(PlayingDataChange(""))
                                 isPlayingGame = true
-
-                                SPUtils.putValue(
-                                    SPArgument.GAME_TIME_INFO,
-                                    "$gameId-${System.currentTimeMillis()}"
-                                )
+                                if (gameId < 10000) {
+                                    SPUtils.putValue(
+                                        SPArgument.GAME_TIME_INFO,
+                                        "$gameId-${System.currentTimeMillis()}"
+                                    )
+                                    DurationUtils.startTiming(gameId)
+                                }
                                 JumpUtils.jump2Game(
                                     this,
                                     gameChannelId + Box2GameUtils.getPhoneAndToken(),
-                                    null
+                                    gameStyle
                                 )
                             }
                             -1 -> {
@@ -1084,7 +1089,7 @@ class SearchGameActivity : BaseActivity() {
     }
 
     override fun destroy() {
-        GameDurationService.stopGame(this)
+        DurationUtils.stopTiming()
 
         getHotSearchHisObservable?.dispose()
         getSearchSugrecObservable?.dispose()
@@ -1138,23 +1143,24 @@ class SearchGameActivity : BaseActivity() {
         if (isPlayingGame) {
             isPlayingGame = false
             LogUtils.d("=====退出游戏")
+            DurationUtils.stopTiming()
             val gameTimeInfo = SPUtils.getString(SPArgument.GAME_TIME_INFO)
             if (null != gameTimeInfo && gameTimeInfo.split("-").size >= 2) {
                 val split = gameTimeInfo.split("-")
                 val gameId = split[0].toInt()
                 val startTime = split[1].toLong()
                 val endTime = System.currentTimeMillis()
-                if (endTime - startTime >= 1 * 60 * 1000) {
-                    val updateGameTimeInfo = RetrofitUtils.builder().updateGameTimeInfo(
-                        gameId,
-                        startTime.toString(),
-                        endTime.toString()
-                    )
-                    updateGameTimeInfoObservable = updateGameTimeInfo.subscribeOn(Schedulers.io())
-                        .observeOn(AndroidSchedulers.mainThread())
-                        .subscribe({
-                        }, {})
-                }
+//                if (endTime - startTime >= 1 * 60 * 1000) {
+                val updateGameTimeInfo = RetrofitUtils.builder().updateGameTimeInfo(
+                    gameId,
+                    startTime.toString(),
+                    endTime.toString()
+                )
+                updateGameTimeInfoObservable = updateGameTimeInfo.subscribeOn(Schedulers.io())
+                    .observeOn(AndroidSchedulers.mainThread())
+                    .subscribe({
+                    }, {})
+//                }
             }
         }
         SPUtils.putValue(SPArgument.GAME_TIME_INFO, null)

@@ -13,7 +13,7 @@ object SPArgument {
     const val IS_NEED_UPDATE_DIALOG = "is_need_update_dialog" //是否需要显示更新Dialog
     const val NOTICE_ID = "notice_id" //公告Id
     const val APP_DOWNLOAD_PATH = "app_download_path" //app下载后的地址
-    const val ONLY_DEVICE_ID = "only_device_id"//设备唯一标识符
+    const val ONLY_DEVICE_ID_NEW = "only_device_id"//设备唯一标识符
     const val IS_NEED_SHADE_NEW = "is_need_shade_new" //是否需要遮罩层,第二版
     const val GAME_TIME_INFO = "game_time_info" //游戏信息 game_id-startTime-endTime
 
@@ -34,4 +34,10 @@ object SPArgument {
 
     const val NEED_JUMP_GAME_ID_JUMP = "needJumpGameId4Jump" //需要跳转的游戏Id_跳转用
     const val NEED_JUMP_GAME_ID_UPDATE = "needJumpGameId4Update" //需要跳转的游戏Id_传值用
+
+    const val INVITE_CODE_USED = "inviteCodeUsed" //邀请码是否使用过了
+
+    const val OPEN_INSTALL_USED = "openInstallUsed" //openInstall是佛是否使用过了
+    const val OPEN_INSTALL_INFO = "openInstallInfo" //openInstall传递的值
+    const val OPEN_INSTALL_INFO_INVITE = "openInstallInfoInvite" //openInstall传递的值_分享来的
 }

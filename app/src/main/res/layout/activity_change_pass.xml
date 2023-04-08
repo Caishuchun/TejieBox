@@ -1,0 +1,347 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@mipmap/bg_all"
+    android:orientation="vertical"
+    tools:context=".activity.ChangePassActivity">
+
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/dp_30" />
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/dp_48">
+
+        <ImageView
+            android:id="@+id/iv_changePass_back"
+            android:layout_width="@dimen/dp_48"
+            android:layout_height="@dimen/dp_48"
+            android:layout_centerVertical="true"
+            android:padding="@dimen/dp_10"
+            android:src="@mipmap/back_black" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerInParent="true"
+            android:text="修改密码"
+            android:textColor="#0A0422"
+            android:textSize="@dimen/sp_18"
+            android:textStyle="bold" />
+    </RelativeLayout>
+
+    <LinearLayout
+        android:id="@+id/ll_changePass_select"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/dp_20"
+        android:orientation="vertical"
+        android:visibility="gone">
+
+        <LinearLayout
+            android:id="@+id/ll_changePass_usePhone"
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/dp_50"
+            android:gravity="center_vertical"
+            android:orientation="horizontal"
+            android:padding="@dimen/dp_10">
+
+            <TextView
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="通过短信验证码修改账号密码"
+                android:textColor="@color/black_1A241F"
+                android:textSize="@dimen/sp_14" />
+
+            <ImageView
+                android:layout_width="@dimen/dp_20"
+                android:layout_height="@dimen/dp_20"
+                android:src="@mipmap/icon_next" />
+        </LinearLayout>
+
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/dp_0_5"
+            android:background="@drawable/line_open_service" />
+
+        <LinearLayout
+            android:id="@+id/ll_changePass_usePass"
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/dp_50"
+            android:gravity="center_vertical"
+            android:orientation="horizontal"
+            android:padding="@dimen/dp_10">
+
+            <TextView
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="通过验证旧密码修改账号密码"
+                android:textColor="@color/black_1A241F"
+                android:textSize="@dimen/sp_14" />
+
+            <ImageView
+                android:layout_width="@dimen/dp_20"
+                android:layout_height="@dimen/dp_20"
+                android:src="@mipmap/icon_next" />
+        </LinearLayout>
+    </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/ll_changePass_root"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical">
+
+        <LinearLayout
+            android:id="@+id/ll_changePass_phonePart"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:visibility="visible">
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:background="@color/gray_102A2C36"
+                android:gravity="center"
+                android:padding="@dimen/dp_5"
+                android:text="当前已绑定手机号"
+                android:textColor="@color/black_1A241F"
+                android:textSize="@dimen/sp_14" />
+
+            <TextView
+                android:id="@+id/tv_changePass_phone"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_horizontal"
+                android:layout_marginTop="@dimen/dp_5"
+                android:textColor="@color/black_1A241F"
+                android:textSize="@dimen/sp_18"
+                android:textStyle="bold" />
+
+            <LinearLayout
+                android:layout_width="@dimen/dp_200"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_horizontal"
+                android:layout_marginTop="@dimen/dp_10"
+                android:gravity="center_vertical"
+                android:orientation="horizontal">
+
+                <EditText
+                    android:id="@+id/et_changePass_code"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:gravity="center"
+                    android:hint="请输入验证码"
+                    android:inputType="number"
+                    android:maxLength="6"
+                    android:maxLines="1"
+                    android:singleLine="true"
+                    android:textColor="@color/black_1A241F"
+                    android:textSize="@dimen/sp_16"
+                    android:textStyle="bold" />
+
+                <TextView
+                    android:id="@+id/tv_changePass_sendCode"
+                    android:layout_width="@dimen/dp_79"
+                    android:layout_height="@dimen/dp_30"
+                    android:layout_marginStart="@dimen/dp_5"
+                    android:background="@drawable/bg_start_btn_big"
+                    android:gravity="center"
+                    android:text="发送验证码"
+                    android:textColor="@color/white_FFFFFF"
+                    android:textSize="@dimen/sp_14"
+                    android:textStyle="bold" />
+
+            </LinearLayout>
+
+        </LinearLayout>
+
+        <LinearLayout
+            android:id="@+id/ll_changePass_passPart"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:visibility="gone">
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:background="@color/gray_102A2C36"
+                android:gravity="center"
+                android:padding="@dimen/dp_5"
+                android:text="输入当前使用的旧密码"
+                android:textColor="@color/black_1A241F"
+                android:textSize="@dimen/sp_14" />
+
+            <TextView
+                android:id="@+id/tv_changePass_oldPass_tips"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="@dimen/dp_32"
+                android:layout_marginTop="@dimen/dp_5"
+                android:layout_marginEnd="@dimen/dp_32"
+                android:text="√ 你说什么都是对的"
+                android:textColor="@color/green_2EC8AC"
+                android:textSize="@dimen/sp_10"
+                android:textStyle="bold"
+                android:visibility="invisible" />
+
+            <LinearLayout
+                android:id="@+id/ll_changePass_oldPass"
+                android:layout_width="match_parent"
+                android:layout_height="@dimen/dp_48"
+                android:layout_marginStart="@dimen/dp_32"
+                android:layout_marginEnd="@dimen/dp_32"
+                android:background="@drawable/bg_phone_enter"
+                android:orientation="horizontal">
+
+                <EditText
+                    android:id="@+id/et_changePass_oldPass"
+                    android:layout_width="0dp"
+                    android:layout_height="match_parent"
+                    android:layout_weight="1"
+                    android:background="@null"
+                    android:digits="0123456789abcdefghigklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ"
+                    android:hint="请输入旧密码"
+                    android:inputType="textPassword"
+                    android:maxLength="20"
+                    android:maxLines="1"
+                    android:padding="@dimen/dp_10"
+                    android:textColor="#0A0422"
+                    android:textColorHint="#CAC9CE"
+                    android:textSize="@dimen/sp_16" />
+
+                <ImageView
+                    android:id="@+id/iv_changePass_oldPass"
+                    android:layout_width="@dimen/dp_48"
+                    android:layout_height="@dimen/dp_48"
+                    android:padding="@dimen/dp_12"
+                    android:src="@mipmap/pass_show" />
+            </LinearLayout>
+        </LinearLayout>
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/dp_30"
+            android:background="@color/gray_102A2C36"
+            android:gravity="center"
+            android:padding="@dimen/dp_5"
+            android:text="输入并确认要修改的新密码"
+            android:textColor="@color/black_1A241F"
+            android:textSize="@dimen/sp_14" />
+
+        <TextView
+            android:id="@+id/tv_changePass_pass_tips"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="@dimen/dp_32"
+            android:layout_marginTop="@dimen/dp_5"
+            android:layout_marginEnd="@dimen/dp_32"
+            android:text="√ 你说什么都是对的"
+            android:textColor="@color/green_2EC8AC"
+            android:textSize="@dimen/sp_10"
+            android:textStyle="bold"
+            android:visibility="invisible" />
+
+        <LinearLayout
+            android:id="@+id/ll_changePass_pass"
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/dp_48"
+            android:layout_marginStart="@dimen/dp_32"
+            android:layout_marginEnd="@dimen/dp_32"
+            android:background="@drawable/bg_phone_enter"
+            android:orientation="horizontal">
+
+            <EditText
+                android:id="@+id/et_changePass_pass"
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:background="@null"
+                android:digits="0123456789abcdefghigklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ"
+                android:hint="请输入新密码"
+                android:inputType="textPassword"
+                android:maxLength="20"
+                android:maxLines="1"
+                android:padding="@dimen/dp_10"
+                android:textColor="#0A0422"
+                android:textColorHint="#CAC9CE"
+                android:textSize="@dimen/sp_16" />
+
+            <ImageView
+                android:id="@+id/iv_changePass_pass"
+                android:layout_width="@dimen/dp_48"
+                android:layout_height="@dimen/dp_48"
+                android:padding="@dimen/dp_12"
+                android:src="@mipmap/pass_show" />
+        </LinearLayout>
+
+        <TextView
+            android:id="@+id/tv_changePass_rePass_tips"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="@dimen/dp_32"
+            android:layout_marginTop="@dimen/dp_5"
+            android:layout_marginEnd="@dimen/dp_32"
+            android:text="√ 你说什么都是对的"
+            android:textColor="@color/green_2EC8AC"
+            android:textSize="@dimen/sp_10"
+            android:textStyle="bold"
+            android:visibility="invisible" />
+
+        <LinearLayout
+            android:id="@+id/ll_changePass_rePass"
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/dp_48"
+            android:layout_marginStart="@dimen/dp_32"
+            android:layout_marginEnd="@dimen/dp_32"
+            android:background="@drawable/bg_phone_enter"
+            android:orientation="horizontal">
+
+            <EditText
+                android:id="@+id/et_changePass_rePass"
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:background="@null"
+                android:digits="0123456789abcdefghigklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ"
+                android:hint="请确认新密码"
+                android:inputType="textPassword"
+                android:maxLength="20"
+                android:maxLines="1"
+                android:padding="@dimen/dp_10"
+                android:textColor="#0A0422"
+                android:textColorHint="#CAC9CE"
+                android:textSize="@dimen/sp_16" />
+
+            <ImageView
+                android:id="@+id/iv_changePass_rePass"
+                android:layout_width="@dimen/dp_48"
+                android:layout_height="@dimen/dp_48"
+                android:padding="@dimen/dp_12"
+                android:src="@mipmap/pass_show" />
+        </LinearLayout>
+
+        <TextView
+            android:id="@+id/tv_changePass_sure"
+            android:layout_width="@dimen/dp_200"
+            android:layout_height="@dimen/dp_40"
+            android:layout_gravity="center_horizontal"
+            android:layout_marginTop="@dimen/dp_60"
+            android:background="@drawable/bg_btn"
+            android:gravity="center"
+            android:text="确认修改"
+            android:textColor="@color/white_FFFFFF"
+            android:textSize="@dimen/sp_16"
+            android:textStyle="bold" />
+    </LinearLayout>
+
+</LinearLayout>

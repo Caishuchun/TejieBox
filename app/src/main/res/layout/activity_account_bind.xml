@@ -180,4 +180,21 @@
         android:text="添加账号"
         android:textColor="@color/white_FFFFFF"
         android:textSize="@dimen/sp_16" />
+
+    <View
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:layout_weight="1" />
+
+    <TextView
+        android:id="@+id/tv_accountBind_changePass"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center_horizontal"
+        android:layout_marginBottom="@dimen/dp_10"
+        android:autoLink="all"
+        android:padding="@dimen/dp_10"
+        android:textColor="@color/ps_color_blue"
+        android:textSize="@dimen/sp_14"
+        android:visibility="gone" />
 </LinearLayout>

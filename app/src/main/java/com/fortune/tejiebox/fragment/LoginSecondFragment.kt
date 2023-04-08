@@ -8,9 +8,9 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
+import com.fm.openinstall.OpenInstall
 import com.fortune.tejiebox.R
 import com.fortune.tejiebox.activity.DialogActivity
-import com.fortune.tejiebox.activity.LoginActivity
 import com.fortune.tejiebox.activity.MainActivity
 import com.fortune.tejiebox.base.BaseAppUpdateSetting
 import com.fortune.tejiebox.bean.GameInfo4ClipboardBean
@@ -151,17 +151,21 @@ class LoginSecondFragment() : Fragment() {
     private fun toLogin(code: String) {
         val data = GameInfo4ClipboardBean.getData()
         val gameChannel = data?.channelId
+        val gameVersion = data?.version
         var gameId: Int? = SPUtils.getInt(SPArgument.NEED_JUMP_GAME_ID_UPDATE, -1)
         if (gameId == -1) {
             gameId = null
         }
+        val inviteInfo = SPUtils.getString(SPArgument.OPEN_INSTALL_INFO)
         DialogUtils.showBeautifulDialog(requireContext())
         val login = RetrofitUtils.builder().login(
-            phone!!,
-            code.toInt(),
-            GetDeviceId.getDeviceId(requireContext()),
-            gameChannel,
-            gameId
+            phone = phone!!,
+            captcha = code.toInt(),
+            device_id = GetDeviceId.getDeviceId(requireContext()),
+            game_channel = gameChannel,
+            game_id = gameId,
+            game_version = gameVersion,
+            i = inviteInfo
         )
         SPUtils.putValue(SPArgument.LOGIN_TOKEN, null)
         SPUtils.putValue(SPArgument.PHONE_NUMBER, null)
@@ -179,6 +183,7 @@ class LoginSecondFragment() : Fragment() {
                 if (it != null) {
                     when (it.code) {
                         1 -> {
+                            SPUtils.putValue(SPArgument.OPEN_INSTALL_USED, true)
                             SPUtils.putValue(SPArgument.IS_CHECK_AGREEMENT, true)
                             SPUtils.putValue(SPArgument.LOGIN_TOKEN, it.data?.token)
                             SPUtils.putValue(SPArgument.PHONE_NUMBER, it.data?.phone)
@@ -207,6 +212,8 @@ class LoginSecondFragment() : Fragment() {
                                         null
                                     )
                                 }
+                                //openInstall 注册统计
+                                OpenInstall.reportRegister()
                             }
                             EventBus.getDefault().postSticky(
                                 LoginStatusChange(
@@ -216,7 +223,15 @@ class LoginSecondFragment() : Fragment() {
                                     isHaveRewardInteger
                                 )
                             )
-                            (activity as LoginActivity).finish()
+//                            if (it.data?.first_login == 1 && BaseAppUpdateSetting.isInviteVersion) {
+//                                startActivity(
+//                                    Intent(
+//                                        requireContext(),
+//                                        InviteCodeActivity::class.java
+//                                    )
+//                                )
+//                            }
+                            requireActivity().finish()
                         }
                         else -> {
                             it.msg?.let { it1 -> ToastUtils.show(it1) }
@@ -229,7 +244,7 @@ class LoginSecondFragment() : Fragment() {
             }, {
                 DialogUtils.dismissLoading()
                 LogUtils.d("${javaClass.simpleName}=fail=>${it.message.toString()}")
-                ToastUtils.show(HttpExceptionUtils.getExceptionMsg(activity as LoginActivity, it))
+                ToastUtils.show(HttpExceptionUtils.getExceptionMsg(requireContext(), it))
             })
     }
 
@@ -350,7 +365,7 @@ class LoginSecondFragment() : Fragment() {
             }, {
                 DialogUtils.dismissLoading()
                 LogUtils.d("${javaClass.simpleName}=fail=>${it.message.toString()}")
-                ToastUtils.show(HttpExceptionUtils.getExceptionMsg(activity as LoginActivity, it))
+                ToastUtils.show(HttpExceptionUtils.getExceptionMsg(requireContext(), it))
             })
     }
 

@@ -1,0 +1,135 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@mipmap/bg_all"
+    android:orientation="vertical"
+    tools:context=".activity.InviteCodeActivity">
+
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/dp_30" />
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/dp_48">
+
+        <ImageView
+            android:id="@+id/iv_inviteCode_back"
+            android:layout_width="@dimen/dp_48"
+            android:layout_height="@dimen/dp_48"
+            android:layout_centerVertical="true"
+            android:padding="@dimen/dp_10"
+            android:src="@mipmap/back_black"
+            android:visibility="gone" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerInParent="true"
+            android:text="欢迎使用"
+            android:textColor="#0A0422"
+            android:textSize="@dimen/sp_18"
+            android:textStyle="bold" />
+    </RelativeLayout>
+
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/dp_1"
+        android:background="@drawable/line_open_service" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center_horizontal"
+        android:layout_marginTop="@dimen/dp_20"
+        android:text="欢迎使用"
+        android:textColor="@color/black_1A241F"
+        android:textSize="@dimen/sp_40"
+        android:textStyle="bold"
+        android:visibility="gone" />
+
+    <ImageView
+        android:layout_width="@dimen/dp_170"
+        android:layout_height="@dimen/dp_48"
+        android:layout_gravity="center_horizontal"
+        android:layout_marginTop="@dimen/dp_30"
+        android:scaleType="fitXY"
+        android:src="@mipmap/app_title" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center_horizontal"
+        android:layout_marginTop="@dimen/dp_60"
+        android:text="请填写邀请人邀请码"
+        android:textColor="@color/black_1A241F"
+        android:textSize="@dimen/sp_16"
+        android:textStyle="bold" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center_horizontal"
+        android:layout_marginTop="@dimen/dp_5"
+        android:text="如忘记邀请码可联系邀请人询问"
+        android:textColor="@color/gray_C4C4C4"
+        android:textSize="@dimen/sp_10" />
+
+    <EditText
+        android:id="@+id/et_inviteCode_code"
+        android:layout_width="@dimen/dp_100"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center_horizontal"
+        android:layout_marginTop="@dimen/dp_20"
+        android:background="@null"
+        android:gravity="center"
+        android:hint="邀请码"
+        android:inputType="number"
+        android:maxLength="6"
+        android:maxLines="1"
+        android:singleLine="true"
+        android:textColor="#5F60FF"
+        android:textSize="@dimen/sp_18"
+        android:textStyle="bold" />
+
+    <View
+        android:layout_width="100dp"
+        android:layout_height="@dimen/dp_1"
+        android:layout_gravity="center_horizontal"
+        android:background="#5F60FF" />
+
+    <TextView
+        android:id="@+id/tv_inviteCode_sure"
+        android:layout_width="@dimen/dp_100"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center_horizontal"
+        android:layout_marginTop="@dimen/dp_30"
+        android:background="@drawable/bg_start_btn_big"
+        android:gravity="center"
+        android:letterSpacing="0.7"
+        android:paddingTop="@dimen/dp_5"
+        android:paddingBottom="@dimen/dp_5"
+        android:text="确认"
+        android:textColor="@color/white_FFFFFF"
+        android:textSize="@dimen/sp_16"
+        android:textStyle="bold" />
+
+    <View
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:layout_weight="1" />
+
+    <TextView
+        android:id="@+id/tv_inviteCode_jump"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center_horizontal"
+        android:layout_marginTop="@dimen/dp_5"
+        android:layout_marginBottom="@dimen/dp_10"
+        android:padding="@dimen/dp_5"
+        android:textColor="@color/ps_color_blue"
+        android:textSize="@dimen/sp_12"
+        android:visibility="gone" />
+</LinearLayout>

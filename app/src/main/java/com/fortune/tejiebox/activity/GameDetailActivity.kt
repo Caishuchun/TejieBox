@@ -3,7 +3,6 @@ package com.fortune.tejiebox.activity
 import android.annotation.SuppressLint
 import android.content.Intent
 import android.graphics.Color
-import android.os.Build
 import android.os.Handler
 import android.os.Message
 import android.view.LayoutInflater
@@ -27,7 +26,6 @@ import com.fortune.tejiebox.event.LikeDataChange
 import com.fortune.tejiebox.event.PlayingDataChange
 import com.fortune.tejiebox.http.RetrofitUtils
 import com.fortune.tejiebox.myapp.MyApp
-import com.fortune.tejiebox.service.GameDurationService
 import com.fortune.tejiebox.utils.*
 import com.fortune.tejiebox.widget.CenterLayoutManager
 import com.fortune.tejiebox.widget.SafeLinearLayoutManager
@@ -39,6 +37,26 @@ import com.unity3d.player.JumpUtils
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.Disposable
 import io.reactivex.schedulers.Schedulers
+import kotlinx.android.synthetic.main.activity_game_detail.*
+import kotlinx.android.synthetic.main.activity_game_detail.fl_detail
+import kotlinx.android.synthetic.main.activity_game_detail.iv_detail_back
+import kotlinx.android.synthetic.main.activity_game_detail.iv_detail_icon
+import kotlinx.android.synthetic.main.activity_game_detail.iv_detail_like
+import kotlinx.android.synthetic.main.activity_game_detail.ll_detail_code
+import kotlinx.android.synthetic.main.activity_game_detail.ll_detail_like
+import kotlinx.android.synthetic.main.activity_game_detail.rl_detail_pic
+import kotlinx.android.synthetic.main.activity_game_detail.rv_detail_pic
+import kotlinx.android.synthetic.main.activity_game_detail.rv_detail_pic_small
+import kotlinx.android.synthetic.main.activity_game_detail.tv_detail_code
+import kotlinx.android.synthetic.main.activity_game_detail.tv_detail_codeMsg
+import kotlinx.android.synthetic.main.activity_game_detail.tv_detail_days
+import kotlinx.android.synthetic.main.activity_game_detail.tv_detail_des
+import kotlinx.android.synthetic.main.activity_game_detail.tv_detail_integral
+import kotlinx.android.synthetic.main.activity_game_detail.tv_detail_like
+import kotlinx.android.synthetic.main.activity_game_detail.tv_detail_name
+import kotlinx.android.synthetic.main.activity_game_detail.tv_detail_start
+import kotlinx.android.synthetic.main.activity_game_detail.tv_detail_strategy
+import kotlinx.android.synthetic.main.activity_game_detail.tv_detail_tips
 import kotlinx.android.synthetic.main.activity_game_detail_v2.*
 import kotlinx.android.synthetic.main.item_game_pic.view.*
 import kotlinx.android.synthetic.main.item_game_pic_small.view.*
@@ -89,377 +107,7 @@ class GameDetailActivity : BaseActivity() {
         gameId = intent.getIntExtra(GAME_ID, -1)
         gameChannelId = intent.getStringExtra(GAME_CHANNEL_ID)
         initView()
-        initWebView()
         getInfo()
-    }
-
-    /**
-     * 设置WebView
-     */
-    @SuppressLint("SetJavaScriptEnabled")
-    private fun initWebView() {
-        val settings: WebSettings = web_detail.settings
-        // 设置WebView支持JavaScript
-        settings.javaScriptEnabled = true
-        //支持自动适配
-        settings.useWideViewPort = true
-        settings.loadWithOverviewMode = true
-        settings.setSupportZoom(false) //支持放大缩小
-        settings.builtInZoomControls = false //显示缩放按钮
-        settings.blockNetworkImage = true // 把图片加载放在最后来加载渲染
-        settings.allowFileAccess = true // 允许访问文件
-        settings.saveFormData = true
-        settings.setGeolocationEnabled(true)
-        settings.domStorageEnabled = true
-        settings.javaScriptCanOpenWindowsAutomatically = true /// 支持通过JS打开新窗口
-        settings.layoutAlgorithm = WebSettings.LayoutAlgorithm.NARROW_COLUMNS
-        settings.layoutAlgorithm = WebSettings.LayoutAlgorithm.SINGLE_COLUMN
-        //设置不让其跳转浏览器
-        web_detail.webViewClient = object : WebViewClient() {
-            override fun shouldOverrideUrlLoading(view: WebView?, url: String?): Boolean {
-                return false
-            }
-        }
-        // 添加客户端支持
-        web_detail.webChromeClient = WebChromeClient()
-        //不加这个图片显示不出来
-        // mWebView.loadUrl(TEXTURL);
-        //不加这个图片显示不出来
-        if (Build.VERSION.SDK_INT > Build.VERSION_CODES.LOLLIPOP) {
-            web_detail.settings.mixedContentMode = WebSettings.MIXED_CONTENT_ALWAYS_ALLOW
-        }
-        web_detail.settings.blockNetworkImage = false
-        //允许cookie 不然有的网站无法登陆
-        val mCookieManager: CookieManager = CookieManager.getInstance()
-        mCookieManager.setAcceptCookie(true)
-        mCookieManager.setAcceptThirdPartyCookies(web_detail, true)
-//        web_detail.loadUrl(URL)
-        web_detail.isHorizontalScrollBarEnabled = false
-        web_detail.isVerticalScrollBarEnabled = false
-
-        val data = """
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Document</title> 
-    
-    <link rel="stylesheet" href="css/base.css">
-
-    <style type="text/css">
-		body,p,h1,h2,h3,h4,h5,h6,ul,ol,dl,dt,dd,li {
-			margin: 0;
-			padding: 0;
-			list-style: none;
-			font-size: 14px;
-			font-family: 宋体;
-			color: #000000;
-		}
-
-		body {
-			background-color: #241E18;
-			text-align: center;
-		}
-
-		a {
-			color: #000000; 
-			text-decoration: none;
-		}
-
-		/*a:hover {
-			color: red;
-			text-decoration: underline;
-		}*/
-
-		i,s,em {
-			font-style: normal;
-			text-decoration: none;
-		}
-
-		input,img {
-			vertical-align: middle;
-			border: 0 none;
-			outline-style: none;
-			padding: 0;
-			margin: 0;
-		}
-
-		/*清除浮动*/
-		.clearfix:after {
-			content: "";
-			height: 0;
-			line-height: 0;
-			display: block;
-			clear: both;
-			visibility: hidden;
-		}
-
-		.clearfix {
-			zoom: 1;
-		}
-
-		/*版心*/
-		.w {
-			width: 1190px;
-			margin: 0 auto;
-		}
-        .header {
-            width: 100%; 
-            height: 146px; 
-            background-color: #010101; 
-            position: relative;
-        }
-        .game_info {
-            height: 100px; 
-            margin-left: 30px; 
-            margin-top: 23px; 
-            margin-bottom: 23px; 
-            display: flex; 
-            flex-direction: row; 
-            float: left
-        }
-        .game_avart {
-            height: 100%; 
-            width: 100px; 
-            background-color: #6E6568;
-        }
-        .game_details {
-            margin-left: 30px; 
-            text-align: left; 
-            display: flex; 
-            flex-direction: column; 
-            justify-content: space-between;
-        }
-        .game_details_item {
-            color: gold;
-        }
-        .name {
-            font-size: 28px; 
-        }
-        .subname {
-            font-size: 16px; 
-        }
-        .introduce {
-            font-size: 16px; 
-        }
-        .download_btn_header {
-            width:192px;
-            height:74px;
-            background-image: url(resource/download_btn_top.png);
-            position: absolute;
-            top: 50%;
-            right: 30px;
-            margin-top: -37px;
-        }
-        /* width: 192px; height: 74px; background-image: url(resource/download_btn_top.png); */
-        .banner {
-            height: 937px; 
-            background: url("https://t7.baidu.com/it/u=1595072465,3644073269&fm=193&f=GIF") no-repeat;
-        }
-
-        .login_gift {
-            height: 450px; 
-            background: url(resource/login_gift_bg.png) no-repeat;
-        }
-        .login_gift_title {
-            margin-top: 87px;
-        }
-        .login_gift_list {
-            height: 174px; 
-            margin-left: 82px; 
-            margin-right: 82px; 
-            margin-top: 8px; 
-            display: flex; 
-            flex-direction: row; 
-            justify-content: space-between;
-        }
-        .login_gift_btn {
-            width: 220px; 
-            height: 55px; 
-            background-image: 
-            url(resource/login_gift_btn.png); 
-            background-color: rgba(0, 0, 0, 0); 
-            border-style: none; 
-            margin-top: 22px; 
-            margin-bottom: 85px;
-        }
-
-        .luck_draw {
-            text-align: center; 
-            margin-bottom: 54px;
-        }
-        .jackpot {
-            height: 438px; 
-            background: url(resource/luck_draw_bg.png) no-repeat center; 
-            margin-top: 40px;
-        }
-        .jackpot_list {
-            height: 250px; 
-            display: grid; 
-            grid-gap: 52px 30px; 
-            grid-template: repeat(2, 1fr)/repeat(4, 1fr); 
-            padding-top: 47px; 
-            padding-left: 60px; 
-            padding-right: 60px;
-        }
-        .jackpot_item {
-            display: grid;
-            place-items: center;
-            background: url(resource/jackpot_item.png);
-            background-size: cover;
-        }
-        .luck_draw_btn {
-            width: 220px; 
-            height: 55px; 
-            background-image: url(resource/login_gift_btn.png); 
-            background-color: rgba(0, 0, 0, 0); 
-            border-style: none; 
-            margin-top: 44px;
-        }
-
-        .strategy {
-            text-align: center;
-        }
-        .strategy_content {
-            height: 444px; 
-            background: url(resource/strategy_bg.png) no-repeat center; 
-            margin-top: 40px;
-            font-size: 25px;
-            text-align: left;
-            padding-top: 85px;
-            padding-left: 55px;
-            padding-right: 55px;
-            padding-bottom: 85px;
-        }
-        .load_btn_bottom {
-            width: 254px; 
-            height: 94px; 
-            background-image: url(resource/load_btn_bottom.png); 
-            background-color: rgba(0, 0, 0, 0); 
-            border-style: none; 
-            margin-top: 30px; 
-            margin-bottom: 53px;
-        }
-    </style>
-</head>
-<body>
-    <!-- 顶部 -->
-    <div class="header">
-       <!-- 游戏介绍 -->
-       <div class="game_info">
-            <!-- 游戏图标  -->
-            <img class="game_avart" src="">
-            <div class="game_details">
-                <span class="game_details_item name">传奇手游</span>
-                <span class="game_details_item subname">(爆率全开刀刀暴击)</span>
-                <span class="game_details_item introduce">装备永久回收小怪爆终极</span>
-            </div>
-            <!-- 游戏信息 -->
-       </div>
-       <button class="download_btn_header">
-
-    </button>
-    </div>
-    
-    <!-- 游戏banner -->
-    <div class="banner">
-        
-       
-    </div>
-
-    <!-- 领取登录福利 -->
-    <div class="login_gift">
-         <!-- 标题 -->
-        <img class="login_gift_title" src="resource/login_gift_title.png">
-        <!-- 登录福利列表 -->
-        <div class="login_gift_list">
-            <div class="login_gift_item">
-                <img src="resource/gift_4.png">
-                <div>5000积分</div>
-            </div>
-            <div class="login_gift_item">
-                <img src="resource/gift_2.png">
-                <div>狂暴神技</div>
-            </div>
-            <div class="login_gift_item">
-                <img src="resource/gift_3.png">
-                <div>琥珀套装</div>
-            </div>
-            <div class="login_gift_item">
-                <img src="resource/gift_1.png">
-                <div>四格神器</div>
-            </div>
-        </div>
-        <!-- 领取按钮 -->
-        <button class="login_gift_btn">
-
-        </button>
-    </div>
-
-    <!-- 抽奖 -->
-    <div class="luck_draw">
-        <!-- 标题 -->
-        <img src="resource/luck_draw_title.png">
-        <!-- 奖池 -->
-        <div class="jackpot">
-            <!-- 奖池列表 -->
-            <div class="jackpot_list">
-                <div class="jackpot_item">
-                    <img src="resource/jackpot_1.png">
-                </div>
-                <div class="jackpot_item">
-                    <img src="resource/jackpot_2.png">
-                </div>
-                <div class="jackpot_item">
-                    <img src="resource/jackpot_3.png">
-                </div>
-                <div class="jackpot_item">
-                    <img src="resource/jackpot_4.png">
-                </div>
-                <div class="jackpot_item">
-                    <img src="resource/jackpot_5.png">
-                </div>
-                <div class="jackpot_item">
-                    <img src="resource/jackpot_6.png">
-                </div>
-                <div class="jackpot_item">
-                    <img src="resource/jackpot_7.png">
-                </div>
-                <div class="jackpot_item">
-                    <img src="resource/jackpot_8.png">
-                </div>
-            </div>
-            <!-- 抽奖按钮 -->
-            <button class="luck_draw_btn">
-
-            </button>
-        </div>
-        
-        
-        
-    </div>
-
-    <!-- 攻略 -->
-    <div class="strategy">
-        <!-- 标题 -->
-        <img src="resource/strategy_title.png">
-        <!-- 攻略内容 -->
-        <div class="strategy_content">
-            吃饭睡觉打豆豆
-        </div>
-    </div>
-
-    <!-- 底部下载按钮 -->
-    <button class="load_btn_bottom">
-
-    </button>
-</body>
-</html>
-        """.trimIndent()
-
-        web_detail.loadDataWithBaseURL(null, data, "text/html", "utf-8", null);
     }
 
     private var currentPicPosition = 0
@@ -518,13 +166,14 @@ class GameDetailActivity : BaseActivity() {
                     .load(itemData)
                     .diskCacheStrategy(DiskCacheStrategy.ALL)
                     .override(600, 450)
+                    .placeholder(R.mipmap.default_pic)
                     .into(itemView.iv_item_gamePicSmall)
 
                 if (currentPicPosition == position) {
-                    itemView.view_item_gamePicSmall.visibility = View.GONE
+//                    itemView.view_item_gamePicSmall.visibility = View.GONE
                     itemView.rl_item_gamePicSmall.setBackgroundResource(R.drawable.bg_pic_selected)
                 } else {
-                    itemView.view_item_gamePicSmall.visibility = View.VISIBLE
+//                    itemView.view_item_gamePicSmall.visibility = View.VISIBLE
                     itemView.rl_item_gamePicSmall.setBackgroundResource(R.drawable.bg_pic_unselected)
                     RxView.clicks(itemView)
                         .throttleFirst(200, TimeUnit.MILLISECONDS)
@@ -617,11 +266,11 @@ class GameDetailActivity : BaseActivity() {
 
                                 EventBus.getDefault().post(PlayingDataChange(""))
                                 isPlayingGame = true
-                                GameDurationService.startGame(this, gameId)
                                 SPUtils.putValue(
                                     SPArgument.GAME_TIME_INFO,
                                     "$gameId-${System.currentTimeMillis()}"
                                 )
+                                DurationUtils.startTiming(gameId)
 
                                 JumpUtils.jump2Game(
                                     this,
@@ -754,16 +403,19 @@ class GameDetailActivity : BaseActivity() {
                         else -> {
                             DialogUtils.dismissLoading()
                             it.msg?.let { it1 -> ToastUtils.show(it1) }
+                            finish()
                         }
                     }
                 } else {
                     DialogUtils.dismissLoading()
                     ToastUtils.show(getString(R.string.network_fail_to_responseDate))
+                    finish()
                 }
             }, {
                 LogUtils.d("${javaClass.simpleName}=fail=>${it.message.toString()}")
                 ToastUtils.show(HttpExceptionUtils.getExceptionMsg(this, it))
                 DialogUtils.dismissLoading()
+                finish()
             })
     }
 
@@ -784,7 +436,7 @@ class GameDetailActivity : BaseActivity() {
         }
     }
 
-    @SuppressLint("CheckResult", "SetTextI18n", "NotifyDataSetChanged")
+    @SuppressLint("CheckResult", "SetTextI18n", "NotifyDataSetChanged", "SimpleDateFormat")
     private fun toInitView(info: GameInfoBean.Data) {
         //修改顶部图片高度
         val width = PhoneInfoUtils.getWidth(this)
@@ -870,6 +522,8 @@ class GameDetailActivity : BaseActivity() {
             }
 
         //今日开服
+        val currentTimeMillis = System.currentTimeMillis()
+        val dataFormat = SimpleDateFormat("HHmm")
         if (info.game_open_times.size <= 1) {
             ll_detail_service2.visibility = View.GONE
             view_detail_service2.visibility = View.GONE
@@ -878,6 +532,27 @@ class GameDetailActivity : BaseActivity() {
             val gameOpenTimes = info.game_open_times[0]
             tv_detail_service1.text = getServerNameAndTime(gameOpenTimes)[0]
             tv_detail_time1.text = getServerNameAndTime(gameOpenTimes)[1]
+//            tv_detail_open_date2.visibility = View.GONE
+//            line_detail_open_start2.visibility = View.GONE
+//            line_detail_open_end2.visibility = View.GONE
+//            iv_detail_open_time2.visibility = View.GONE
+//            ll_detail_open_time2.visibility = View.GONE
+//            val gameOpenTimes = info.game_open_times[0]
+//            val serverNameAndTime = getServerNameAndTime(gameOpenTimes)
+//            tv_detail_open_date1.text = serverNameAndTime[0]
+//            tv_detail_open_time2.text = serverNameAndTime[1]
+//            val openTime = serverNameAndTime[1]
+//                .replace("今日", "")
+//                .replace(" ", "")
+//                .replace(":", "")
+//            val currentTime = dataFormat.format(currentTimeMillis)
+//            if (currentTime >= openTime) {
+//                line_detail_open_start1.setBackgroundColor(Color.parseColor("#fe7f02"))
+//                iv_detail_open_time1.setImageResource(R.mipmap.detail_time_in)
+//                iv_detail_open_clock1.setImageResource(R.mipmap.detail_collect_in)
+//                line_detail_open_end1.setBackgroundColor(Color.parseColor("#fe7f02"))
+//                tv_detail_open_time1.setTextColor(Color.parseColor("#fe7f02"))
+//            }
         } else {
             ll_detail_service2.visibility = View.VISIBLE
             view_detail_service2.visibility = View.VISIBLE
@@ -889,6 +564,37 @@ class GameDetailActivity : BaseActivity() {
             val gameOpenTimes1 = info.game_open_times[1]
             tv_detail_service2.text = getServerNameAndTime(gameOpenTimes1)[0]
             tv_detail_time2.text = getServerNameAndTime(gameOpenTimes1)[1]
+//            val gameOpenTimes = info.game_open_times[0]
+//            val serverNameAndTime = getServerNameAndTime(gameOpenTimes)
+//            tv_detail_open_date1.text = serverNameAndTime[0]
+//            tv_detail_open_time1.text = serverNameAndTime[1]
+//            val openTime = serverNameAndTime[1]
+//                .replace("今日", "")
+//                .replace(" ", "")
+//                .replace(":", "")
+//            val currentTime = dataFormat.format(currentTimeMillis)
+//            if (currentTime >= openTime) {
+//                line_detail_open_start1.setBackgroundColor(Color.parseColor("#fe7f02"))
+//                iv_detail_open_time1.setImageResource(R.mipmap.detail_time_in)
+//                iv_detail_open_clock1.setImageResource(R.mipmap.detail_clock_in)
+//                line_detail_open_end1.setBackgroundColor(Color.parseColor("#fe7f02"))
+//                tv_detail_open_time1.setTextColor(Color.parseColor("#fe7f02"))
+//            }
+//            val gameOpenTimes1 = info.game_open_times[1]
+//            val serverNameAndTime1 = getServerNameAndTime(gameOpenTimes1)
+//            tv_detail_open_date2.text = serverNameAndTime1[0]
+//            tv_detail_open_time2.text = serverNameAndTime1[1]
+//            val openTime1 = serverNameAndTime1[1]
+//                .replace("今日", "")
+//                .replace(" ", "")
+//                .replace(":", "")
+//            if (currentTime >= openTime1) {
+//                line_detail_open_start2.setBackgroundColor(Color.parseColor("#fe7f02"))
+//                iv_detail_open_time2.setImageResource(R.mipmap.detail_time_in)
+//                iv_detail_open_clock2.setImageResource(R.mipmap.detail_clock_in)
+//                line_detail_open_end2.setBackgroundColor(Color.parseColor("#fe7f02"))
+//                tv_detail_open_time2.setTextColor(Color.parseColor("#fe7f02"))
+//            }
         }
 
         //特戒盒子专属礼包
@@ -942,7 +648,7 @@ class GameDetailActivity : BaseActivity() {
         mHandler.removeMessages(0)
         EventBus.getDefault().unregister(this)
 
-        GameDurationService.stopGame(this)
+        DurationUtils.stopTiming()
 
         gameInfoObservable?.dispose()
         gameInfoObservable = null
@@ -962,6 +668,7 @@ class GameDetailActivity : BaseActivity() {
         MobclickAgent.onResume(this)
         if (isPlayingGame) {
             isPlayingGame = false
+            DurationUtils.stopTiming()
             LogUtils.d("=====退出游戏")
             val gameTimeInfo = SPUtils.getString(SPArgument.GAME_TIME_INFO)
             if (null != gameTimeInfo && gameTimeInfo.split("-").size >= 2) {
@@ -969,16 +676,16 @@ class GameDetailActivity : BaseActivity() {
                 val gameId = split[0].toInt()
                 val startTime = split[1].toLong()
                 val endTime = System.currentTimeMillis()
-                if (endTime - startTime >= 1 * 60 * 1000) {
-                    val updateGameTimeInfo = RetrofitUtils.builder().updateGameTimeInfo(
-                        gameId,
-                        startTime.toString(),
-                        endTime.toString()
-                    )
-                    updateGameTimeInfoObservable = updateGameTimeInfo.subscribeOn(Schedulers.io())
-                        .observeOn(AndroidSchedulers.mainThread())
-                        .subscribe({}, {})
-                }
+//                if (endTime - startTime >= 1 * 60 * 1000) {
+                val updateGameTimeInfo = RetrofitUtils.builder().updateGameTimeInfo(
+                    gameId,
+                    startTime.toString(),
+                    endTime.toString()
+                )
+                updateGameTimeInfoObservable = updateGameTimeInfo.subscribeOn(Schedulers.io())
+                    .observeOn(AndroidSchedulers.mainThread())
+                    .subscribe({}, {})
+//                }
             }
         }
         SPUtils.putValue(SPArgument.GAME_TIME_INFO, null)

@@ -38,6 +38,7 @@ class IntegralActivity : BaseActivity() {
     override fun getLayoutId() = R.layout.activity_integral
 
     override fun doSomething() {
+        instance = this
         StatusBarUtils.setTextDark(this, true)
         gameId = intent.getIntExtra(GAME_ID, 0)
         gameIcon = intent.getStringExtra(GAME_ICON)!!

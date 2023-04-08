@@ -1,6 +1,8 @@
 package com.fortune.tejiebox.activity
 
 import android.annotation.SuppressLint
+import android.content.Intent
+import android.text.Html
 import android.text.method.HideReturnsTransformationMethod
 import android.text.method.PasswordTransformationMethod
 import android.view.View
@@ -64,20 +66,33 @@ class AccountBindActivity : BaseActivity() {
 //            et_accountBind_pass.setTextColor(resources.getColor(R.color.gray_C4C4C4))
 //        }
 
-        if(!account.isNullOrBlank()){
+        if (!account.isNullOrBlank()) {
             ll_accountBind_rePass.visibility = View.GONE
             tv_accountBind_bind.visibility = View.GONE
             et_accountBind_account.isEnabled = false
             et_accountBind_account.setText(account)
             et_accountBind_account.setTextColor(resources.getColor(R.color.gray_C4C4C4))
-            if(!pass.isNullOrBlank()){
+            if (!pass.isNullOrBlank()) {
                 et_accountBind_pass.isEnabled = false
                 et_accountBind_pass.setText(pass)
                 et_accountBind_pass.setTextColor(resources.getColor(R.color.gray_C4C4C4))
-            }else{
+            } else {
                 ll_accountBind_pass.visibility = View.GONE
             }
+            tv_accountBind_changePass.visibility = View.VISIBLE
+            tv_accountBind_changePass.text = Html.fromHtml("<u>忘记密码? 修改密码</u>")
         }
+
+        RxView.clicks(tv_accountBind_changePass)
+            .throttleFirst(200, TimeUnit.MILLISECONDS)
+            .subscribe {
+                val phone = SPUtils.getString(SPArgument.PHONE_NUMBER)
+                if (phone == null) {
+                    ToastUtils.show("请先绑定手机号")
+                    return@subscribe
+                }
+                startActivity(Intent(this, ChangePassActivity::class.java))
+            }
 
         et_accountBind_account?.let { et ->
             RxTextView.textChanges(et_accountBind_account)
@@ -411,7 +426,7 @@ class AccountBindActivity : BaseActivity() {
                     1 -> {
                         SPUtils.putValue(SPArgument.LOGIN_ACCOUNT, account)
                         SPUtils.putValue(SPArgument.LOGIN_ACCOUNT_PASS, pass)
-                        ToastUtils.show("账号成功")
+                        ToastUtils.show("绑定账号成功")
                         finish()
                     }
                     -1 -> {
@@ -431,6 +446,7 @@ class AccountBindActivity : BaseActivity() {
 
     override fun onResume() {
         super.onResume()
+        initView()
         MobclickAgent.onResume(this)
     }
 
