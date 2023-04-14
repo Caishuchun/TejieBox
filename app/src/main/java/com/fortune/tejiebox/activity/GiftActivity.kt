@@ -131,6 +131,21 @@ class GiftActivity : BaseActivity() {
         })
 
         tv_gift_tips.text = "进入任一游戏详情页 --> 点击\"免费充值\" --> 选择区服角色 --> 选择充值额度 --> 点击\"确认充值\" --> 充值成功"
+
+        RxView.clicks(tv_gift_tip2)
+            .throttleFirst(200, TimeUnit.MILLISECONDS)
+            .subscribe {
+                DialogUtils.showDefaultDialog(
+                    this, "规则说明",
+                    """
+                        1. 盒子余额有效期30天，领取后超过30天不使用就会自动作废清除；使用余额时会优先使用最早领取的余额。
+                        2. 同一个手机多个账号，每天只有一个账号可以白嫖。
+                        3. 邀请好友时，多个账号同个手机只算邀请成功一次。
+                        4. 被邀请的好友，每玩1个小时的游戏，可以获得2元，最多10元。
+                    """.trimIndent(),
+                    null, "确定", null
+                )
+            }
     }
 
     private fun toChangeFragment(index: Int) {

@@ -1,24 +1,265 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:progress="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:background="@drawable/bg_gray_10"
     android:orientation="vertical"
+    android:layout_marginBottom="@dimen/dp_5"
     android:padding="@dimen/dp_10">
 
     <TextView
+        android:id="@+id/tv_invite_user_phoneEnding"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:gravity="center"
-        android:text="成功邀请尾号7718的用户 (该用户每玩1小时游戏可领取2元)"
+        android:text="成功邀请尾号XXXX的用户"
         android:textColor="@color/black_1A241F"
-        android:textSize="@dimen/sp_12" />
+        android:textSize="@dimen/sp_14" />
 
-    <com.fortune.tejiebox.widget.InviteProgress
-        android:layout_width="@dimen/dp_300"
-        android:layout_height="@dimen/dp_10"
-        android:layout_gravity="center_horizontal"
-        android:layout_marginTop="@dimen/dp_10"
-        android:layout_marginBottom="@dimen/dp_10" />
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_marginTop="@dimen/dp_5"
+        android:layout_marginBottom="@dimen/dp_5"
+        android:layout_height="wrap_content">
 
+        <com.fortune.tejiebox.widget.InviteProgress
+            android:id="@+id/pb_invite_user_progress"
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/dp_6"
+            android:layout_centerInParent="true"
+            progress:bg_type="0" />
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal">
+
+            <RelativeLayout
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1">
+
+                <ImageView
+                    android:id="@+id/iv_invite_user_h1"
+                    android:layout_width="@dimen/dp_16"
+                    android:layout_height="@dimen/dp_16"
+                    android:layout_centerInParent="true"
+                    android:src="@mipmap/bg_invite_hour_can" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_centerInParent="true"
+                    android:text="1h"
+                    android:textColor="@color/white_FFFFFF"
+                    android:textSize="@dimen/sp_9"
+                    android:textStyle="bold" />
+            </RelativeLayout>
+
+            <RelativeLayout
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1">
+
+                <ImageView
+                    android:id="@+id/iv_invite_user_h2"
+                    android:layout_width="@dimen/dp_16"
+                    android:layout_height="@dimen/dp_16"
+                    android:layout_centerInParent="true"
+                    android:src="@mipmap/bg_invite_hour_can" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_centerInParent="true"
+                    android:text="2h"
+                    android:textColor="@color/white_FFFFFF"
+                    android:textSize="@dimen/sp_9"
+                    android:textStyle="bold" />
+            </RelativeLayout>
+
+            <RelativeLayout
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1">
+
+                <ImageView
+                    android:id="@+id/iv_invite_user_h3"
+                    android:layout_width="@dimen/dp_16"
+                    android:layout_height="@dimen/dp_16"
+                    android:layout_centerInParent="true"
+                    android:src="@mipmap/bg_invite_hour_cannot" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_centerInParent="true"
+                    android:text="3h"
+                    android:textColor="@color/white_FFFFFF"
+                    android:textSize="@dimen/sp_9"
+                    android:textStyle="bold" />
+            </RelativeLayout>
+
+            <RelativeLayout
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1">
+
+                <ImageView
+                    android:id="@+id/iv_invite_user_h4"
+                    android:layout_width="@dimen/dp_16"
+                    android:layout_height="@dimen/dp_16"
+                    android:layout_centerInParent="true"
+                    android:src="@mipmap/bg_invite_hour_cannot" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_centerInParent="true"
+                    android:text="4h"
+                    android:textColor="@color/white_FFFFFF"
+                    android:textSize="@dimen/sp_9"
+                    android:textStyle="bold" />
+            </RelativeLayout>
+
+            <RelativeLayout
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1">
+
+                <ImageView
+                    android:id="@+id/iv_invite_user_h5"
+                    android:layout_width="@dimen/dp_16"
+                    android:layout_height="@dimen/dp_16"
+                    android:layout_centerInParent="true"
+                    android:src="@mipmap/bg_invite_hour_cannot" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_centerInParent="true"
+                    android:text="5h"
+                    android:textColor="@color/white_FFFFFF"
+                    android:textSize="@dimen/sp_9"
+                    android:textStyle="bold" />
+            </RelativeLayout>
+        </LinearLayout>
+    </RelativeLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal">
+
+        <FrameLayout
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1">
+
+            <TextView
+                android:id="@+id/tv_invite_user_h1"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:background="@mipmap/bg_invite_btn_cannot"
+                android:gravity="center"
+                android:paddingStart="@dimen/dp_10"
+                android:paddingTop="@dimen/dp_2"
+                android:paddingEnd="@dimen/dp_10"
+                android:paddingBottom="@dimen/dp_2"
+                android:text="已领"
+                android:textColor="@color/white_FFFFFF"
+                android:textSize="@dimen/sp_12"
+                android:textStyle="bold" />
+        </FrameLayout>
+
+        <FrameLayout
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1">
+
+            <TextView
+                android:id="@+id/tv_invite_user_h2"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:background="@mipmap/bg_invite_btn_can"
+                android:gravity="center"
+                android:paddingStart="@dimen/dp_10"
+                android:paddingTop="@dimen/dp_2"
+                android:paddingEnd="@dimen/dp_10"
+                android:paddingBottom="@dimen/dp_2"
+                android:text="领取"
+                android:textColor="@color/white_FFFFFF"
+                android:textSize="@dimen/sp_12"
+                android:textStyle="bold" />
+        </FrameLayout>
+
+        <FrameLayout
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1">
+
+            <TextView
+                android:id="@+id/tv_invite_user_h3"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:background="@mipmap/bg_invite_btn_cannot"
+                android:gravity="center"
+                android:paddingStart="@dimen/dp_10"
+                android:paddingTop="@dimen/dp_2"
+                android:paddingEnd="@dimen/dp_10"
+                android:paddingBottom="@dimen/dp_2"
+                android:text="领取"
+                android:textColor="@color/white_FFFFFF"
+                android:textSize="@dimen/sp_12"
+                android:textStyle="bold" />
+        </FrameLayout>
+
+        <FrameLayout
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1">
+
+            <TextView
+                android:id="@+id/tv_invite_user_h4"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:background="@mipmap/bg_invite_btn_cannot"
+                android:gravity="center"
+                android:paddingStart="@dimen/dp_10"
+                android:paddingTop="@dimen/dp_2"
+                android:paddingEnd="@dimen/dp_10"
+                android:paddingBottom="@dimen/dp_2"
+                android:text="领取"
+                android:textColor="@color/white_FFFFFF"
+                android:textSize="@dimen/sp_12"
+                android:textStyle="bold" />
+        </FrameLayout>
+
+        <FrameLayout
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1">
+
+            <TextView
+                android:id="@+id/tv_invite_user_h5"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:background="@mipmap/bg_invite_btn_cannot"
+                android:gravity="center"
+                android:paddingStart="@dimen/dp_10"
+                android:paddingTop="@dimen/dp_2"
+                android:paddingEnd="@dimen/dp_10"
+                android:paddingBottom="@dimen/dp_2"
+                android:text="领取"
+                android:textColor="@color/white_FFFFFF"
+                android:textSize="@dimen/sp_12"
+                android:textStyle="bold" />
+        </FrameLayout>
+    </LinearLayout>
 </LinearLayout>

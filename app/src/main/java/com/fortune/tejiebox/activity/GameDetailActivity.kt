@@ -19,7 +19,6 @@ import com.bumptech.glide.load.engine.DiskCacheStrategy
 import com.fortune.tejiebox.R
 import com.fortune.tejiebox.adapter.BaseAdapterWithPosition
 import com.fortune.tejiebox.base.BaseActivity
-import com.fortune.tejiebox.base.BaseAppUpdateSetting
 import com.fortune.tejiebox.bean.GameInfoBean
 import com.fortune.tejiebox.constants.SPArgument
 import com.fortune.tejiebox.event.LikeDataChange
@@ -38,36 +37,13 @@ import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.Disposable
 import io.reactivex.schedulers.Schedulers
 import kotlinx.android.synthetic.main.activity_game_detail.*
-import kotlinx.android.synthetic.main.activity_game_detail.fl_detail
-import kotlinx.android.synthetic.main.activity_game_detail.iv_detail_back
-import kotlinx.android.synthetic.main.activity_game_detail.iv_detail_icon
-import kotlinx.android.synthetic.main.activity_game_detail.iv_detail_like
-import kotlinx.android.synthetic.main.activity_game_detail.ll_detail_code
-import kotlinx.android.synthetic.main.activity_game_detail.ll_detail_like
-import kotlinx.android.synthetic.main.activity_game_detail.rl_detail_pic
-import kotlinx.android.synthetic.main.activity_game_detail.rv_detail_pic
-import kotlinx.android.synthetic.main.activity_game_detail.rv_detail_pic_small
-import kotlinx.android.synthetic.main.activity_game_detail.tv_detail_code
-import kotlinx.android.synthetic.main.activity_game_detail.tv_detail_codeMsg
-import kotlinx.android.synthetic.main.activity_game_detail.tv_detail_days
-import kotlinx.android.synthetic.main.activity_game_detail.tv_detail_des
-import kotlinx.android.synthetic.main.activity_game_detail.tv_detail_integral
-import kotlinx.android.synthetic.main.activity_game_detail.tv_detail_like
-import kotlinx.android.synthetic.main.activity_game_detail.tv_detail_name
-import kotlinx.android.synthetic.main.activity_game_detail.tv_detail_start
-import kotlinx.android.synthetic.main.activity_game_detail.tv_detail_strategy
-import kotlinx.android.synthetic.main.activity_game_detail.tv_detail_tips
-import kotlinx.android.synthetic.main.activity_game_detail_v2.*
 import kotlinx.android.synthetic.main.item_game_pic.view.*
 import kotlinx.android.synthetic.main.item_game_pic_small.view.*
 import kotlinx.android.synthetic.main.layout_item_tag.view.*
-import net.center.blurview.ShapeBlurView
-import net.center.blurview.enu.BlurMode
 import org.greenrobot.eventbus.EventBus
 import java.text.SimpleDateFormat
 import java.util.*
 import java.util.concurrent.TimeUnit
-
 
 class GameDetailActivity : BaseActivity() {
     private var gameInfoObservable: Disposable? = null
@@ -99,7 +75,7 @@ class GameDetailActivity : BaseActivity() {
         const val GAME_CHANNEL_ID = "game_channel_id"
     }
 
-    override fun getLayoutId() = R.layout.activity_game_detail_v2
+    override fun getLayoutId() = R.layout.activity_game_detail
 
     override fun doSomething() {
         StatusBarUtils.setTextDark(this, false)
@@ -127,7 +103,7 @@ class GameDetailActivity : BaseActivity() {
                 finish()
             }
 
-        RxView.clicks(ll_detail_start)
+        RxView.clicks(tv_detail_start)
             .throttleFirst(200, TimeUnit.MILLISECONDS)
             .subscribe {
                 if (MyApp.getInstance().isHaveToken()) {
@@ -234,15 +210,15 @@ class GameDetailActivity : BaseActivity() {
             }
         })
 
-        val screenWidth = PhoneInfoUtils.getWidth(this)
-        val float = screenWidth.toFloat() / 360
-        blur_detail_start.refreshView(
-            ShapeBlurView.build()
-                .setBlurMode(BlurMode.MODE_RECTANGLE)
-                .setBlurRadius(5 * float)
-                .setDownSampleFactor(0.1f * float)
-                .setOverlayColor(Color.parseColor("#FFFFFF"))
-        )
+//        val screenWidth = PhoneInfoUtils.getWidth(this)
+//        val float = screenWidth.toFloat() / 360
+//        blur_detail_start.refreshView(
+//            ShapeBlurView.build()
+//                .setBlurMode(BlurMode.MODE_RECTANGLE)
+//                .setBlurRadius(5 * float)
+//                .setDownSampleFactor(0.1f * float)
+//                .setOverlayColor(Color.parseColor("#FFFFFF"))
+//        )
     }
 
     /**
@@ -327,7 +303,7 @@ class GameDetailActivity : BaseActivity() {
                                 ToastUtils.show(getString(R.string.string_049))
                             }
                             isCollect = !isCollect
-                            iv_detail_like.setImageResource(if (isCollect) R.mipmap.icon_like_selected4game else R.mipmap.icon_like_unselect4game)
+                            iv_detail_like.setImageResource(if (isCollect) R.mipmap.detail_collect_in else R.mipmap.detail_collect_un)
                             tv_detail_like.text = if (isCollect) "已收藏" else "收藏"
                             tv_detail_like.setTextColor(
                                 if (isCollect) Color.parseColor("#ff3159")
@@ -489,7 +465,7 @@ class GameDetailActivity : BaseActivity() {
 
         //收藏
         isCollect = info.is_fav == 1
-        iv_detail_like.setImageResource(if (isCollect) R.mipmap.icon_like_selected4game else R.mipmap.icon_like_unselect4game)
+        iv_detail_like.setImageResource(if (isCollect) R.mipmap.detail_collect_in else R.mipmap.detail_collect_un)
         tv_detail_like.text = if (isCollect) "已收藏" else "收藏"
         tv_detail_like.setTextColor(
             if (isCollect) Color.parseColor("#ff3159")
@@ -525,76 +501,76 @@ class GameDetailActivity : BaseActivity() {
         val currentTimeMillis = System.currentTimeMillis()
         val dataFormat = SimpleDateFormat("HHmm")
         if (info.game_open_times.size <= 1) {
-            ll_detail_service2.visibility = View.GONE
-            view_detail_service2.visibility = View.GONE
-            view_detail_service2_bg.visibility = View.GONE
-            view_detail_service2_bg2.visibility = View.GONE
-            val gameOpenTimes = info.game_open_times[0]
-            tv_detail_service1.text = getServerNameAndTime(gameOpenTimes)[0]
-            tv_detail_time1.text = getServerNameAndTime(gameOpenTimes)[1]
-//            tv_detail_open_date2.visibility = View.GONE
-//            line_detail_open_start2.visibility = View.GONE
-//            line_detail_open_end2.visibility = View.GONE
-//            iv_detail_open_time2.visibility = View.GONE
-//            ll_detail_open_time2.visibility = View.GONE
+//            ll_detail_service2.visibility = View.GONE
+//            view_detail_service2.visibility = View.GONE
+//            view_detail_service2_bg.visibility = View.GONE
+//            view_detail_service2_bg2.visibility = View.GONE
 //            val gameOpenTimes = info.game_open_times[0]
-//            val serverNameAndTime = getServerNameAndTime(gameOpenTimes)
-//            tv_detail_open_date1.text = serverNameAndTime[0]
-//            tv_detail_open_time2.text = serverNameAndTime[1]
-//            val openTime = serverNameAndTime[1]
-//                .replace("今日", "")
-//                .replace(" ", "")
-//                .replace(":", "")
-//            val currentTime = dataFormat.format(currentTimeMillis)
-//            if (currentTime >= openTime) {
-//                line_detail_open_start1.setBackgroundColor(Color.parseColor("#fe7f02"))
-//                iv_detail_open_time1.setImageResource(R.mipmap.detail_time_in)
-//                iv_detail_open_clock1.setImageResource(R.mipmap.detail_collect_in)
-//                line_detail_open_end1.setBackgroundColor(Color.parseColor("#fe7f02"))
-//                tv_detail_open_time1.setTextColor(Color.parseColor("#fe7f02"))
-//            }
+//            tv_detail_service1.text = getServerNameAndTime(gameOpenTimes)[0]
+//            tv_detail_time1.text = getServerNameAndTime(gameOpenTimes)[1]
+            tv_detail_open_date2.visibility = View.GONE
+            line_detail_open_start2.visibility = View.GONE
+            line_detail_open_end2.visibility = View.GONE
+            iv_detail_open_time2.visibility = View.GONE
+            ll_detail_open_time2.visibility = View.GONE
+            val gameOpenTimes = info.game_open_times[0]
+            val serverNameAndTime = getServerNameAndTime(gameOpenTimes)
+            tv_detail_open_date1.text = serverNameAndTime[0]
+            tv_detail_open_time2.text = serverNameAndTime[1]
+            val openTime = serverNameAndTime[1]
+                .replace("今日", "")
+                .replace(" ", "")
+                .replace(":", "")
+            val currentTime = dataFormat.format(currentTimeMillis)
+            if (currentTime >= openTime) {
+                line_detail_open_start1.setBackgroundColor(Color.parseColor("#fe7f02"))
+                iv_detail_open_time1.setImageResource(R.mipmap.detail_time_in)
+                iv_detail_open_clock1.setImageResource(R.mipmap.detail_clock_in)
+                line_detail_open_end1.setBackgroundColor(Color.parseColor("#fe7f02"))
+                tv_detail_open_time1.setTextColor(Color.parseColor("#fe7f02"))
+            }
         } else {
-            ll_detail_service2.visibility = View.VISIBLE
-            view_detail_service2.visibility = View.VISIBLE
-            view_detail_service2_bg.visibility = View.VISIBLE
-            view_detail_service2_bg2.visibility = View.VISIBLE
-            val gameOpenTimes = info.game_open_times[0]
-            tv_detail_service1.text = getServerNameAndTime(gameOpenTimes)[0]
-            tv_detail_time1.text = getServerNameAndTime(gameOpenTimes)[1]
-            val gameOpenTimes1 = info.game_open_times[1]
-            tv_detail_service2.text = getServerNameAndTime(gameOpenTimes1)[0]
-            tv_detail_time2.text = getServerNameAndTime(gameOpenTimes1)[1]
+//            ll_detail_service2.visibility = View.VISIBLE
+//            view_detail_service2.visibility = View.VISIBLE
+//            view_detail_service2_bg.visibility = View.VISIBLE
+//            view_detail_service2_bg2.visibility = View.VISIBLE
 //            val gameOpenTimes = info.game_open_times[0]
-//            val serverNameAndTime = getServerNameAndTime(gameOpenTimes)
-//            tv_detail_open_date1.text = serverNameAndTime[0]
-//            tv_detail_open_time1.text = serverNameAndTime[1]
-//            val openTime = serverNameAndTime[1]
-//                .replace("今日", "")
-//                .replace(" ", "")
-//                .replace(":", "")
-//            val currentTime = dataFormat.format(currentTimeMillis)
-//            if (currentTime >= openTime) {
-//                line_detail_open_start1.setBackgroundColor(Color.parseColor("#fe7f02"))
-//                iv_detail_open_time1.setImageResource(R.mipmap.detail_time_in)
-//                iv_detail_open_clock1.setImageResource(R.mipmap.detail_clock_in)
-//                line_detail_open_end1.setBackgroundColor(Color.parseColor("#fe7f02"))
-//                tv_detail_open_time1.setTextColor(Color.parseColor("#fe7f02"))
-//            }
+//            tv_detail_service1.text = getServerNameAndTime(gameOpenTimes)[0]
+//            tv_detail_time1.text = getServerNameAndTime(gameOpenTimes)[1]
 //            val gameOpenTimes1 = info.game_open_times[1]
-//            val serverNameAndTime1 = getServerNameAndTime(gameOpenTimes1)
-//            tv_detail_open_date2.text = serverNameAndTime1[0]
-//            tv_detail_open_time2.text = serverNameAndTime1[1]
-//            val openTime1 = serverNameAndTime1[1]
-//                .replace("今日", "")
-//                .replace(" ", "")
-//                .replace(":", "")
-//            if (currentTime >= openTime1) {
-//                line_detail_open_start2.setBackgroundColor(Color.parseColor("#fe7f02"))
-//                iv_detail_open_time2.setImageResource(R.mipmap.detail_time_in)
-//                iv_detail_open_clock2.setImageResource(R.mipmap.detail_clock_in)
-//                line_detail_open_end2.setBackgroundColor(Color.parseColor("#fe7f02"))
-//                tv_detail_open_time2.setTextColor(Color.parseColor("#fe7f02"))
-//            }
+//            tv_detail_service2.text = getServerNameAndTime(gameOpenTimes1)[0]
+//            tv_detail_time2.text = getServerNameAndTime(gameOpenTimes1)[1]
+            val gameOpenTimes = info.game_open_times[0]
+            val serverNameAndTime = getServerNameAndTime(gameOpenTimes)
+            tv_detail_open_date1.text = serverNameAndTime[0]
+            tv_detail_open_time1.text = serverNameAndTime[1]
+            val openTime = serverNameAndTime[1]
+                .replace("今日", "")
+                .replace(" ", "")
+                .replace(":", "")
+            val currentTime = dataFormat.format(currentTimeMillis)
+            if (currentTime >= openTime) {
+                line_detail_open_start1.setBackgroundColor(Color.parseColor("#fe7f02"))
+                iv_detail_open_time1.setImageResource(R.mipmap.detail_time_in)
+                iv_detail_open_clock1.setImageResource(R.mipmap.detail_clock_in)
+                line_detail_open_end1.setBackgroundColor(Color.parseColor("#fe7f02"))
+                tv_detail_open_time1.setTextColor(Color.parseColor("#fe7f02"))
+            }
+            val gameOpenTimes1 = info.game_open_times[1]
+            val serverNameAndTime1 = getServerNameAndTime(gameOpenTimes1)
+            tv_detail_open_date2.text = serverNameAndTime1[0]
+            tv_detail_open_time2.text = serverNameAndTime1[1]
+            val openTime1 = serverNameAndTime1[1]
+                .replace("今日", "")
+                .replace(" ", "")
+                .replace(":", "")
+            if (currentTime >= openTime1) {
+                line_detail_open_start2.setBackgroundColor(Color.parseColor("#fe7f02"))
+                iv_detail_open_time2.setImageResource(R.mipmap.detail_time_in)
+                iv_detail_open_clock2.setImageResource(R.mipmap.detail_clock_in)
+                line_detail_open_end2.setBackgroundColor(Color.parseColor("#fe7f02"))
+                tv_detail_open_time2.setTextColor(Color.parseColor("#fe7f02"))
+            }
         }
 
         //特戒盒子专属礼包
@@ -603,10 +579,10 @@ class GameDetailActivity : BaseActivity() {
         } else {
             ll_detail_code.visibility = View.VISIBLE
             tv_detail_code.text = info.cdkey
-            iv_detail_code_title.setImageResource(
-                if (BaseAppUpdateSetting.isToPromoteVersion) R.mipmap.gift_title2
-                else R.mipmap.gift_title
-            )
+//            iv_detail_code_title.setImageResource(
+//                if (BaseAppUpdateSetting.isToPromoteVersion) R.mipmap.gift_title2
+//                else R.mipmap.gift_title
+//            )
             tv_detail_codeMsg.text = "礼包奖励: ${info.desc}"
         }
 

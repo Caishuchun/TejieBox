@@ -4,7 +4,6 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/white_FFFFFF"
     android:orientation="vertical"
     android:scrollbars="none"
     tools:context=".activity.GameDetailActivity">
@@ -12,6 +11,7 @@
     <ScrollView
         android:layout_width="match_parent"
         android:layout_height="match_parent"
+        android:background="@color/white_FFFFFF"
         android:scrollbars="none"
         android:visibility="visible">
 
@@ -37,14 +37,14 @@
                     android:layout_height="@dimen/dp_1"
                     android:layout_alignParentBottom="true"
                     android:layout_marginBottom="@dimen/dp_48"
-                    android:background="@drawable/line_tab_bottom" />
+                    android:background="@drawable/line_open_service" />
 
                 <androidx.recyclerview.widget.RecyclerView
                     android:id="@+id/rv_detail_pic_small"
                     android:layout_width="match_parent"
                     android:layout_height="@dimen/dp_47"
                     android:layout_alignParentBottom="true"
-                    android:background="@color/white_FFFFFF"
+                    android:background="@color/black_04000000"
                     android:scrollbars="none" />
 
             </RelativeLayout>
@@ -59,12 +59,14 @@
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
+                    android:layout_marginStart="@dimen/dp_10"
+                    android:layout_marginEnd="@dimen/dp_10"
                     android:orientation="vertical"
-                    android:padding="@dimen/dp_20">
+                    android:padding="@dimen/dp_10">
 
                     <LinearLayout
                         android:layout_width="match_parent"
-                        android:layout_height="match_parent"
+                        android:layout_height="wrap_content"
                         android:gravity="center_vertical"
                         android:orientation="horizontal">
 
@@ -78,7 +80,7 @@
 
                         <LinearLayout
                             android:layout_width="0dp"
-                            android:layout_height="match_parent"
+                            android:layout_height="wrap_content"
                             android:layout_marginStart="@dimen/dp_20"
                             android:layout_weight="1"
                             android:gravity="center_vertical"
@@ -90,21 +92,21 @@
                                 android:layout_height="wrap_content"
                                 android:text="游戏名"
                                 android:textColor="#0A0422"
-                                android:textSize="@dimen/sp_18"
+                                android:textSize="@dimen/sp_20"
                                 android:textStyle="bold" />
 
                             <TextView
                                 android:id="@+id/tv_detail_des"
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
-                                android:layout_marginTop="@dimen/dp_2"
-                                android:layout_marginBottom="@dimen/dp_2"
+                                android:layout_marginTop="@dimen/dp_5"
+                                android:layout_marginBottom="@dimen/dp_8"
                                 android:text="简介"
                                 android:textColor="#534F64"
                                 android:textSize="@dimen/sp_12" />
 
                             <FrameLayout
-                                android:layout_width="match_parent"
+                                android:layout_width="wrap_content"
                                 android:layout_height="wrap_content">
 
                                 <com.zhy.view.flowlayout.FlowLayout
@@ -118,9 +120,10 @@
 
                         <LinearLayout
                             android:id="@+id/ll_detail_like"
-                            android:layout_width="wrap_content"
+                            android:layout_width="@dimen/dp_50"
                             android:layout_height="wrap_content"
-                            android:orientation="horizontal"
+                            android:gravity="center"
+                            android:orientation="vertical"
                             android:padding="@dimen/dp_5">
 
                             <ImageView
@@ -133,27 +136,27 @@
                                 android:id="@+id/tv_detail_like"
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
-                                android:layout_marginStart="@dimen/dp_2"
+                                android:layout_marginTop="@dimen/dp_4"
                                 android:text="收藏"
                                 android:textColor="#534F64"
                                 android:textSize="@dimen/sp_12"
-                                android:visibility="gone" />
+                                android:visibility="visible" />
                         </LinearLayout>
                     </LinearLayout>
                 </LinearLayout>
 
                 <View
                     android:layout_width="match_parent"
-                    android:layout_height="@dimen/dp_1"
+                    android:layout_height="@dimen/dp_0_5"
                     android:layout_marginStart="@dimen/dp_20"
                     android:layout_marginEnd="@dimen/dp_20"
-                    android:background="@color/gray_C4C4C4" />
+                    android:background="@drawable/line_open_service" />
 
                 <LinearLayout
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginStart="@dimen/dp_20"
-                    android:layout_marginTop="@dimen/dp_20"
+                    android:layout_marginTop="@dimen/dp_10"
                     android:layout_marginEnd="@dimen/dp_20"
                     android:layout_marginBottom="@dimen/dp_10"
                     android:gravity="center"
@@ -286,8 +289,8 @@
 
                                 <ImageView
                                     android:id="@+id/iv_detail_open_clock1"
-                                    android:layout_width="@dimen/dp_15"
-                                    android:layout_height="@dimen/dp_15"
+                                    android:layout_width="@dimen/dp_13"
+                                    android:layout_height="@dimen/dp_13"
                                     android:layout_marginEnd="@dimen/dp_2"
                                     android:src="@mipmap/detail_clock_un" />
 
@@ -313,8 +316,8 @@
 
                                 <ImageView
                                     android:id="@+id/iv_detail_open_clock2"
-                                    android:layout_width="@dimen/dp_15"
-                                    android:layout_height="@dimen/dp_15"
+                                    android:layout_width="@dimen/dp_13"
+                                    android:layout_height="@dimen/dp_13"
                                     android:layout_marginEnd="@dimen/dp_2"
                                     android:src="@mipmap/detail_clock_un" />
 
@@ -330,102 +333,132 @@
 
                             </LinearLayout>
                         </LinearLayout>
-
                     </LinearLayout>
                 </androidx.cardview.widget.CardView>
 
                 <LinearLayout
                     android:id="@+id/ll_detail_code"
                     android:layout_width="match_parent"
-                    android:layout_height="@dimen/dp_170"
-                    android:layout_marginStart="@dimen/dp_20"
-                    android:layout_marginTop="@dimen/dp_20"
-                    android:layout_marginEnd="@dimen/dp_20"
-                    android:background="@mipmap/detail_gift"
-                    android:gravity="center_horizontal"
+                    android:layout_height="wrap_content"
                     android:orientation="vertical"
                     android:visibility="gone">
 
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_marginTop="@dimen/dp_11"
-                        android:text="特戒盒子专属礼包"
-                        android:textColor="#1e485e"
-                        android:textSize="@dimen/sp_14" />
-
+                    <View
+                        android:layout_width="match_parent"
+                        android:layout_height="@dimen/dp_0_5"
+                        android:layout_marginStart="@dimen/dp_20"
+                        android:layout_marginTop="@dimen/dp_10"
+                        android:layout_marginEnd="@dimen/dp_20"
+                        android:background="@drawable/line_open_service" />
 
                     <LinearLayout
-                        android:layout_width="wrap_content"
+                        android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:layout_marginTop="@dimen/dp_20"
+                        android:layout_marginStart="@dimen/dp_20"
+                        android:layout_marginTop="@dimen/dp_10"
+                        android:layout_marginEnd="@dimen/dp_20"
+                        android:layout_marginBottom="@dimen/dp_10"
                         android:gravity="center"
                         android:orientation="horizontal">
 
                         <ImageView
-                            android:layout_width="@dimen/dp_12"
-                            android:layout_height="@dimen/dp_12"
-                            android:layout_marginEnd="@dimen/dp_4"
-                            android:src="@mipmap/tips" />
+                            android:layout_width="@dimen/dp_16"
+                            android:layout_height="@dimen/dp_16"
+                            android:layout_marginEnd="@dimen/dp_5"
+                            android:src="@mipmap/detail_gift" />
 
                         <TextView
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:gravity="center_vertical"
-                            android:text="进入本游戏领取礼包"
-                            android:textColor="#9dc7df"
-                            android:textSize="@dimen/sp_10" />
-                    </LinearLayout>
-
-                    <LinearLayout
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_marginTop="@dimen/dp_10"
-                        android:orientation="horizontal">
-
-                        <TextView
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:gravity="center"
-                            android:text="礼包码: "
-                            android:textColor="@color/white_FFFFFF"
-                            android:textSize="@dimen/sp_24" />
-
-                        <TextView
-                            android:id="@+id/tv_detail_code"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:gravity="center"
-                            android:textColor="@color/white_FFFFFF"
-                            android:textSize="@dimen/sp_24"
+                            android:text="特戒盒子专属礼包"
+                            android:textColor="#0A0422"
+                            android:textSize="@dimen/sp_16"
                             android:textStyle="bold" />
 
+                        <TextView
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:gravity="end"
+                            android:text="进入本游戏领取礼包"
+                            android:textColor="#5F60FF"
+                            android:textSize="@dimen/sp_12" />
+
                     </LinearLayout>
 
-                    <TextView
-                        android:id="@+id/tv_detail_codeMsg"
-                        android:layout_width="@dimen/dp_200"
+                    <androidx.cardview.widget.CardView
+                        android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:layout_marginTop="@dimen/dp_10"
-                        android:gravity="center"
-                        android:text="礼包奖励"
-                        android:textColor="#9dc7df"
-                        android:textSize="@dimen/sp_12" />
+                        android:layout_marginStart="@dimen/dp_15"
+                        android:layout_marginEnd="@dimen/dp_15"
+                        app:cardBackgroundColor="@color/white_FFFFFF"
+                        app:cardCornerRadius="@dimen/dp_10"
+                        app:cardUseCompatPadding="true">
+
+                        <LinearLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:gravity="center_horizontal"
+                            android:orientation="vertical"
+                            android:paddingStart="@dimen/dp_20"
+                            android:paddingTop="@dimen/dp_10"
+                            android:paddingEnd="@dimen/dp_20"
+                            android:paddingBottom="@dimen/dp_10"
+                            android:visibility="visible">
+
+                            <LinearLayout
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:gravity="bottom"
+                                android:orientation="horizontal">
+
+                                <TextView
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:gravity="center"
+                                    android:text="礼包码: "
+                                    android:textColor="#0A0422"
+                                    android:textSize="@dimen/sp_16" />
+
+                                <TextView
+                                    android:id="@+id/tv_detail_code"
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:gravity="center"
+                                    android:textColor="#fd7c02"
+                                    android:textSize="@dimen/sp_24"
+                                    android:textStyle="bold" />
+
+                            </LinearLayout>
+
+                            <TextView
+                                android:id="@+id/tv_detail_codeMsg"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:layout_marginTop="@dimen/dp_10"
+                                android:text="礼包奖励"
+                                android:textSize="@dimen/sp_12" />
+
+                        </LinearLayout>
+
+                    </androidx.cardview.widget.CardView>
 
                 </LinearLayout>
 
                 <View
                     android:layout_width="match_parent"
-                    android:layout_height="@dimen/dp_1"
+                    android:layout_height="@dimen/dp_0_5"
                     android:layout_marginStart="@dimen/dp_20"
-                    android:layout_marginTop="@dimen/dp_20"
+                    android:layout_marginTop="@dimen/dp_10"
                     android:layout_marginEnd="@dimen/dp_20"
-                    android:background="@color/gray_C4C4C4" />
+                    android:background="@drawable/line_open_service" />
 
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_margin="@dimen/dp_20"
+                    android:layout_marginStart="@dimen/sp_20"
+                    android:layout_marginTop="@dimen/dp_10"
+                    android:layout_marginEnd="@dimen/dp_20"
+                    android:layout_marginBottom="@dimen/dp_10"
                     android:orientation="vertical">
 
                     <LinearLayout
@@ -498,6 +531,7 @@
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:background="@color/white_FFFFFF"
             android:orientation="horizontal"
             android:padding="@dimen/dp_10">
 
@@ -521,7 +555,7 @@
                 android:id="@+id/tv_detail_start"
                 android:layout_width="0dp"
                 android:layout_height="@dimen/dp_36"
-                android:layout_weight="1"
+                android:layout_weight="2"
                 android:background="@drawable/bg_start_btn_circle"
                 android:gravity="center"
                 android:text="启动游戏"

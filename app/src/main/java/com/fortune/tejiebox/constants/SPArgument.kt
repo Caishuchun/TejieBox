@@ -40,4 +40,6 @@ object SPArgument {
     const val OPEN_INSTALL_USED = "openInstallUsed" //openInstall是佛是否使用过了
     const val OPEN_INSTALL_INFO = "openInstallInfo" //openInstall传递的值
     const val OPEN_INSTALL_INFO_INVITE = "openInstallInfoInvite" //openInstall传递的值_分享来的
+
+    const val GET_GAME_LIST_TIME = "getGameListTime" //获取游戏列表的时间
 }

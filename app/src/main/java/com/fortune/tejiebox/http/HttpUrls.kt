@@ -179,4 +179,10 @@ object HttpUrls {
 
     //修改密码_验证码校验
     const val CHANGE_PASS_USE_CODE = "/android/v2.user/codeChangePassword"
+
+    //新邀请列表
+    const val INVITE_LIST_NEW = "/android/activity.invite/newList"
+
+    //新邀请列表的领取积分
+    const val INVITE_LIST_GET_RECHARGE = "/android/activity.invite/newReceive"
 }

@@ -56,7 +56,10 @@ object RetrofitUtils {
                     .addHeader("Content-Type", "application/json")
                     .addHeader("Upgrade", "h2c")
                     .addHeader("Accept-Encoding", "identity")
-                    .addHeader("mac", SPUtils.getString(SPArgument.ONLY_DEVICE_ID_NEW) ?: "android_mac")
+                    .addHeader(
+                        "mac",
+                        SPUtils.getString(SPArgument.ONLY_DEVICE_ID_NEW) ?: "android_mac"
+                    )
 //                    .addHeader(
 //                        "box-type",
 //                        if (BaseAppUpdateSetting.isToPromoteVersion) "1" else ""
@@ -133,7 +136,8 @@ object RetrofitUtils {
          */
         @GET(HttpUrls.GAME_LIST)
         fun gameList(
-            @Query("page", encoded = true) page: Int
+            @Query("page", encoded = true) page: Int,
+            @Query("rand_num", encoded = true) rand_num: Int
         ): Flowable<GameListInfoBean>
 
         /**
@@ -571,5 +575,21 @@ object RetrofitUtils {
             @Field("password", encoded = true) password: String,
             @Field("captcha", encoded = true) captcha: String
         ): Flowable<BaseBean>
+
+        /**
+         * 新邀请列表
+         */
+        @GET(HttpUrls.INVITE_LIST_NEW)
+        fun inviteList(): Flowable<InviteListNewBean>
+
+        /**
+         * 新邀请列表的领取积分
+         */
+        @FormUrlEncoded
+        @POST(HttpUrls.INVITE_LIST_GET_RECHARGE)
+        fun inviteListGetRecharge(
+            @Field("share_id", encoded = true) share_id: Int,
+            @Field("h_id", encoded = true) h_id: Int
+        ): Flowable<DailyCheckBean>
     }
 }

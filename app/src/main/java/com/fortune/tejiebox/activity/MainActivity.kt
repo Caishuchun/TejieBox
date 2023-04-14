@@ -606,7 +606,7 @@ class MainActivity : BaseActivity() {
                 }
                 LogUtils.d("==========================map:$map")
                 when {
-                    map["type"] == 1 -> {
+                    map["type"] == 1 || map["type"] == 4 -> {
                         //1.用户分享下载
                         LogUtils.d("==========================map[\"type\"] == 1")
                         //需要使用加密串在注册登录时使用

@@ -9,6 +9,7 @@ import android.text.SpannableStringBuilder
 import android.text.TextPaint
 import android.text.method.LinkMovementMethod
 import android.text.style.ClickableSpan
+import android.view.Gravity
 import android.view.LayoutInflater
 import android.view.View
 import android.view.WindowManager
@@ -114,9 +115,9 @@ object DialogUtils {
         context: Context,
         title: String,
         msg: String,
-        cancel: String,
+        cancel: String?,
         sure: String,
-        listener: OnDialogListener
+        listener: OnDialogListener?
     ) {
         if (mDialog != null) {
             mDialog?.dismiss()
@@ -127,12 +128,20 @@ object DialogUtils {
         mDialog?.setCancelable(true)
         mDialog?.setCanceledOnTouchOutside(true)
         mDialog?.tv_dialog_default_title?.text = title
-        mDialog?.tv_dialog_default_cancel?.text = cancel
+        if (cancel == null) {
+            mDialog?.tv_dialog_default_cancel?.visibility = View.GONE
+            mDialog?.view_dialog_default_line?.visibility = View.GONE
+        } else {
+            mDialog?.tv_dialog_default_cancel?.text = cancel
+        }
         mDialog?.tv_dialog_default_sure?.text = sure
         mDialog?.tv_dialog_default_message?.text = msg
+        if (msg.length > 24) {
+            mDialog?.tv_dialog_default_message?.gravity = Gravity.START
+        }
         mDialog?.tv_dialog_default_sure?.setOnClickListener {
             dismissLoading()
-            listener.next()
+            listener?.next()
         }
         mDialog?.tv_dialog_default_cancel?.setOnClickListener {
             dismissLoading()

@@ -23,6 +23,7 @@ import com.fortune.tejiebox.activity.GameDetailActivity
 import com.fortune.tejiebox.activity.SearchGameActivity
 import com.fortune.tejiebox.adapter.BaseAdapterWithPosition
 import com.fortune.tejiebox.bean.BaseGameListInfoBean
+import com.fortune.tejiebox.constants.SPArgument
 import com.fortune.tejiebox.http.RetrofitUtils
 import com.fortune.tejiebox.utils.*
 import com.fortune.tejiebox.widget.SafeStaggeredGridLayoutManager
@@ -46,8 +47,10 @@ class GameFragment : Fragment() {
     private var mAdapter: BaseAdapterWithPosition<BaseGameListInfoBean>? = null
     private var mView: View? = null
 
+    private var isFirstCreate = true
     private var currentPage = 1
     private var countPage = 1
+    private var currentRandom = 0
 
     companion object {
         @JvmStatic
@@ -68,6 +71,7 @@ class GameFragment : Fragment() {
         savedInstanceState: Bundle?
     ): View? {
         mView = inflater.inflate(R.layout.fragment_game, container, false)
+        isFirstCreate = true
         initView()
         getGameList(true)
         return mView
@@ -78,7 +82,6 @@ class GameFragment : Fragment() {
      */
     @SuppressLint("CheckResult", "NotifyDataSetChanged")
     private fun initView() {
-
         mView?.ll_gameFragment_search?.visibility = View.VISIBLE
         mView?.rl_gameFragment_title?.visibility = View.GONE
 
@@ -214,6 +217,32 @@ class GameFragment : Fragment() {
         }
     }
 
+    override fun onHiddenChanged(hidden: Boolean) {
+        super.onHiddenChanged(hidden)
+        if (!isFirstCreate && !hidden) {
+            LogUtils.d("++++++++++++++首页出现-onHiddenChanged")
+            val lastGetGameListTime = SPUtils.getLong(SPArgument.GET_GAME_LIST_TIME)
+            if (System.currentTimeMillis() - lastGetGameListTime > 1000 * 60 * 10) {
+                //时间过了十分钟
+                currentPage = 1
+                getGameList(false)
+            }
+        }
+    }
+
+    override fun onResume() {
+        super.onResume()
+        if (!isFirstCreate) {
+            LogUtils.d("++++++++++++++首页出现-onResume")
+            val lastGetGameListTime = SPUtils.getLong(SPArgument.GET_GAME_LIST_TIME)
+            if (System.currentTimeMillis() - lastGetGameListTime > 1000 * 60 * 10) {
+                //时间过了十分钟
+                currentPage = 1
+                getGameList(false)
+            }
+        }
+    }
+
     /**
      * 获取游戏列表
      */
@@ -221,11 +250,20 @@ class GameFragment : Fragment() {
         if (needLoading && isAdded) {
             DialogUtils.showBeautifulDialog(requireContext())
         }
-        val gameList = RetrofitUtils.builder().gameList(currentPage)
+        if (currentPage == 1) {
+            val lastGetGameListTime = SPUtils.getLong(SPArgument.GET_GAME_LIST_TIME)
+            if (System.currentTimeMillis() - lastGetGameListTime > 1000 * 60 * 10) {
+                //时间过了十分钟
+                SPUtils.putValue(SPArgument.GET_GAME_LIST_TIME, System.currentTimeMillis())
+                currentRandom = (0..10000).random()
+            }
+        }
+        val gameList = RetrofitUtils.builder().gameList(currentPage, currentRandom)
         gameListObservable = gameList.subscribeOn(Schedulers.io())
             .observeOn(AndroidSchedulers.mainThread())
             .subscribe(
                 {
+                    if (needLoading) isFirstCreate = false
                     LogUtils.d("${javaClass.simpleName}=success=>${Gson().toJson(it)}")
                     DialogUtils.dismissLoading()
                     mView?.refresh_gameFragment_game?.finishRefresh()
@@ -235,8 +273,7 @@ class GameFragment : Fragment() {
                             1 -> {
                                 if (currentPage == 1) {
                                     mData.clear()
-                                    mAdapter?.notifyItemRangeChanged(0, mData.size)
-//                                    mAdapter?.notifyDataSetChanged()
+                                    mAdapter?.notifyDataSetChanged()
                                 }
                                 if (it.data.list.isNotEmpty()) {
                                     val count = it.data.paging.count
@@ -297,6 +334,7 @@ class GameFragment : Fragment() {
                         ToastUtils.show(getString(R.string.network_fail_to_responseDate))
                     }
                 }, {
+                    if (needLoading) isFirstCreate = false
                     mView?.refresh_gameFragment_game?.finishRefresh()
                     mView?.refresh_gameFragment_game?.finishLoadMore()
                     DialogUtils.dismissLoading()

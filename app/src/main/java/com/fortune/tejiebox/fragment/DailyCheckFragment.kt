@@ -290,6 +290,13 @@ class DailyCheckFragment : Fragment() {
                             it.getMsg()?.let { it1 -> ToastUtils.show(it1) }
                             ActivityManager.toSplashActivity(requireActivity())
                         }
+                        3 -> {
+                            it.getMsg()?.let { it1 ->
+                                DialogUtils.showDefaultDialog(
+                                    requireContext(), "提醒", it1, null, "好的", null
+                                )
+                            }
+                        }
                         else -> {
                             it.getMsg()?.let { it1 -> ToastUtils.show(it1) }
                         }

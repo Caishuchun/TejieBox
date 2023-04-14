@@ -25,6 +25,7 @@
         android:layout_weight="1"
         android:gravity="center"
         android:lineSpacingExtra="@dimen/dp_5"
+        android:padding="@dimen/dp_10"
         android:textColor="@color/black_1A241F"
         android:textSize="14sp" />
 
@@ -39,32 +40,33 @@
         android:orientation="horizontal">
 
         <TextView
-            android:paddingTop="@dimen/dp_10"
-            android:paddingBottom="@dimen/dp_10"
             android:id="@+id/tv_dialog_default_cancel"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_gravity="center_horizontal"
             android:layout_weight="1"
             android:gravity="center"
+            android:paddingTop="@dimen/dp_10"
+            android:paddingBottom="@dimen/dp_10"
             android:textColor="@color/black_000000"
             android:textSize="@dimen/sp_16"
             android:textStyle="bold" />
 
         <View
+            android:id="@+id/view_dialog_default_line"
             android:layout_width="@dimen/dp_1"
             android:layout_height="match_parent"
             android:background="@color/gray_102A2C36" />
 
         <TextView
-            android:paddingTop="@dimen/dp_10"
-            android:paddingBottom="@dimen/dp_10"
             android:id="@+id/tv_dialog_default_sure"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_gravity="center_horizontal"
             android:layout_weight="1"
             android:gravity="center"
+            android:paddingTop="@dimen/dp_10"
+            android:paddingBottom="@dimen/dp_10"
             android:textColor="#5F60FF"
             android:textSize="@dimen/sp_16"
             android:textStyle="bold" />

@@ -71,10 +71,8 @@ class NewSplashActivity : BaseActivity() {
         instance = this
         wakeUpAdapter?.let { OpenInstall.getWakeUp(intent, it) }
         toSetSplashBg()
-        SPUtils.putValue(SPArgument.ONLY_DEVICE_ID_NEW, GetDeviceId.getDeviceId(this))
+        SPUtils.putValue(SPArgument.GET_GAME_LIST_TIME, 0L)
         toAgreeAgreement()
-//        val deviceId = GetDeviceId.getDeviceId(this)
-//        LogUtils.d("===============$deviceId")
 //        val encrypt = AESUtils.encrypt("k202301|csc0913|csc0913|k2hz001|5|168513")
 //        val encrypt = AESUtils.encrypt("678910|csc0913|csc0913|ltdjp|5|168513")
 //        val encrypt = AESUtils.encrypt("vm1000|w123|w123|vm1000|1|1")
@@ -297,9 +295,10 @@ class NewSplashActivity : BaseActivity() {
      */
     @SuppressLint("CheckResult")
     private fun toMain4CheckVersion() {
-        val checkVersion = RetrofitUtils.builder().checkVersion(
-            GetDeviceId.getDeviceId(this)
-        )
+        val deviceId = GetDeviceId.getDeviceId(this)
+        LogUtils.d("===============$deviceId")
+        SPUtils.putValue(SPArgument.ONLY_DEVICE_ID_NEW, GetDeviceId.getDeviceId(this))
+        val checkVersion = RetrofitUtils.builder().checkVersion(deviceId)
         checkVersionObservable = checkVersion
             .subscribeOn(Schedulers.io())
             .observeOn(AndroidSchedulers.mainThread())
