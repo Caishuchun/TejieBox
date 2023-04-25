@@ -48,7 +48,9 @@ class LoginFirstFragment : Fragment() {
     @SuppressLint("CheckResult")
     private fun initView(view: View) {
         val isAgree = SPUtils.getBoolean(SPArgument.IS_CHECK_AGREEMENT, false)
-        if (isAgree || !BaseAppUpdateSetting.isToPromoteVersion) {
+        if (isAgree
+//            || !BaseAppUpdateSetting.isToPromoteVersion
+        ) {
             view.cb_login_first?.isChecked = true
         }
         view.iv_login_first_title.setImageResource(

@@ -40,6 +40,7 @@ class IdCardActivity : BaseActivity() {
 
     private var account: String? = null
     private var password: String? = null
+    private var isIntegral = 0
 
     companion object {
         @SuppressLint("StaticFieldLeak")
@@ -54,6 +55,7 @@ class IdCardActivity : BaseActivity() {
 
         const val ACCOUNT = "account"
         const val PASSWORD = "password"
+        const val GAME_IS_INTEGRAL = "game_is_integral" //游戏是否是置顶游戏
     }
 
     override fun getLayoutId() = R.layout.activity_id_card
@@ -69,6 +71,7 @@ class IdCardActivity : BaseActivity() {
                 finish()
             }
 
+        isIntegral = intent.getIntExtra(GAME_IS_INTEGRAL, 0)
         from = intent.getIntExtra(FROM, 0)
         gameId = intent.getIntExtra(GAME_ID, -1)
         gameChannel = intent.getStringExtra(GAME_CHANNEL)
@@ -187,7 +190,7 @@ class IdCardActivity : BaseActivity() {
      */
     private fun toStartGame() {
         DialogUtils.showBeautifulDialog(this)
-        val addPlayingGame = RetrofitUtils.builder().addPlayingGame(gameId!!, 1)
+        val addPlayingGame = RetrofitUtils.builder().addPlayingGame(gameId!!, 1, isIntegral)
         addPlayingGameObservable = addPlayingGame.subscribeOn(Schedulers.io())
             .observeOn(AndroidSchedulers.mainThread())
             .subscribe({

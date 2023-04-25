@@ -99,15 +99,6 @@ class MyApp : Application() {
         if (level >= TRIM_MEMORY_UI_HIDDEN) {
             isBackground = true
             LogUtils.d("app 跑后台去了")
-//            val gameTimeInfo = SPUtils.getString(SPArgument.GAME_TIME_INFO)
-//            if (null != gameTimeInfo && gameTimeInfo.split("-").size >= 2) {
-//                val split = gameTimeInfo.split("-")
-//                val gameId = split[0]
-//                val startTime = split[1]
-//                val newInfo = "$gameId-$startTime-${System.currentTimeMillis()}"
-//                LogUtils.d("gameTimeInfo=>$newInfo")
-//                SPUtils.putValue(SPArgument.GAME_TIME_INFO, newInfo)
-//            }
         }
     }
 

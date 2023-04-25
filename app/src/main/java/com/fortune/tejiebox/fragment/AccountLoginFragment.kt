@@ -51,7 +51,9 @@ class AccountLoginFragment : Fragment() {
 
     private fun initView() {
         val isAgree = SPUtils.getBoolean(SPArgument.IS_CHECK_AGREEMENT, false)
-        if (isAgree || !BaseAppUpdateSetting.isToPromoteVersion) {
+        if (isAgree
+//            || !BaseAppUpdateSetting.isToPromoteVersion
+        ) {
             mView?.cb_account_login?.isChecked = true
         }
 
@@ -235,7 +237,7 @@ class AccountLoginFragment : Fragment() {
                                 )
                             }
                             //注册统计
-                            OpenInstall.reportRegister()
+//                            OpenInstall.reportRegister()
                         }
 
                         EventBus.getDefault().postSticky(

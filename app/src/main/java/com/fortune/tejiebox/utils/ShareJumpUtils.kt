@@ -106,7 +106,7 @@ object ShareJumpUtils {
                 )
                 val chooserIntent = Intent.createChooser(shareIntent, "特戒盒子分享") ?: return
                 shareIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
-                reportShare(type)
+//                reportShare(type)
                 context.startActivity(chooserIntent)
             }
             1 -> {
@@ -133,7 +133,7 @@ object ShareJumpUtils {
                 )
                 val chooserIntent = Intent.createChooser(shareIntent, "特戒盒子分享") ?: return
                 shareIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
-                reportShare(type)
+//                reportShare(type)
                 context.startActivity(chooserIntent)
             }
         }

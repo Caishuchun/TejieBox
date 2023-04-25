@@ -77,7 +77,7 @@ object ActivityManager {
     fun exitLogin(activity: MainActivity) {
         VersionBean.clear()
         val channel = SPUtils.getString(SPArgument.UM_CHANNEL_ID, null)
-        SPUtils.clear()
+        SPUtils.clear(true)
         SPUtils.putValue(SPArgument.UM_CHANNEL_ID, channel)
         SearchHisDataBase.getDataBase(activity).searchHisDao().deleteAll()
         CustomerServiceInfoDataBase.getDataBase(activity).customerServiceInfoDao().clear()

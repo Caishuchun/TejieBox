@@ -168,7 +168,7 @@ object DialogUtils {
         mDialog?.setCancelable(true)
         mDialog?.setCanceledOnTouchOutside(true)
 
-        if (BaseAppUpdateSetting.isToAuditVersion) {
+//        if (BaseAppUpdateSetting.isToAuditVersion) {
             mDialog?.tv_dialog_agreement_cancel?.visibility = View.VISIBLE
             mDialog?.tv_dialog_agreement_cancel?.let {
                 RxView.clicks(it)
@@ -177,12 +177,12 @@ object DialogUtils {
                         exitProcess(0)
                     }
             }
-        } else {
-            mDialog?.tv_dialog_agreement_cancel?.visibility = View.GONE
-        }
+//        } else {
+//            mDialog?.tv_dialog_agreement_cancel?.visibility = View.GONE
+//        }
 
         val ssb =
-            SpannableStringBuilder("欢迎使用特戒!\n我们非常重视您的个人信息和隐私协议保护。为了更好地保障您的个人权益, 在使用我们的服务前, 请务必打开链接并审慎阅读《用户协议》和《隐私协议》")
+            SpannableStringBuilder("欢迎使用特戒盒子!\n我们非常重视您的个人信息和隐私协议保护。为了更好地保障您的个人权益, 在使用我们的服务前, 请务必打开链接并审慎阅读《用户协议》和《隐私协议》")
         ssb.setSpan(object : ClickableSpan() {
             override fun onClick(widget: View) {
                 val intent = Intent(context, WebActivity::class.java)
@@ -196,7 +196,7 @@ object DialogUtils {
                 ds.isUnderlineText = false
             }
 
-        }, 66, 72, 0)
+        }, 68, 74, 0)
         ssb.setSpan(object : ClickableSpan() {
             override fun onClick(widget: View) {
                 val intent = Intent(context, WebActivity::class.java)
@@ -209,7 +209,7 @@ object DialogUtils {
                 ds.color = Color.parseColor("#5F60FF")
                 ds.isUnderlineText = false
             }
-        }, 73, ssb.length, 0)
+        }, 75, ssb.length, 0)
 
         mDialog?.tv_dialog_agreement_content?.let {
             it.movementMethod = LinkMovementMethod.getInstance()

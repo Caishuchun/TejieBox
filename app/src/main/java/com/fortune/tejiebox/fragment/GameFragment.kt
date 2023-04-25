@@ -156,6 +156,7 @@ class GameFragment : Fragment() {
                     .subscribe {
                         val intent = Intent(requireActivity(), GameDetailActivity::class.java)
                         intent.putExtra(GameDetailActivity.GAME_ID, itemData.game_id)
+                        intent.putExtra(GameDetailActivity.GAME_IS_INTEGRAL, itemData.is_integral)
                         requireActivity().startActivity(intent)
                     }
             }

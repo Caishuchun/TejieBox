@@ -52,7 +52,8 @@ class AccountSafeActivity : BaseActivity() {
             tv_accountSafe_account.text = "未添加"
             tv_accountSafe_account.setTextColor(Color.parseColor("#FF982E"))
         } else {
-            tv_accountSafe_account.text = "${account.substring(0, 3)}****${account.substring(account.length-3)}"
+            tv_accountSafe_account.text =
+                "${account.substring(0, 3)}****${account.substring(account.length - 3)}"
             tv_accountSafe_account.setTextColor(Color.parseColor("#5F60FF"))
         }
 
@@ -102,7 +103,8 @@ class AccountSafeActivity : BaseActivity() {
             tv_accountSafe_account.text = "未添加"
             tv_accountSafe_account.setTextColor(Color.parseColor("#FF982E"))
         } else {
-            tv_accountSafe_account.text = "${account.substring(0, 3)}****${account.substring(account.length-3)}"
+            tv_accountSafe_account.text =
+                "${account.substring(0, 3)}****${account.substring(account.length - 3)}"
             tv_accountSafe_account.setTextColor(Color.parseColor("#5F60FF"))
         }
     }

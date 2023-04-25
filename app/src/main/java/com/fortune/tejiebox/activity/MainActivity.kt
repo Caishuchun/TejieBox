@@ -34,6 +34,8 @@ import com.fortune.tejiebox.utils.ActivityManager
 import com.google.gson.Gson
 import com.jakewharton.rxbinding2.view.RxView
 import com.umeng.analytics.MobclickAgent
+import com.umeng.umlink.MobclickLink
+import com.umeng.umlink.UMLinkListener
 import io.reactivex.Observable
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.Disposable
@@ -45,9 +47,6 @@ import org.greenrobot.eventbus.Subscribe
 import org.greenrobot.eventbus.ThreadMode
 import org.json.JSONObject
 import java.io.File
-import java.net.URL
-import java.net.URLDecoder
-import java.net.URLEncoder
 import java.text.SimpleDateFormat
 import java.util.*
 import java.util.concurrent.TimeUnit
@@ -557,29 +556,93 @@ class MainActivity : BaseActivity() {
         } else {
             // 未使用
             val openInstallInfo = SPUtils.getString(SPArgument.OPEN_INSTALL_INFO)
-//            dealOpenInstallInfo(openInstallInfo, isLogined)
             if (openInstallInfo == null) {
-                // 从openInstall取数据
-                LogUtils.d("==========================获取参数")
-                OpenInstall.getInstall(object : AppInstallAdapter() {
-                    override fun onInstall(appData: AppData) {
-                        LogUtils.d(
-                            "==========================${Gson().toJson(appData)}"
-                        )
-                        if (appData.data != "") {
-                            //data不为空
-                            val dataInfo =
-                                Gson().fromJson(appData.data, OpenInstallBean::class.java)
-                            dealOpenInstallInfo(dataInfo.i, isLogined)
-                        } else {
-                            LogUtils.d("==========================没有数据")
-                        }
-                    }
-                })
+                getInstallParams(isLogined)
             } else {
                 dealOpenInstallInfo(openInstallInfo, isLogined)
             }
         }
+    }
+
+    /**
+     * 获取安装参数
+     */
+    private fun getInstallParams(isLogined: Boolean) {
+        LogUtils.d("==========================TJ_getInstallParams")
+        val type = 1 //0 openInstall  1 友盟
+        if (type == 0) {
+            //openInstall
+            OpenInstall.getInstall(object : AppInstallAdapter() {
+                override fun onInstall(appData: AppData) {
+                    LogUtils.d("==========================OpenInstall_data: ${Gson().toJson(appData)}")
+                    if (appData.data != "") {
+                        //data不为空
+                        val dataInfo =
+                            Gson().fromJson(appData.data, OpenInstallBean::class.java)
+                        dealOpenInstallInfo(dataInfo.i, isLogined)
+                    } else {
+                        LogUtils.d("==========================OpenInstall_data is null")
+                    }
+                }
+            })
+        } else {
+            //友盟
+            MobclickLink.getInstallParams(this, true, umLinkListener)
+        }
+    }
+
+    /**
+     * 友盟安装传值
+     */
+    private var umLinkListener = object : UMLinkListener {
+        /**
+         * 对跳转App的处理，唤起已安装App
+         * @param path 后台配置的页面path
+         * @param query_params 后台配置的页面启动唤起的参数kv键值对
+         */
+        override fun onLink(path: String?, query_params: HashMap<String, String>?) {
+            if (query_params == null) {
+                LogUtils.d("==========================UM_query_params is null")
+            } else {
+                val i = query_params["i"]
+                LogUtils.d("==========================UM_i: $i")
+                if (!i.isNullOrEmpty()) {
+                    //data不为空
+                    dealOpenInstallInfo(i, MyApp.getInstance().isHaveToken())
+                } else {
+                    LogUtils.d("==========================UM_i is null")
+                }
+            }
+        }
+
+        /**
+         * 为获取新装参数的处理，App首次安装
+         * @param install_params 配置的新装参数kv键值对
+         * @param uri url拼接参数,直接回调到 handleUMLinkURI
+         */
+        override fun onInstall(install_params: HashMap<String, String>?, uri: Uri?) {
+            if (uri == null) {
+                LogUtils.d("==========================UM_install_uri is null")
+            } else {
+                LogUtils.d("==========================UM_install_uri: $uri")
+                toGetInstallParams(uri)
+            }
+        }
+
+        /**
+         * 出现异常错误
+         * @param error 错误
+         */
+        override fun onError(error: String?) {
+            LogUtils.d("==========================UM_error: $error")
+        }
+    }
+
+    /**
+     * 获取友盟安装参数
+     */
+    private fun toGetInstallParams(uri: Uri) {
+        MobclickLink.handleUMLinkURI(this, uri, umLinkListener)
     }
 
     /**
@@ -592,11 +655,11 @@ class MainActivity : BaseActivity() {
         var info = data
         try {
             info = Uri.decode(info)
-            LogUtils.d("==========================info:$info")
+            LogUtils.d("==========================TJ_info: $info")
             SPUtils.putValue(SPArgument.OPEN_INSTALL_INFO, info)
             val needInfo = AESUtils.decrypt(info)
             if (needInfo != null) {
-                LogUtils.d("==========================needInfo:$needInfo")
+                LogUtils.d("==========================TJ_needInfo: $needInfo")
                 val jsonObject = JSONObject(needInfo)
                 val keys = jsonObject.keys()
                 val map = HashMap<String, Any>()
@@ -604,11 +667,11 @@ class MainActivity : BaseActivity() {
                     val value = jsonObject[key]
                     map[key] = value
                 }
-                LogUtils.d("==========================map:$map")
+                LogUtils.d("==========================TJ_map: $map")
                 when {
                     map["type"] == 1 || map["type"] == 4 -> {
                         //1.用户分享下载
-                        LogUtils.d("==========================map[\"type\"] == 1")
+                        LogUtils.d("==========================TJ_map[\"type\"] == ${map["type"]}")
                         //需要使用加密串在注册登录时使用
                         openInstallType = 1
                         if (!isLogined) {
@@ -617,7 +680,7 @@ class MainActivity : BaseActivity() {
                     }
                     map["type"] == 2 -> {
                         //2.游戏内跳转下载
-                        LogUtils.d("==========================map[\"type\"] == 2")
+                        LogUtils.d("==========================TJ_map[\"type\"] == 2")
                         openInstallType = 2
                         //需要在首页的时候进行判断, 跳转
                         if (!isLogined) {
@@ -644,7 +707,7 @@ class MainActivity : BaseActivity() {
                     }
                     map["type"] == 3 -> {
                         //3.GM分享
-                        LogUtils.d("==========================map[\"type\"] == 3")
+                        LogUtils.d("==========================TJ_map[\"type\"] == 3")
                         openInstallType = 3
                         //跳转到游戏详情页面
                         var gameId = SPUtils.getInt(SPArgument.NEED_JUMP_GAME_ID_JUMP, -1)
@@ -657,15 +720,14 @@ class MainActivity : BaseActivity() {
                         }
                     }
                     else -> {
-                        LogUtils.d("==========================type异常, 不是123")
+                        LogUtils.d("==========================TJ_type is not available")
                     }
                 }
             } else {
-                LogUtils.d("==========================数据为空")
+                LogUtils.d("==========================TJ_needInfo is null")
             }
         } catch (e: Exception) {
-            LogUtils.d("==========================解密失败")
-            LogUtils.d("==========================${e.message}")
+            LogUtils.d("==========================TJ_decode_error: ${e.message}")
         }
     }
 

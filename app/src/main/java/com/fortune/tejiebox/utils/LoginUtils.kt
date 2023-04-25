@@ -118,7 +118,9 @@ object LoginUtils {
                 .setCheckboxHidden(false)
                 .setCheckBoxWidth(px2dp(activity, 24f))
                 .setCheckBoxHeight(px2dp(activity, 24f))
-                .setPrivacyState(isAgree || !BaseAppUpdateSetting.isToPromoteVersion)
+                .setPrivacyState(isAgree
+//                        || !BaseAppUpdateSetting.isToPromoteVersion
+                )
                 .setCheckedImgDrawable(activity.getDrawable(R.drawable.checked))
                 .setUncheckedImgDrawable(activity.getDrawable(R.drawable.uncheck))
                 .setVendorPrivacyPrefix("《")
@@ -462,7 +464,7 @@ object LoginUtils {
                                     )
                                 }
                                 //openInstall 注册统计
-                                OpenInstall.reportRegister()
+//                                OpenInstall.reportRegister()
                             }
 
                             EventBus.getDefault().postSticky(

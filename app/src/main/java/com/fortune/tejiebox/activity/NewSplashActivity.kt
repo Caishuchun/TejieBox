@@ -69,7 +69,7 @@ class NewSplashActivity : BaseActivity() {
         Aria.download(this).register()
         setTheme(R.style.NormalTheme)
         instance = this
-        wakeUpAdapter?.let { OpenInstall.getWakeUp(intent, it) }
+//        wakeUpAdapter?.let { OpenInstall.getWakeUp(intent, it) }
         toSetSplashBg()
         SPUtils.putValue(SPArgument.GET_GAME_LIST_TIME, 0L)
         toAgreeAgreement()
@@ -82,20 +82,20 @@ class NewSplashActivity : BaseActivity() {
 //        LogUtils.d("++++++++++++++$encrypt")
     }
 
-    override fun onNewIntent(intent: Intent?) {
-        super.onNewIntent(intent)
-        wakeUpAdapter?.let { OpenInstall.getWakeUp(intent, it) }
-    }
+//    override fun onNewIntent(intent: Intent?) {
+//        super.onNewIntent(intent)
+//        wakeUpAdapter?.let { OpenInstall.getWakeUp(intent, it) }
+//    }
 
     /**
      * OpenInstall 一键拉起功能
      */
-    private var wakeUpAdapter: AppWakeUpAdapter? = object : AppWakeUpAdapter() {
-        override fun onWakeUp(appData: AppData) {
-            LogUtils.d("==========================一键拉起")
-            LogUtils.d("==========================channel:${appData.channel},bindData:${appData.data}")
-        }
-    }
+//    private var wakeUpAdapter: AppWakeUpAdapter? = object : AppWakeUpAdapter() {
+//        override fun onWakeUp(appData: AppData) {
+//            LogUtils.d("==========================一键拉起")
+//            LogUtils.d("==========================channel:${appData.channel},bindData:${appData.data}")
+//        }
+//    }
 
     /**
      * 获取剪切板数据
@@ -149,7 +149,9 @@ class NewSplashActivity : BaseActivity() {
      */
     private fun toAgreeAgreement() {
         val isAgree = SPUtils.getBoolean(SPArgument.IS_CHECK_AGREEMENT, false)
-        if (!isAgree && BaseAppUpdateSetting.isToAuditVersion) {
+        if (!isAgree
+//            && BaseAppUpdateSetting.isToAuditVersion
+        ) {
             DialogUtils.showAgreementDialog(
                 this,
                 object : DialogUtils.OnDialogListener {
@@ -266,8 +268,8 @@ class NewSplashActivity : BaseActivity() {
     @SuppressLint("CheckResult")
     fun toCountDown() {
         //初始化openinstall
-        LogUtils.d("==========================初始化")
-        OpenInstall.init(this)
+//        LogUtils.d("==========================OpenInstall_init")
+//        OpenInstall.init(this)
         countDownTimeObservable = Observable.interval(0, 1, TimeUnit.SECONDS)
             .subscribeOn(Schedulers.io())
             .observeOn(AndroidSchedulers.mainThread())
@@ -522,7 +524,7 @@ class NewSplashActivity : BaseActivity() {
         checkVersionObservable = null
         countDownTimeObservable = null
 
-        wakeUpAdapter = null
+//        wakeUpAdapter = null
     }
 
     override fun onResume() {

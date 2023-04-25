@@ -239,6 +239,7 @@ object RetrofitUtils {
         fun addPlayingGame(
             @Field("game_id", encoded = true) game_id: Int,
             @Field("is_cancel", encoded = true) is_cancel: Int,
+            @Field("is_integral", encoded = true) is_integral: Int = 0,
         ): Flowable<BaseBean>
 
         /**

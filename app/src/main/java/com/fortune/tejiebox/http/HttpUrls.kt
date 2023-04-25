@@ -6,7 +6,7 @@ package com.fortune.tejiebox.http
 
 object HttpUrls {
 
-    const val TEST_URL = "http://47.94.252.136:10001/"       //测试区
+    const val TEST_URL = "https://test.tjbox.lelehuyu.com/"       //测试区
     const val REAL_URL = "https://tjbox.lelehuyu.com/"       //正式区
 
     //一键登录

@@ -488,7 +488,8 @@
                             android:layout_weight="1"
                             android:gravity="end"
                             android:textColor="#5F60FF"
-                            android:textSize="@dimen/sp_12" />
+                            android:textSize="@dimen/sp_12"
+                            android:visibility="gone" />
                     </LinearLayout>
 
                     <TextView
@@ -535,33 +536,57 @@
             android:orientation="horizontal"
             android:padding="@dimen/dp_10">
 
-            <TextView
-                android:id="@+id/tv_detail_integral"
+            <LinearLayout
                 android:layout_width="0dp"
                 android:layout_height="@dimen/dp_36"
                 android:layout_weight="1"
-                android:background="@drawable/bg_start_btn_circle_yellow"
-                android:gravity="center"
-                android:text="免费充值"
-                android:textColor="@color/white_FFFFFF"
-                android:textSize="@dimen/sp_16"
-                android:textStyle="bold" />
+                android:background="@drawable/bg_integral_btn"
+                android:gravity="center">
+
+                <ImageView
+                    android:layout_width="@dimen/dp_16"
+                    android:layout_height="@dimen/dp_16"
+                    android:layout_marginEnd="@dimen/dp_3"
+                    android:src="@mipmap/icon_recharge" />
+
+                <TextView
+                    android:id="@+id/tv_detail_integral"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:gravity="center"
+                    android:text="免费充值"
+                    android:textColor="@color/white_FFFFFF"
+                    android:textSize="@dimen/sp_16" />
+
+            </LinearLayout>
 
             <View
                 android:layout_width="@dimen/dp_10"
                 android:layout_height="0dp" />
 
-            <TextView
-                android:id="@+id/tv_detail_start"
+            <LinearLayout
                 android:layout_width="0dp"
                 android:layout_height="@dimen/dp_36"
                 android:layout_weight="2"
-                android:background="@drawable/bg_start_btn_circle"
-                android:gravity="center"
-                android:text="启动游戏"
-                android:textColor="@color/white_FFFFFF"
-                android:textSize="@dimen/sp_16"
-                android:textStyle="bold" />
+                android:background="@drawable/bg_start_btn_big"
+                android:gravity="center">
+
+                <ImageView
+                    android:layout_width="@dimen/dp_24"
+                    android:layout_height="@dimen/dp_24"
+                    android:layout_marginEnd="@dimen/dp_3"
+                    android:src="@mipmap/icon_play" />
+
+                <TextView
+                    android:id="@+id/tv_detail_start"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:background="@drawable/bg_start_btn_circle"
+                    android:gravity="center"
+                    android:text="启动游戏"
+                    android:textColor="@color/white_FFFFFF"
+                    android:textSize="@dimen/sp_16" />
+            </LinearLayout>
         </LinearLayout>
 
         <TextView

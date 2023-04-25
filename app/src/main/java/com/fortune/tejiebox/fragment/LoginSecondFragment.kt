@@ -213,7 +213,7 @@ class LoginSecondFragment() : Fragment() {
                                     )
                                 }
                                 //openInstall 注册统计
-                                OpenInstall.reportRegister()
+//                                OpenInstall.reportRegister()
                             }
                             EventBus.getDefault().postSticky(
                                 LoginStatusChange(

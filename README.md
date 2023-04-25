@@ -5,6 +5,11 @@
 2. git config --global http.proxy 127.0.0.1:7890
 3. git config --global https.proxy 127.0.0.1:7890
 
+### V3.2.6
+openInstall换友盟安装传参
+优化详情页界面
+新增列表置顶游戏(isIntegral)
+
 ### V3.2.5
 openInstall, 详情页, 邀请分享
 

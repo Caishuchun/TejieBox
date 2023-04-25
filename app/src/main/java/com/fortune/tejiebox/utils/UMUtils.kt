@@ -17,19 +17,21 @@ object UMUtils {
      */
     fun init(context: Context, isInApplication: Boolean = true) {
         val isCheckAgreement = SPUtils.getBoolean(SPArgument.IS_CHECK_AGREEMENT, false)
-        if (BaseAppUpdateSetting.isToPromoteVersion && !isCheckAgreement) {
+        if (
+//            BaseAppUpdateSetting.isToPromoteVersion &&
+            !isCheckAgreement) {
             return
         }
-        if (BaseAppUpdateSetting.isToPromoteVersion) {
-            // 如果是推广版本的App,直接走
-            SPUtils.getString(SPArgument.UM_CHANNEL_ID, null) ?: return
-            if (isInApplication) {
-                UMConfigure.init(
-                    context, "63467e0c88ccdf4b7e47580a", null,
-                    UMConfigure.DEVICE_TYPE_PHONE, ""
-                )
-            }
-        } else {
+//        if (BaseAppUpdateSetting.isToPromoteVersion) {
+//            // 如果是推广版本的App,直接走
+//            SPUtils.getString(SPArgument.UM_CHANNEL_ID, null) ?: return
+//            if (isInApplication) {
+//                UMConfigure.init(
+//                    context, "63467e0c88ccdf4b7e47580a", null,
+//                    UMConfigure.DEVICE_TYPE_PHONE, ""
+//                )
+//            }
+//        } else {
             //获取本地是否有存储渠道号,没有存储直接退出,有存储进行下一步
             val uMChannelId = SPUtils.getString(SPArgument.UM_CHANNEL_ID, null) ?: return
 
@@ -40,7 +42,7 @@ object UMUtils {
                 context, "62bd575605844627b5d180c2", channel,
                 UMConfigure.DEVICE_TYPE_PHONE, ""
             )
-        }
+//        }
         UMConfigure.setLogEnabled(BaseAppUpdateSetting.isDebug)
         UMCrash.registerUMCrashCallback {
             return@registerUMCrashCallback "UMCrash_TejieBox"

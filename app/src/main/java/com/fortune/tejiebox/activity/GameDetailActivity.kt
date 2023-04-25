@@ -66,12 +66,15 @@ class GameDetailActivity : BaseActivity() {
 
     private var updateGameTimeInfoObservable: Disposable? = null
 
+    private var isIntegral = 0
+
     companion object {
         @SuppressLint("StaticFieldLeak")
         private lateinit var instance: GameDetailActivity
         private fun isInstance() = this::instance.isInitialized
         fun getInstance() = if (isInstance()) instance else null
         const val GAME_ID = "game_id"
+        const val GAME_IS_INTEGRAL = "game_is_integral" //游戏是否是置顶游戏
         const val GAME_CHANNEL_ID = "game_channel_id"
     }
 
@@ -82,6 +85,7 @@ class GameDetailActivity : BaseActivity() {
         instance = this
         gameId = intent.getIntExtra(GAME_ID, -1)
         gameChannelId = intent.getStringExtra(GAME_CHANNEL_ID)
+        isIntegral = intent.getIntExtra(GAME_IS_INTEGRAL, 0)
         initView()
         getInfo()
     }
@@ -228,7 +232,7 @@ class GameDetailActivity : BaseActivity() {
         val isHaveId = SPUtils.getInt(SPArgument.IS_HAVE_ID)
         if (isHaveId == 1) {
             DialogUtils.showBeautifulDialog(this)
-            val addPlayingGame = RetrofitUtils.builder().addPlayingGame(gameId, 1)
+            val addPlayingGame = RetrofitUtils.builder().addPlayingGame(gameId, 1, isIntegral)
             addPlayingGameObservable = addPlayingGame.subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe({
@@ -277,6 +281,7 @@ class GameDetailActivity : BaseActivity() {
             intent.putExtra(IdCardActivity.GAME_ID, gameId)
             intent.putExtra(IdCardActivity.GAME_CHANNEL, gameChannel)
             intent.putExtra(IdCardActivity.GAME_STYLE, gameStyle)
+            intent.putExtra(IdCardActivity.GAME_IS_INTEGRAL, isIntegral)
             startActivity(intent)
         }
     }
