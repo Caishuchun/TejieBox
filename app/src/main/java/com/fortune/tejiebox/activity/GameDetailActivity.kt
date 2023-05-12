@@ -19,6 +19,7 @@ import com.bumptech.glide.load.engine.DiskCacheStrategy
 import com.fortune.tejiebox.R
 import com.fortune.tejiebox.adapter.BaseAdapterWithPosition
 import com.fortune.tejiebox.base.BaseActivity
+import com.fortune.tejiebox.base.BaseAppUpdateSetting
 import com.fortune.tejiebox.bean.GameInfoBean
 import com.fortune.tejiebox.constants.SPArgument
 import com.fortune.tejiebox.event.LikeDataChange
@@ -107,7 +108,7 @@ class GameDetailActivity : BaseActivity() {
                 finish()
             }
 
-        RxView.clicks(tv_detail_start)
+        RxView.clicks(ll_detail_start)
             .throttleFirst(200, TimeUnit.MILLISECONDS)
             .subscribe {
                 if (MyApp.getInstance().isHaveToken()) {
@@ -487,7 +488,7 @@ class GameDetailActivity : BaseActivity() {
             }
 
         //免费充值
-        RxView.clicks(tv_detail_integral)
+        RxView.clicks(ll_detail_integral)
             .throttleFirst(200, TimeUnit.MILLISECONDS)
             .subscribe {
                 if (MyApp.getInstance().isHaveToken()) {
@@ -506,13 +507,6 @@ class GameDetailActivity : BaseActivity() {
         val currentTimeMillis = System.currentTimeMillis()
         val dataFormat = SimpleDateFormat("HHmm")
         if (info.game_open_times.size <= 1) {
-//            ll_detail_service2.visibility = View.GONE
-//            view_detail_service2.visibility = View.GONE
-//            view_detail_service2_bg.visibility = View.GONE
-//            view_detail_service2_bg2.visibility = View.GONE
-//            val gameOpenTimes = info.game_open_times[0]
-//            tv_detail_service1.text = getServerNameAndTime(gameOpenTimes)[0]
-//            tv_detail_time1.text = getServerNameAndTime(gameOpenTimes)[1]
             tv_detail_open_date2.visibility = View.GONE
             line_detail_open_start2.visibility = View.GONE
             line_detail_open_end2.visibility = View.GONE
@@ -535,16 +529,6 @@ class GameDetailActivity : BaseActivity() {
                 tv_detail_open_time1.setTextColor(Color.parseColor("#fe7f02"))
             }
         } else {
-//            ll_detail_service2.visibility = View.VISIBLE
-//            view_detail_service2.visibility = View.VISIBLE
-//            view_detail_service2_bg.visibility = View.VISIBLE
-//            view_detail_service2_bg2.visibility = View.VISIBLE
-//            val gameOpenTimes = info.game_open_times[0]
-//            tv_detail_service1.text = getServerNameAndTime(gameOpenTimes)[0]
-//            tv_detail_time1.text = getServerNameAndTime(gameOpenTimes)[1]
-//            val gameOpenTimes1 = info.game_open_times[1]
-//            tv_detail_service2.text = getServerNameAndTime(gameOpenTimes1)[0]
-//            tv_detail_time2.text = getServerNameAndTime(gameOpenTimes1)[1]
             val gameOpenTimes = info.game_open_times[0]
             val serverNameAndTime = getServerNameAndTime(gameOpenTimes)
             tv_detail_open_date1.text = serverNameAndTime[0]
@@ -584,16 +568,27 @@ class GameDetailActivity : BaseActivity() {
         } else {
             ll_detail_code.visibility = View.VISIBLE
             tv_detail_code.text = info.cdkey
-//            iv_detail_code_title.setImageResource(
-//                if (BaseAppUpdateSetting.isToPromoteVersion) R.mipmap.gift_title2
-//                else R.mipmap.gift_title
-//            )
             tv_detail_codeMsg.text = "礼包奖励: ${info.desc}"
         }
 
         //游戏详情相关
         tv_detail_days.text = getDays(info.game_update_time)
         tv_detail_strategy.text = info.game_intro.trim()
+
+        //是否显示<免费充值>
+        if (info.is_open_free == 1) {
+            ll_detail_integral.visibility = View.VISIBLE
+//            space_detail_bottom_tab_1.visibility = View.GONE
+//            space_detail_bottom_tab_2.visibility = View.GONE
+        } else {
+            ll_detail_integral.visibility = View.GONE
+//            space_detail_bottom_tab_1.visibility = View.VISIBLE
+//            space_detail_bottom_tab_2.visibility = View.VISIBLE
+        }
+        ll_detail_bottom_tab.visibility =
+            if (BaseAppUpdateSetting.isShangJiaVersion) View.GONE else View.VISIBLE
+        space_detail_bottom_tab.visibility =
+            if (BaseAppUpdateSetting.isShangJiaVersion) View.GONE else View.VISIBLE
     }
 
     /**

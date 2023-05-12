@@ -2,9 +2,15 @@ package com.fortune.tejiebox.activity
 
 import android.annotation.SuppressLint
 import android.content.Intent
+import android.graphics.Color
 import android.graphics.drawable.Drawable
+import android.text.SpannableStringBuilder
+import android.text.TextPaint
+import android.text.method.LinkMovementMethod
+import android.text.style.ClickableSpan
 import android.view.View
 import android.widget.LinearLayout
+import android.widget.TextView
 import com.bumptech.glide.Glide
 import com.bumptech.glide.load.engine.DiskCacheStrategy
 import com.bumptech.glide.request.RequestOptions
@@ -21,9 +27,11 @@ import com.fortune.tejiebox.http.RetrofitUtils
 import com.fortune.tejiebox.room.CustomerServiceInfo
 import com.fortune.tejiebox.room.CustomerServiceInfoDao
 import com.fortune.tejiebox.room.CustomerServiceInfoDataBase
-import com.fortune.tejiebox.utils.*
+import com.fortune.tejiebox.utils.PhoneInfoUtils
+import com.fortune.tejiebox.utils.SoftKeyBoardListener
+import com.fortune.tejiebox.utils.StatusBarUtils
+import com.fortune.tejiebox.utils.ToastUtils
 import com.fortune.tejiebox.widget.SafeLinearLayoutManager
-import com.google.gson.Gson
 import com.jakewharton.rxbinding2.view.RxView
 import com.jakewharton.rxbinding2.widget.RxTextView
 import com.luck.picture.lib.basic.PictureSelector
@@ -63,6 +71,7 @@ class CustomerServiceActivity : BaseActivity() {
     private var mData = mutableListOf<CustomerServiceInfo>()
 
     private var picIndex = 0 //上传图片时,图片index
+    private var picNum = 0 // 客服未回复消息时, 共有多少条消息时图片
 
     private var uploadPictureObservable: Disposable? = null
     private var sendMsgObservable: Disposable? = null
@@ -108,7 +117,16 @@ class CustomerServiceActivity : BaseActivity() {
         RxView.clicks(iv_customerService_send)
             .throttleFirst(200, TimeUnit.MILLISECONDS)
             .subscribe {
-                toSendMsg(et_customerService_msg.text.toString().trim())
+                val quest = et_customerService_msg.text.toString().trim()
+                //先判断是不是常见问题的模糊询问, 如果是的话, 走"是否想问"
+                when (isNormalQuest(quest)) {
+                    1 -> requestResponseNormalQuest(quest, 4, "1")
+                    2 -> requestResponseNormalQuest(quest, 4, "2")
+                    4 -> requestResponseNormalQuest(quest, 4, "4")
+                    5 -> requestResponseNormalQuest(quest, 4, "5")
+                    6 -> requestResponseNormalQuest(quest, 4, "6")
+                    else -> toSendMsg(quest)
+                }
             }
 
         //获取最近聊天数据
@@ -119,15 +137,7 @@ class CustomerServiceActivity : BaseActivity() {
         val info = mCustomerServiceDao.getInfo()
         if (info.isEmpty()) {
             //没有数据,添加开始提示
-            val customerServiceInfo = CustomerServiceInfo(
-                -1, 0, 1,
-                "您好, 请问有什么可以帮助您! 请反馈遇到的问题, 我们将在一个工作日内解答。",
-                null, null, null,
-                System.currentTimeMillis(),
-                1
-            )
-            mCustomerServiceDao.addInfo(customerServiceInfo)
-            mData.add(customerServiceInfo)
+            initCustomerServiceInfo()
         } else {
             //有数据
             mData.clear()
@@ -138,9 +148,19 @@ class CustomerServiceActivity : BaseActivity() {
                 }
                 mData.add(data)
             }
+            isHavePassMaxPic()
+            val lastCustomerServiceInfo = mData[mData.size - 1]
+            if (lastCustomerServiceInfo.form == 0 && lastCustomerServiceInfo.chat_type != 3) {
+                val chatTime = lastCustomerServiceInfo.chat_time
+                val currentTimeMillis = System.currentTimeMillis()
+                if (currentTimeMillis - chatTime >= 24 * 60 * 60 * 1000) {
+                    //超过24小时, 重新来一次常见问题
+                    initCustomerServiceInfo(true)
+                }
+            }
             EventBus.getDefault().postSticky(ShowNumChange(0))
         }
-        LogUtils.d(Gson().toJson(mData))
+//        LogUtils.d(Gson().toJson(mData))
 
         mAdapter = BaseAdapterWithPosition4CustomerService.Builder<CustomerServiceInfo>()
             .setLayoutId(R.layout.item_customer_service)
@@ -155,10 +175,294 @@ class CustomerServiceActivity : BaseActivity() {
                             itemView.ll_item_customerService_left_img.visibility = View.GONE
                             itemView.ll_item_customerService_right_msg.visibility = View.GONE
                             itemView.ll_item_customerService_right_img.visibility = View.GONE
-
-                            itemView.tv_item_customerService_left_msg.text = itemData.chat_content
                             itemView.tv_item_customerService_left_msg_time.text =
                                 formatChatTime(itemData.chat_time)
+                            when (itemData.chat_type) {
+                                3 -> {
+                                    //常见问题
+                                    val ssb = SpannableStringBuilder(
+                                        """
+                                            常见问题
+                                            ￣￣￣￣￣￣￣￣￣￣￣￣￣
+                                            如何下载特戒盒子
+                                            
+                                            游戏内玩法或者游戏bug等问题
+                                            
+                                            为何不能免费充值
+                                            
+                                            盒子无法下载或更新
+                                            
+                                            游戏内白嫖的余额使用介绍
+                                            
+                                            为什么被封号了
+                                            """.trimIndent()
+                                    )
+                                    //常见问题
+                                    ssb.setSpan(object : ClickableSpan() {
+                                        override fun onClick(widget: View) {
+                                        }
+
+                                        override fun updateDrawState(ds: TextPaint) {
+                                            super.updateDrawState(ds)
+                                            ds.color = Color.parseColor("#1A1A1A")
+                                            ds.isUnderlineText = false
+                                            ds.isFakeBoldText = true
+                                        }
+
+                                    }, 0, 18, 0)
+                                    //如何下载特戒盒子
+                                    ssb.setSpan(object : ClickableSpan() {
+                                        override fun onClick(widget: View) {
+                                            requestResponseNormalQuest(
+                                                "如何下载特戒盒子",
+                                                0,
+                                                "1. 盒子下载地址是 69t.top 在浏览器输入网址下载\n2. 目前只支持手机和平板, 电脑可用模拟器下载盒子"
+                                            )
+                                        }
+
+                                        override fun updateDrawState(ds: TextPaint) {
+                                            super.updateDrawState(ds)
+                                            ds.isUnderlineText = false
+                                        }
+
+                                    }, 19, 27, 0)
+                                    //游戏内玩法或者游戏bug等问题
+                                    ssb.setSpan(object : ClickableSpan() {
+                                        override fun onClick(widget: View) {
+                                            requestResponseNormalQuest(
+                                                "游戏内玩法或者游戏bug等问题",
+                                                0,
+                                                "游戏内的问题, 可以在游戏里找到当前游戏里的客服处理"
+                                            )
+                                        }
+
+                                        override fun updateDrawState(ds: TextPaint) {
+                                            super.updateDrawState(ds)
+                                            ds.isUnderlineText = false
+                                        }
+
+                                    }, 29, 44, 0)
+                                    //为何不能免费充值
+                                    ssb.setSpan(object : ClickableSpan() {
+                                        override fun onClick(widget: View) {
+                                            requestResponseNormalQuest(
+                                                "为何不能免费充值",
+                                                0,
+                                                "1. 一个游戏里包含多个版本无法免费充值\n2. 游戏商家没有打开免费充值功能的话, 该游戏无法免费充值\n" +
+                                                        "3. “全部游戏”里面的游戏不发免费充值\n4. 盒子余额不能充值, 只能白嫖"
+                                            )
+                                        }
+
+                                        override fun updateDrawState(ds: TextPaint) {
+                                            super.updateDrawState(ds)
+                                            ds.isUnderlineText = false
+                                        }
+
+                                    }, 46, 54, 0)
+                                    //盒子无法下载或更新
+                                    ssb.setSpan(object : ClickableSpan() {
+                                        override fun onClick(widget: View) {
+                                            requestResponseNormalQuest(
+                                                "盒子无法下载或更新",
+                                                0,
+                                                "3111423308 您加一下这个QQ，让技术排查一下原因"
+                                            )
+                                        }
+
+                                        override fun updateDrawState(ds: TextPaint) {
+                                            super.updateDrawState(ds)
+                                            ds.isUnderlineText = false
+                                        }
+                                    }, 56, 65, 0)
+                                    //游戏内白嫖的余额使用介绍
+                                    ssb.setSpan(object : ClickableSpan() {
+                                        override fun onClick(widget: View) {
+                                            requestResponseNormalQuest(
+                                                "游戏内白嫖的余额使用介绍",
+                                                0,
+                                                "1. 1个手机每天只能签到一个账号\n" +
+                                                        "2. 当天签到的余额, 30天后会自动到期清除, 比如今天是19号白嫖10块钱, " +
+                                                        "等到下个月20号这个10块钱没有使用, 清除的就是今天领的10块钱, 明天领的后天领的是不会清除的"
+                                            )
+                                        }
+
+                                        override fun updateDrawState(ds: TextPaint) {
+                                            super.updateDrawState(ds)
+                                            ds.isUnderlineText = false
+                                        }
+
+                                    }, 67, 79, 0)
+                                    //为什么被封号了
+                                    ssb.setSpan(object : ClickableSpan() {
+                                        override fun onClick(widget: View) {
+                                            requestResponseNormalQuest(
+                                                "为什么被封号了",
+                                                0,
+                                                "游戏内的问题, 1可以在游戏里找到当前游戏里的客服处理"
+                                            )
+                                        }
+
+                                        override fun updateDrawState(ds: TextPaint) {
+                                            super.updateDrawState(ds)
+                                            ds.isUnderlineText = false
+                                        }
+
+                                    }, 81, 88, 0)
+
+                                    itemView.tv_item_customerService_left_msg.let {
+                                        it.movementMethod = LinkMovementMethod.getInstance()
+                                        it.setText(ssb, TextView.BufferType.SPANNABLE)
+                                        it.highlightColor = Color.TRANSPARENT
+                                    }
+                                }
+                                4 -> {
+                                    //是否想问
+                                    val ssb = SpannableStringBuilder(
+                                        """
+                                            是否想问?
+                                            ￣￣￣￣￣￣￣￣￣￣￣￣￣
+                                            
+                                            """.trimIndent()
+                                    )
+                                    //是否想问
+                                    ssb.setSpan(object : ClickableSpan() {
+                                        override fun onClick(widget: View) {
+                                        }
+
+                                        override fun updateDrawState(ds: TextPaint) {
+                                            super.updateDrawState(ds)
+                                            ds.color = Color.parseColor("#1A1A1A")
+                                            ds.isUnderlineText = false
+                                            ds.isFakeBoldText = true
+                                        }
+
+                                    }, 0, 19, 0)
+                                    when (itemData.chat_content!!.toInt()) {
+                                        1 -> {
+                                            ssb.append(SpannableStringBuilder("如何下载特戒盒子"))
+                                            //如何下载特戒盒子
+                                            ssb.setSpan(object : ClickableSpan() {
+                                                override fun onClick(widget: View) {
+                                                    requestResponseNormalQuest(
+                                                        "如何下载特戒盒子",
+                                                        0,
+                                                        "1. 盒子下载地址是 69t.top 在浏览器输入网址下载\n2. 目前只支持手机和平板, 电脑可用模拟器下载盒子"
+                                                    )
+                                                }
+
+                                                override fun updateDrawState(ds: TextPaint) {
+                                                    super.updateDrawState(ds)
+                                                    ds.isUnderlineText = false
+                                                }
+
+                                            }, 20, 28, 0)
+                                        }
+                                        2 -> {
+                                            ssb.append(SpannableStringBuilder("游戏内玩法或者游戏bug等问题\n\n为何不能免费充值"))
+                                            //如何下载特戒盒子
+                                            ssb.setSpan(object : ClickableSpan() {
+                                                override fun onClick(widget: View) {
+                                                    requestResponseNormalQuest(
+                                                        "游戏内玩法或者游戏bug等问题",
+                                                        0,
+                                                        "游戏内的问题, 可以在游戏里找到当前游戏里的客服处理"
+                                                    )
+                                                }
+
+                                                override fun updateDrawState(ds: TextPaint) {
+                                                    super.updateDrawState(ds)
+                                                    ds.isUnderlineText = false
+                                                }
+
+                                            }, 20, 35, 0)
+                                            ssb.setSpan(object : ClickableSpan() {
+                                                override fun onClick(widget: View) {
+                                                    requestResponseNormalQuest(
+                                                        "为何不能免费充值",
+                                                        0,
+                                                        "1. 一个游戏里包含多个版本无法免费充值\n2. 游戏商家没有打开免费充值功能的话, 该游戏无法免费充值\n" +
+                                                                "3. “全部游戏”里面的游戏不发免费充值\n4. 盒子余额不能充值. 只能白嫖"
+                                                    )
+                                                }
+
+                                                override fun updateDrawState(ds: TextPaint) {
+                                                    super.updateDrawState(ds)
+                                                    ds.isUnderlineText = false
+                                                }
+
+                                            }, 37, 45, 0)
+                                        }
+                                        4 -> {
+                                            ssb.append(SpannableStringBuilder("盒子无法下载或更新"))
+                                            //如何下载特戒盒子
+                                            ssb.setSpan(object : ClickableSpan() {
+                                                override fun onClick(widget: View) {
+                                                    requestResponseNormalQuest(
+                                                        "盒子无法下载或更新",
+                                                        0,
+                                                        "3111423308 您加一下这个QQ，让技术排查一下原因"
+                                                    )
+                                                }
+
+                                                override fun updateDrawState(ds: TextPaint) {
+                                                    super.updateDrawState(ds)
+                                                    ds.isUnderlineText = false
+                                                }
+
+                                            }, 20, 29, 0)
+                                        }
+                                        5 -> {
+                                            ssb.append(SpannableStringBuilder("游戏内白嫖的余额使用介绍"))
+                                            //如何下载特戒盒子
+                                            ssb.setSpan(object : ClickableSpan() {
+                                                override fun onClick(widget: View) {
+                                                    requestResponseNormalQuest(
+                                                        "游戏内白嫖的余额使用介绍",
+                                                        0,
+                                                        "1. 1个手机每天只能签到一个账号\n" +
+                                                                "2. 当天签到的余额, 30天后会自动到期清除, 比如今天是19号白嫖10块钱, " +
+                                                                "等到下个月20号这个10块钱没有使用, 清除的就是今天领的10块钱, 明天领的后天领的是不会清除的"
+                                                    )
+                                                }
+
+                                                override fun updateDrawState(ds: TextPaint) {
+                                                    super.updateDrawState(ds)
+                                                    ds.isUnderlineText = false
+                                                }
+
+                                            }, 20, 32, 0)
+                                        }
+                                        6 -> {
+                                            ssb.append(SpannableStringBuilder("为什么被封号了"))
+                                            //如何下载特戒盒子
+                                            ssb.setSpan(object : ClickableSpan() {
+                                                override fun onClick(widget: View) {
+                                                    requestResponseNormalQuest(
+                                                        "为什么被封号了",
+                                                        0,
+                                                        "游戏内的问题, 1可以在游戏里找到当前游戏里的客服处理"
+                                                    )
+                                                }
+
+                                                override fun updateDrawState(ds: TextPaint) {
+                                                    super.updateDrawState(ds)
+                                                    ds.isUnderlineText = false
+                                                }
+
+                                            }, 20, 27, 0)
+                                        }
+                                    }
+                                    itemView.tv_item_customerService_left_msg.let {
+                                        it.movementMethod = LinkMovementMethod.getInstance()
+                                        it.setText(ssb, TextView.BufferType.SPANNABLE)
+                                        it.highlightColor = Color.TRANSPARENT
+                                    }
+                                }
+                                else -> {
+                                    itemView.tv_item_customerService_left_msg.text =
+                                        itemData.chat_content
+                                }
+                            }
                         } else {
                             //图片消息
                             itemView.ll_item_customerService_left_msg.visibility = View.GONE
@@ -273,6 +577,124 @@ class CustomerServiceActivity : BaseActivity() {
     }
 
     /**
+     * 是否在客服未回消息时, 有超过一定数量的图片
+     * 数据直接翻转, 只要遍历到一个客服消息, 直接gg
+     */
+    private fun isHavePassMaxPic() {
+        val reversed = mData.reversed()
+        for (info in reversed) {
+            if (info.form == 0) {
+                return
+            }
+            if (info.chat_type == 2) {
+                picNum++
+            }
+        }
+    }
+
+    /**
+     * 初始化在线客服聊天
+     * @param isExpire 是否是已过期
+     */
+    private fun initCustomerServiceInfo(isExpire: Boolean = false) {
+        val customerServiceInfo = CustomerServiceInfo(
+            -2, 0, 0,
+            "您好, 请问有什么可以帮助您! 请反馈遇到的问题, 我们将在一个工作日内解答。",
+            null, null, null,
+            System.currentTimeMillis(),
+            1
+        )
+        Thread.sleep(200)
+        val customerServiceInfoTips = CustomerServiceInfo(
+            -1, 0, 3, "",
+            null, null, null,
+            System.currentTimeMillis(),
+            1
+        )
+        mCustomerServiceDao.addInfo(customerServiceInfo)
+        mCustomerServiceDao.addInfo(customerServiceInfoTips)
+        mData.add(customerServiceInfo)
+        mData.add(customerServiceInfoTips)
+    }
+
+    /**
+     * 提问和回答常见问题
+     * @param quest 提问
+     * @param chatType 0默认文字, 是已经点击过常见问题了  4.是否想问
+     * */
+    private fun requestResponseNormalQuest(quest: String, chatType: Int, chatContent: String) {
+        if (chatType == 4) {
+            et_customerService_msg.setText("")
+        }
+        val customerServiceInfo4Request = CustomerServiceInfo(
+            System.currentTimeMillis().toInt(), 1, 1,
+            quest, null, null, null,
+            System.currentTimeMillis(),
+            1
+        )
+        Thread.sleep(200)
+        val customerServiceInfo4Response = CustomerServiceInfo(
+            System.currentTimeMillis().toInt(), 0,
+            chatType, chatContent, null, null, null,
+            System.currentTimeMillis(),
+            1
+        )
+        mCustomerServiceDao.addInfo(customerServiceInfo4Request)
+        mCustomerServiceDao.addInfo(customerServiceInfo4Response)
+        val oldSize = mData.size
+        mData.add(customerServiceInfo4Request)
+        mData.add(customerServiceInfo4Response)
+        mAdapter?.notifyItemChanged(oldSize)
+        mAdapter?.notifyItemChanged(oldSize + 1)
+        rv_customerService_info.scrollToPosition(oldSize + 1)
+    }
+
+    /**
+     * 是否是常见问题的模糊询问
+     */
+    private fun isNormalQuest(quest: String): Int {
+        val list4Quest1 = mutableListOf("下载", "更新", "掉签")
+        val list4Quest23 =
+            mutableListOf("bug", "BUG", "新区", "角色", "测试", "充值", "开区", "称号", "大陆", "版本", "充值", "免费")
+        val list4Quest4 = mutableListOf("怎么更新", "下载不了")
+        val list4Quest5 = mutableListOf("白嫖", "签到", "余额")
+        val list4Quest6 = mutableListOf("封号", "被封")
+        val isContainList1Info = isContainListInfo(quest, list4Quest1)
+        if (isContainList1Info) {
+            return 1
+        }
+        val isContainList2Info = isContainListInfo(quest, list4Quest23)
+        if (isContainList2Info) {
+            return 2
+        }
+        val isContainList4Info = isContainListInfo(quest, list4Quest4)
+        if (isContainList4Info) {
+            return 4
+        }
+        val isContainList5Info = isContainListInfo(quest, list4Quest5)
+        if (isContainList5Info) {
+            return 5
+        }
+        val isContainList6Info = isContainListInfo(quest, list4Quest6)
+        if (isContainList6Info) {
+            return 6
+        }
+        return 0
+    }
+
+    /**
+     * 是否含有集合中的数据
+     */
+    private fun isContainListInfo(quest: String, list: MutableList<String>): Boolean {
+        for (info in list) {
+            if (quest.contains(info)) {
+                return true
+            }
+        }
+        return false
+    }
+
+    /**
      * 格式化时间
      * 今日时间显示    xx:xx
      * 昨日时间显示    昨天 xx:xx
@@ -327,7 +749,8 @@ class CustomerServiceActivity : BaseActivity() {
         type: Int = 1,
         customerServiceInfo4Pic: CustomerServiceInfo? = null,
         image_width: Int? = null,
-        image_height: Int? = null
+        image_height: Int? = null,
+        isUploadPicOver: Boolean? = null
     ) {
         val sendMsg = RetrofitUtils.builder().sendMsg(msg, type, image_width, image_height)
         sendMsgObservable = sendMsg.subscribeOn(Schedulers.io())
@@ -339,6 +762,23 @@ class CustomerServiceActivity : BaseActivity() {
                             customerServiceInfo4Pic?.chat_id = it.data.chat_id
                             mCustomerServiceDao.addInfo(customerServiceInfo4Pic!!)
                             rv_customerService_info?.scrollToPosition(mData.size - 1)
+                            picNum++
+                            if (isUploadPicOver == true && picNum >= 3) {
+                                picNum = 0
+                                //图片上传结束, 且图片个数大于等于3张, 则
+                                Thread.sleep(200)
+                                val customerServiceInfo4Response = CustomerServiceInfo(
+                                    System.currentTimeMillis().toInt(), 0,
+                                    4, "2", null, null, null,
+                                    System.currentTimeMillis(),
+                                    1
+                                )
+                                mCustomerServiceDao.addInfo(customerServiceInfo4Response)
+                                val oldSize = mData.size
+                                mData.add(customerServiceInfo4Response)
+                                mAdapter?.notifyItemChanged(oldSize)
+                                rv_customerService_info.scrollToPosition(oldSize)
+                            }
                         } else {
                             et_customerService_msg.setText("")
                             val customerServiceInfo = CustomerServiceInfo(
@@ -459,7 +899,8 @@ class CustomerServiceActivity : BaseActivity() {
                                 2,
                                 customerServiceInfo,
                                 result[picIndex].width,
-                                result[picIndex].height
+                                result[picIndex].height,
+                                picIndex == result.size - 1
                             )
                         }
                         else -> {

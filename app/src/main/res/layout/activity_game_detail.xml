@@ -504,6 +504,7 @@
             </LinearLayout>
 
             <View
+                android:id="@+id/space_detail_bottom_tab"
                 android:layout_width="0dp"
                 android:layout_height="@dimen/dp_60" />
         </LinearLayout>
@@ -530,27 +531,33 @@
             android:layout_weight="1" />
 
         <LinearLayout
+            android:id="@+id/ll_detail_bottom_tab"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
+            android:layout_height="@dimen/dp_60"
             android:background="@color/white_FFFFFF"
+            android:gravity="center_vertical"
             android:orientation="horizontal"
-            android:padding="@dimen/dp_10">
+            android:paddingStart="@dimen/dp_20"
+            android:paddingEnd="@dimen/dp_20"
+            android:visibility="gone">
 
             <LinearLayout
+                android:id="@+id/ll_detail_integral"
                 android:layout_width="0dp"
-                android:layout_height="@dimen/dp_36"
-                android:layout_weight="1"
+                android:layout_height="@dimen/dp_38"
+                android:layout_marginEnd="@dimen/dp_10"
+                android:layout_weight="3"
                 android:background="@drawable/bg_integral_btn"
                 android:gravity="center">
 
                 <ImageView
                     android:layout_width="@dimen/dp_16"
+                    android:layout_marginTop="@dimen/dp_1"
                     android:layout_height="@dimen/dp_16"
                     android:layout_marginEnd="@dimen/dp_3"
                     android:src="@mipmap/icon_recharge" />
 
                 <TextView
-                    android:id="@+id/tv_detail_integral"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:gravity="center"
@@ -561,24 +568,28 @@
             </LinearLayout>
 
             <View
-                android:layout_width="@dimen/dp_10"
-                android:layout_height="0dp" />
+                android:id="@+id/space_detail_bottom_tab_1"
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:visibility="gone" />
 
             <LinearLayout
+                android:id="@+id/ll_detail_start"
                 android:layout_width="0dp"
-                android:layout_height="@dimen/dp_36"
-                android:layout_weight="2"
+                android:layout_height="@dimen/dp_38"
+                android:layout_weight="6"
                 android:background="@drawable/bg_start_btn_big"
                 android:gravity="center">
 
                 <ImageView
                     android:layout_width="@dimen/dp_24"
                     android:layout_height="@dimen/dp_24"
+                    android:layout_marginTop="@dimen/dp_1"
                     android:layout_marginEnd="@dimen/dp_3"
                     android:src="@mipmap/icon_play" />
 
                 <TextView
-                    android:id="@+id/tv_detail_start"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:background="@drawable/bg_start_btn_circle"
@@ -587,6 +598,13 @@
                     android:textColor="@color/white_FFFFFF"
                     android:textSize="@dimen/sp_16" />
             </LinearLayout>
+
+            <View
+                android:id="@+id/space_detail_bottom_tab_2"
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:visibility="gone" />
         </LinearLayout>
 
         <TextView

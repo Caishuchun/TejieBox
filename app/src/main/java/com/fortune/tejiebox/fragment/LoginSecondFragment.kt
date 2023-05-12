@@ -223,14 +223,6 @@ class LoginSecondFragment() : Fragment() {
                                     isHaveRewardInteger
                                 )
                             )
-//                            if (it.data?.first_login == 1 && BaseAppUpdateSetting.isInviteVersion) {
-//                                startActivity(
-//                                    Intent(
-//                                        requireContext(),
-//                                        InviteCodeActivity::class.java
-//                                    )
-//                                )
-//                            }
                             requireActivity().finish()
                         }
                         else -> {

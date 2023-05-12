@@ -80,7 +80,7 @@ object SPUtils {
     fun clear(isSaveAccount: Boolean = false) {
         val account = getString(SPArgument.LOGIN_ACCOUNT, null)
         val pass = getString(SPArgument.LOGIN_ACCOUNT_PASS, null)
-        val isAgree = getBoolean(SPArgument.IS_CHECK_AGREEMENT, false)
+        val isAgree = getBoolean(SPArgument.IS_CHECK_AGREEMENT_SPLASH, false)
         val openInstallUsed = getBoolean(SPArgument.OPEN_INSTALL_USED, false)
         sp.edit().clear().apply()
         if (isSaveAccount) {
@@ -91,7 +91,7 @@ object SPUtils {
                 putValue(SPArgument.LOGIN_ACCOUNT_PASS, pass)
             }
             if (isAgree) {
-                putValue(SPArgument.IS_CHECK_AGREEMENT, true)
+                putValue(SPArgument.IS_CHECK_AGREEMENT_SPLASH, true)
             }
         }
         if (openInstallUsed) {

@@ -5,6 +5,11 @@
 2. git config --global http.proxy 127.0.0.1:7890
 3. git config --global https.proxy 127.0.0.1:7890
 
+### V3.2.7
+下载更新样式优化修改, 并移动至启动页
+优化修改了客服聊天, 新增自动回复
+为上架应用宝市场做的修改
+
 ### V3.2.6
 openInstall换友盟安装传参
 优化详情页界面

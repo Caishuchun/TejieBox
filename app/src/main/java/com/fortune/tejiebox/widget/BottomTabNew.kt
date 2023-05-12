@@ -91,6 +91,10 @@ class BottomTabNew(context: Context, attrs: AttributeSet) : LinearLayout(context
             mView.iv_bottomTab_whitePiao.setImageResource(R.mipmap.white_piao_audit)
         }
 
+        if (BaseAppUpdateSetting.isShangJiaVersion) {
+            mView.tv_bottomTab_playing.text = "收藏"
+        }
+
         RxView.clicks(mView.rl_bottomTab_home)
             .throttleFirst(20, TimeUnit.MILLISECONDS)
             .subscribe {

@@ -150,7 +150,6 @@ class LoginFirstFragment : Fragment() {
                 startActivity(intent)
             }
 
-
 //        RxTextView.textChanges(view.et_login_first_phone)
 //            .skipInitialValue()
 //            .subscribe {

@@ -15,9 +15,6 @@ import androidx.core.content.FileProvider
 import com.arialyy.aria.core.Aria
 import com.arialyy.aria.core.task.DownloadTask
 import com.bumptech.glide.Glide
-import com.fm.openinstall.OpenInstall
-import com.fm.openinstall.listener.AppWakeUpAdapter
-import com.fm.openinstall.model.AppData
 import com.fortune.tejiebox.R
 import com.fortune.tejiebox.base.BaseActivity
 import com.fortune.tejiebox.base.BaseAppUpdateSetting
@@ -28,7 +25,6 @@ import com.fortune.tejiebox.http.RetrofitUtils
 import com.fortune.tejiebox.myapp.MyApp
 import com.fortune.tejiebox.utils.*
 import com.google.gson.Gson
-import com.luck.picture.lib.utils.SpUtils
 import com.umeng.analytics.MobclickAgent
 import io.reactivex.Observable
 import io.reactivex.android.schedulers.AndroidSchedulers
@@ -69,33 +65,10 @@ class NewSplashActivity : BaseActivity() {
         Aria.download(this).register()
         setTheme(R.style.NormalTheme)
         instance = this
-//        wakeUpAdapter?.let { OpenInstall.getWakeUp(intent, it) }
         toSetSplashBg()
         SPUtils.putValue(SPArgument.GET_GAME_LIST_TIME, 0L)
         toAgreeAgreement()
-//        val encrypt = AESUtils.encrypt("k202301|csc0913|csc0913|k2hz001|5|168513")
-//        val encrypt = AESUtils.encrypt("678910|csc0913|csc0913|ltdjp|5|168513")
-//        val encrypt = AESUtils.encrypt("vm1000|w123|w123|vm1000|1|1")
-//        val encrypt = AESUtils.encrypt("{\"type\":1,\"share_id\":\"QY\"}")
-//        val encrypt = AESUtils.encrypt("{\"type\":3,\"game_id\":1344}")
-//        val encrypt = AESUtils.encrypt("{\"type\":2,\"game_channel\":\"vm1000\",\"account\":\"w123\",\"password\":\"w123\",\"game_version\":\"vm1000\",\"server_id\":\"1\",\"role_id\":\"1\"}")
-//        LogUtils.d("++++++++++++++$encrypt")
     }
-
-//    override fun onNewIntent(intent: Intent?) {
-//        super.onNewIntent(intent)
-//        wakeUpAdapter?.let { OpenInstall.getWakeUp(intent, it) }
-//    }
-
-    /**
-     * OpenInstall 一键拉起功能
-     */
-//    private var wakeUpAdapter: AppWakeUpAdapter? = object : AppWakeUpAdapter() {
-//        override fun onWakeUp(appData: AppData) {
-//            LogUtils.d("==========================一键拉起")
-//            LogUtils.d("==========================channel:${appData.channel},bindData:${appData.data}")
-//        }
-//    }
 
     /**
      * 获取剪切板数据
@@ -148,7 +121,7 @@ class NewSplashActivity : BaseActivity() {
      * 先去同意协议再说
      */
     private fun toAgreeAgreement() {
-        val isAgree = SPUtils.getBoolean(SPArgument.IS_CHECK_AGREEMENT, false)
+        val isAgree = SPUtils.getBoolean(SPArgument.IS_CHECK_AGREEMENT_SPLASH, false)
         if (!isAgree
 //            && BaseAppUpdateSetting.isToAuditVersion
         ) {
@@ -156,7 +129,7 @@ class NewSplashActivity : BaseActivity() {
                 this,
                 object : DialogUtils.OnDialogListener {
                     override fun next() {
-                        SPUtils.putValue(SPArgument.IS_CHECK_AGREEMENT, true)
+                        SPUtils.putValue(SPArgument.IS_CHECK_AGREEMENT_SPLASH, true)
                         LoginUtils.init(this@NewSplashActivity)
                         getPermission(0)
                     }
@@ -245,10 +218,6 @@ class NewSplashActivity : BaseActivity() {
 
                 override fun onFinish() {
                     LogUtils.d("HiPermission=>onFinish()")
-                    val isCheckAgreement = SPUtils.getBoolean(SPArgument.IS_CHECK_AGREEMENT, false)
-                    if (BaseAppUpdateSetting.isToPromoteVersion && !isCheckAgreement) {
-                        return
-                    }
                     toMain4CheckVersion()
                 }
 
@@ -267,9 +236,7 @@ class NewSplashActivity : BaseActivity() {
      */
     @SuppressLint("CheckResult")
     fun toCountDown() {
-        //初始化openinstall
-//        LogUtils.d("==========================OpenInstall_init")
-//        OpenInstall.init(this)
+        tv_splash_countDown.visibility = View.VISIBLE
         countDownTimeObservable = Observable.interval(0, 1, TimeUnit.SECONDS)
             .subscribeOn(Schedulers.io())
             .observeOn(AndroidSchedulers.mainThread())
@@ -346,8 +313,8 @@ class NewSplashActivity : BaseActivity() {
             //需要更新的话,直接更新
             if (isApkDownload(File(downloadPath))) {
                 installAPK(File(downloadPath))
-//                toCountDown()
             } else {
+                tv_splash_updateMsg.text = data.update_msg
                 toDownloadApk(updateUrl)
             }
         } else {
@@ -367,8 +334,7 @@ class NewSplashActivity : BaseActivity() {
      * apk下载
      */
     private fun toDownloadApk(updateUrl: String) {
-        pb_splash_download.visibility = View.VISIBLE
-        tv_splash_download.visibility = View.VISIBLE
+        ll_splash_update.visibility = View.VISIBLE
         isDownloadApp = true
         Aria.download(this)
             .load(updateUrl) //读取下载地址
@@ -380,15 +346,15 @@ class NewSplashActivity : BaseActivity() {
 
     override fun onTaskResume(task: DownloadTask?) {
         if (isDownloadApp) {
-            pb_splash_download.progress = task?.percent ?: 0
-            tv_splash_download.text = "检查更新 ${task?.percent ?: 0}%"
+            pb_splash_download.setProgress(task?.percent ?: 0)
+            tv_splash_download.text = "${task?.percent ?: 0}%"
         }
     }
 
     override fun onTaskStart(task: DownloadTask?) {
         if (isDownloadApp) {
-            pb_splash_download.progress = task?.percent ?: 0
-            tv_splash_download.text = "检查更新 ${task?.percent ?: 0}%"
+            pb_splash_download.setProgress(task?.percent ?: 0)
+            tv_splash_download.text = "${task?.percent ?: 0}%"
         }
     }
 
@@ -415,8 +381,8 @@ class NewSplashActivity : BaseActivity() {
     override fun onTaskComplete(task: DownloadTask?) {
         if (isDownloadApp) {
             isDownloadApp = false
-            pb_splash_download.progress = 100
-            tv_splash_download.text = "检查更新 100%"
+            pb_splash_download.setProgress(100)
+            tv_splash_download.text = "100%"
             pb_splash_download.visibility = View.GONE
             tv_splash_download.visibility = View.GONE
             Aria.download(this).stopAllTask()
@@ -429,8 +395,8 @@ class NewSplashActivity : BaseActivity() {
 
     override fun onTaskRunning(task: DownloadTask?) {
         if (isDownloadApp) {
-            pb_splash_download.progress = task?.percent ?: 0
-            tv_splash_download.text = "检查更新 ${task?.percent ?: 0}%"
+            pb_splash_download.setProgress(task?.percent ?: 0)
+            tv_splash_download.text = "${task?.percent ?: 0}%"
         }
     }
 
@@ -505,16 +471,10 @@ class NewSplashActivity : BaseActivity() {
      */
     @SuppressLint("CheckResult")
     private fun toMain() {
-        //检查邀请码是否填写过了
-//        val inviteCodeUsed = SPUtils.getBoolean(SPArgument.INVITE_CODE_USED, true)
-//        if (inviteCodeUsed) {
         SPUtils.putValue(SPArgument.IS_LOGIN, true)
         startActivity(Intent(this, MainActivity::class.java))
+//        startActivity(Intent(this, com.fortune.tejiebox.shangjia.activity.MainActivity::class.java))
         finish()
-//        } else {
-//            startActivity(Intent(this, InviteCodeActivity::class.java))
-//            finish()
-//        }
     }
 
     override fun destroy() {

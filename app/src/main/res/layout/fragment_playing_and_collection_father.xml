@@ -8,6 +8,7 @@
     tools:context=".fragment.PlayingAndCollectionFatherFragment">
 
     <LinearLayout
+        android:id="@+id/ll_fragment_playingAndCollection"
         android:layout_width="match_parent"
         android:layout_height="@dimen/dp_48"
         android:layout_gravity="center_horizontal"
@@ -47,6 +48,16 @@
             android:layout_weight="1" />
 
     </LinearLayout>
+
+    <TextView
+        android:id="@+id/tv_fragment_playingAndCollection_onlyCollection"
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/dp_48"
+        android:gravity="center"
+        android:text="收藏列表"
+        android:textColor="#0A0422"
+        android:textSize="@dimen/sp_18"
+        android:textStyle="bold" />
 
     <FrameLayout
         android:id="@+id/fl_fragment_playingAndCollection"

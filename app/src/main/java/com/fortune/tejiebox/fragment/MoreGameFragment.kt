@@ -15,6 +15,7 @@ import com.fortune.tejiebox.R
 import com.fortune.tejiebox.activity.IdCardActivity
 import com.fortune.tejiebox.activity.ProcessActivity
 import com.fortune.tejiebox.adapter.BaseAdapterWithPosition
+import com.fortune.tejiebox.base.BaseAppUpdateSetting
 import com.fortune.tejiebox.bean.AllAccountBean
 import com.fortune.tejiebox.bean.BaseGameListInfoBean
 import com.fortune.tejiebox.bean.GameInfo4ClipboardBean
@@ -97,6 +98,9 @@ class MoreGameFragment : Fragment() {
                 RxView.clicks(itemView)
                     .throttleFirst(200, TimeUnit.MILLISECONDS)
                     .subscribe {
+                        if (BaseAppUpdateSetting.isShangJiaVersion) {
+                            return@subscribe
+                        }
                         if (MyApp.getInstance().isHaveToken()) {
                             toGetAllAccount(
                                 itemData.game_id,

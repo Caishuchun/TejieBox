@@ -26,7 +26,8 @@
         android:gravity="center"
         android:text="3"
         android:textColor="@color/white_FFFFFF"
-        android:textSize="@dimen/sp_16" />
+        android:textSize="@dimen/sp_16"
+        android:visibility="gone" />
 
     <ImageView
         android:layout_width="@dimen/dp_100"
@@ -36,28 +37,66 @@
         android:layout_marginBottom="@dimen/dp_20"
         android:src="@mipmap/splash_logo" />
 
-    <ProgressBar
-        android:id="@+id/pb_splash_download"
-        android:visibility="gone"
-        style="?android:attr/progressBarStyleHorizontal"
-        android:layout_width="match_parent"
-        android:layout_height="@dimen/dp_20"
-        android:layout_alignParentBottom="true"
-        android:layout_marginBottom="@dimen/dp_50"
-        android:max="100"
-        android:progress="0"
-        android:progressDrawable="@drawable/bg_pb_download" />
-
-    <TextView
-        android:visibility="gone"
-        android:id="@+id/tv_splash_download"
-        android:layout_width="match_parent"
-        android:layout_height="@dimen/dp_20"
-        android:layout_alignParentBottom="true"
+    <LinearLayout
+        android:id="@+id/ll_splash_update"
+        android:layout_width="@dimen/dp_250"
+        android:layout_height="wrap_content"
         android:layout_centerHorizontal="true"
-        android:layout_marginBottom="@dimen/dp_50"
-        android:gravity="center"
-        android:text="检查更新 0%"
-        android:textColor="@color/white_FFFFFF"
-        android:textSize="@dimen/sp_14" />
+        android:layout_marginTop="@dimen/dp_79"
+        android:background="@drawable/bg_transparent_black_9"
+        android:gravity="center_horizontal"
+        android:orientation="vertical"
+        android:padding="@dimen/dp_10"
+        android:visibility="gone">
+
+        <RelativeLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
+
+            <com.fortune.tejiebox.widget.CircleProgress
+                android:id="@+id/pb_splash_download"
+                android:layout_width="@dimen/dp_79"
+                android:layout_height="@dimen/dp_79" />
+
+            <TextView
+                android:id="@+id/tv_splash_download"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_centerInParent="true"
+                android:text="0%"
+                android:textColor="@color/white_FFFFFF"
+                android:textSize="@dimen/sp_18"
+                android:textStyle="bold" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_centerHorizontal="true"
+                android:layout_marginTop="@dimen/dp_52"
+                android:gravity="center"
+                android:text="检查更新"
+                android:textColor="@color/white_FFFFFF"
+                android:textSize="@dimen/sp_8" />
+        </RelativeLayout>
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_horizontal"
+            android:layout_marginTop="@dimen/dp_20"
+            android:layout_marginBottom="@dimen/dp_10"
+            android:text="更新日志"
+            android:textColor="@color/white_FFFFFF"
+            android:textSize="@dimen/sp_16"
+            android:textStyle="bold" />
+
+        <TextView
+            android:id="@+id/tv_splash_updateMsg"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:textColor="@color/white_FFFFFF"
+            android:textSize="@dimen/sp_12" />
+    </LinearLayout>
+
 </RelativeLayout>

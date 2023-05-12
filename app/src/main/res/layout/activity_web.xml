@@ -25,6 +25,7 @@
             android:layout_height="@dimen/dp_48"
             android:layout_centerHorizontal="true"
             android:gravity="center"
+            android:text="特戒协议"
             android:textColor="#0A0422"
             android:textSize="@dimen/sp_18"
             android:textStyle="bold" />

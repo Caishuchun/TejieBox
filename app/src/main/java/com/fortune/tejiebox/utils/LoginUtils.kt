@@ -366,13 +366,7 @@ object LoginUtils {
     /**
      * 隐藏登录加载和退出登录页面
      */
-    private fun hideLoadingAndQuitLoginPage(
-        activity: Activity? = null,
-        isFirstLogin: Boolean = false
-    ) {
-//        if (isFirstLogin && BaseAppUpdateSetting.isInviteVersion) {
-//            activity?.startActivity(Intent(activity, InviteCodeActivity::class.java))
-//        }
+    private fun hideLoadingAndQuitLoginPage() {
         helper?.hideLoginLoading()
         helper?.quitLoginPage()
     }
@@ -475,7 +469,7 @@ object LoginUtils {
                                     isHaveRewardInteger
                                 )
                             )
-                            hideLoadingAndQuitLoginPage(activity, it.data?.first_login == 1)
+                            hideLoadingAndQuitLoginPage()
                         }
                         else -> {
                             helper?.hideLoginLoading()

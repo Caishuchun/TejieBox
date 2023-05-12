@@ -7,6 +7,7 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import com.fortune.tejiebox.R
+import com.fortune.tejiebox.base.BaseAppUpdateSetting
 import com.jakewharton.rxbinding2.view.RxView
 import kotlinx.android.synthetic.main.fragment_playing_and_collection_father.view.*
 import java.util.concurrent.TimeUnit
@@ -35,6 +36,16 @@ class PlayingAndCollectionFatherFragment : Fragment() {
     private fun initView() {
         changeTitle()
         changeFragment()
+        if(BaseAppUpdateSetting.isShangJiaVersion){
+            mView?.ll_fragment_playingAndCollection?.visibility = View.GONE
+            mView?.tv_fragment_playingAndCollection_onlyCollection?.visibility = View.VISIBLE
+
+            currentPage = 1
+            changeFragment()
+        }else {
+            mView?.ll_fragment_playingAndCollection?.visibility = View.VISIBLE
+            mView?.tv_fragment_playingAndCollection_onlyCollection?.visibility = View.GONE
+        }
 
         mView?.tv_fragment_playingAndCollection_playing?.let {
             RxView.clicks(it)

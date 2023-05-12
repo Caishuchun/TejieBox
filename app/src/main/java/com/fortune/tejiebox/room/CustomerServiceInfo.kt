@@ -15,7 +15,7 @@ class CustomerServiceInfo(
     //内容来源 0-客服 1-用户
     @ColumnInfo(name = "form") val form: Int,
 
-    //消息类型 1-文本信息 2-图片信息
+    //消息类型0-默认文本 1-文本信息 2-图片信息 3-常见问题 4-是否想问
     @ColumnInfo(name = "chat_type") val chat_type: Int,
 
     //文本信息

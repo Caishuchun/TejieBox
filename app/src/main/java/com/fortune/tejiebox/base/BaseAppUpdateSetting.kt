@@ -20,9 +20,9 @@ object BaseAppUpdateSetting {
     const val appType = true
 
     /**
-     * 是否是专属邀请版本
+     * 是否是上架版本
      */
-    const val isInviteVersion = true
+    const val isShangJiaVersion = false
 
     /**
      * 网络请求标志, 热更包版本

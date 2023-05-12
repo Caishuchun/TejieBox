@@ -21,6 +21,7 @@ data class GameInfoBean(
         val game_type: String,
         val game_update_time: Int,
         val is_fav: Int,
-        val game_style: String?
+        val game_style: String?,
+        val is_open_free: Int?
     )
 }

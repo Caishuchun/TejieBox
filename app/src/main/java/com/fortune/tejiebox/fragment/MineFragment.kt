@@ -9,10 +9,7 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import com.fortune.tejiebox.R
-import com.fortune.tejiebox.activity.AccountSafeActivity
-import com.fortune.tejiebox.activity.CustomerServiceActivity
-import com.fortune.tejiebox.activity.IdCardActivity
-import com.fortune.tejiebox.activity.MainActivity
+import com.fortune.tejiebox.activity.*
 import com.fortune.tejiebox.constants.SPArgument
 import com.fortune.tejiebox.event.IsHaveIdChange
 import com.fortune.tejiebox.event.LoginStatusChange
@@ -170,6 +167,15 @@ class MineFragment : Fragment() {
                     )
                 }
         }
+
+        mView?.ll_mineFragment_privacy?.let {
+            RxView.clicks(it)
+                .throttleFirst(200,TimeUnit.MILLISECONDS)
+                .subscribe {
+                    startActivity(Intent(requireContext(),PrivacyActivity::class.java))
+                }
+        }
+
         mView?.tv_mineFragment_exit?.let {
             RxView.clicks(it)
                 .throttleFirst(200, TimeUnit.MILLISECONDS)

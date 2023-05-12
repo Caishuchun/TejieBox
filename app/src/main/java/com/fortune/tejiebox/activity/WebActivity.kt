@@ -40,11 +40,9 @@ class WebActivity : BaseActivity() {
         instance = this
         when (intent.getStringExtra(TYPE)) {
             USER_AGREEMENT -> {
-                tv_web_title.text = getString(R.string.app_name)
                 toLoadUrl((if (BaseAppUpdateSetting.appType) HttpUrls.REAL_URL else HttpUrls.TEST_URL) + FilesArgument.PROTOCOL_SERVICE)
             }
             PRIVACY_AGREEMENT -> {
-                tv_web_title.text = getString(R.string.app_name)
                 toLoadUrl((if (BaseAppUpdateSetting.appType) HttpUrls.REAL_URL else HttpUrls.TEST_URL) + FilesArgument.PROTOCOL_PRIVACY)
             }
             GAME_WEB -> {

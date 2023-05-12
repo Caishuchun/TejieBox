@@ -54,11 +54,17 @@
         tools:ignore="LockedOrientationActivity,UnusedAttribute"
         tools:replace="android:icon,android:theme,android:name,android:allowBackup">
         <activity
+            android:name=".activity.PrivacyActivity"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name=".shangjia.activity.MainActivity"
+            android:screenOrientation="portrait" />
+        <activity
             android:name=".activity.InvitePageActivity"
             android:screenOrientation="portrait" />
         <activity
             android:name=".activity.InviteCodeActivity"
-            android:screenOrientation="portrait"/>
+            android:screenOrientation="portrait" />
         <activity
             android:name=".activity.ChangePassActivity"
             android:screenOrientation="portrait" />
@@ -101,7 +107,7 @@
             android:theme="@style/ActivityTheme4Dialog" />
         <activity
             android:name=".activity.IntegralActivity"
-            android:screenOrientation="portrait"/>
+            android:screenOrientation="portrait" />
         <activity
             android:name=".activity.GiftActivity"
             android:screenOrientation="portrait" />
@@ -135,21 +141,25 @@
             android:theme="@style/SplashTheme">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
+
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
             <intent-filter>
-                <action android:name="android.intent.action.VIEW"/>
-                <category android:name="android.intent.category.DEFAULT"/>
-                <category android:name="android.intent.category.BROWSABLE"/>
-                <data android:scheme="pa5m7x"/>
+                <action android:name="android.intent.action.VIEW" />
+
+                <category android:name="android.intent.category.DEFAULT" />
+                <category android:name="android.intent.category.BROWSABLE" />
+
+                <data android:scheme="pa5m7x" />
             </intent-filter>
         </activity>
         <activity
             android:name=".activity.MainActivity"
             android:screenOrientation="portrait" />
+
         <meta-data
             android:name="com.openinstall.APP_KEY"
-            android:value="pa5m7x"/>
+            android:value="pa5m7x" />
         <meta-data
             android:name="android.max_aspect"
             android:value="2.1" />

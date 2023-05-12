@@ -27,6 +27,7 @@ object SPArgument {
     const val UM_CHANNEL_ID = "umChannelID" //友盟ChannelID
 
     const val IS_CHECK_AGREEMENT = "isCheckAgreement" //是否已经同意协议
+    const val IS_CHECK_AGREEMENT_SPLASH = "isCheckAgreement4Splash" //是否已经同意协议_专属启动页
     const val LOGIN_ACCOUNT = "login_account" //登录账号
     const val LOGIN_ACCOUNT_PASS = "login_account_pass" //登录账号密码
 

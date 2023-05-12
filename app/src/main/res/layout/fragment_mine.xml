@@ -177,6 +177,34 @@
     </LinearLayout>
 
     <LinearLayout
+        android:id="@+id/ll_mineFragment_privacy"
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/dp_54"
+        android:gravity="center_vertical"
+        android:padding="@dimen/dp_10">
+
+        <ImageView
+            android:layout_width="@dimen/dp_24"
+            android:layout_height="@dimen/dp_24"
+            android:src="@mipmap/privacy" />
+
+        <TextView
+            android:layout_width="0dp"
+            android:layout_weight="1"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="@dimen/dp_10"
+            android:text="特戒协议"
+            android:textColor="#0A0422"
+            android:textSize="@dimen/sp_16" />
+
+        <ImageView
+            android:layout_width="@dimen/dp_10"
+            android:layout_height="@dimen/dp_10"
+            android:layout_marginStart="@dimen/dp_5"
+            android:src="@mipmap/icon_next" />
+    </LinearLayout>
+
+    <LinearLayout
         android:id="@+id/ll_mineFragment_clearCache"
         android:layout_width="match_parent"
         android:layout_height="@dimen/dp_54"
