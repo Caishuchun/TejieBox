@@ -421,11 +421,11 @@ class GameDetailActivity : BaseActivity() {
     @SuppressLint("CheckResult", "SetTextI18n", "NotifyDataSetChanged", "SimpleDateFormat")
     private fun toInitView(info: GameInfoBean.Data) {
         //修改顶部图片高度
-        val width = PhoneInfoUtils.getWidth(this)
-        val layoutParams4Rl = rl_detail_pic.layoutParams
-        layoutParams4Rl.height = (249.5 * (width / 360f)).toInt()
-        val layoutParams4RV = rv_detail_pic.layoutParams
-        layoutParams4RV.height = (202.5 * (width / 360f)).toInt()
+//        val width = PhoneInfoUtils.getWidth(this)
+//        val layoutParams4Rl = rl_detail_pic.layoutParams
+//        layoutParams4Rl.height = (249.5 * (width / 360f)).toInt()
+//        val layoutParams4RV = rv_detail_pic.layoutParams
+//        layoutParams4RV.height = (202.5 * (width / 360f)).toInt()
 
         //处理头部图片信息
         picLists.clear()
@@ -456,16 +456,18 @@ class GameDetailActivity : BaseActivity() {
             val tagView =
                 LayoutInflater.from(this).inflate(R.layout.layout_item_tag, null)
             tagView.tv_tag.text = info.game_tag[index]
-            when (index % 2 == 0) {
-                true -> {
-                    tagView.tv_tag.setTextColor(Color.parseColor("#5CE6FF"))
-                    tagView.tv_tag.setBackgroundResource(R.drawable.bg_tag2)
-                }
-                false -> {
-                    tagView.tv_tag.setTextColor(Color.parseColor("#FF5FEB"))
-                    tagView.tv_tag.setBackgroundResource(R.drawable.bg_tag3)
-                }
-            }
+            tagView.tv_tag.setTextColor(Color.parseColor("#5F60FF"))
+            tagView.tv_tag.setBackgroundResource(R.drawable.bg_tag1)
+//            when (index % 2 == 0) {
+//                true -> {
+//                    tagView.tv_tag.setTextColor(Color.parseColor("#5CE6FF"))
+//                    tagView.tv_tag.setBackgroundResource(R.drawable.bg_tag2)
+//                }
+//                false -> {
+//                    tagView.tv_tag.setTextColor(Color.parseColor("#FF5FEB"))
+//                    tagView.tv_tag.setBackgroundResource(R.drawable.bg_tag3)
+//                }
+//            }
             fl_detail.addView(tagView)
         }
 
@@ -578,17 +580,24 @@ class GameDetailActivity : BaseActivity() {
         //是否显示<免费充值>
         if (info.is_open_free == 1) {
             ll_detail_integral.visibility = View.VISIBLE
-//            space_detail_bottom_tab_1.visibility = View.GONE
-//            space_detail_bottom_tab_2.visibility = View.GONE
+            space_detail_button.visibility = View.VISIBLE
+
+            ll_detail_bottom_tab.visibility = View.VISIBLE
+            space_detail_bottom_tab.visibility = View.VISIBLE
+
+            if (BaseAppUpdateSetting.isShangJiaVersion) {
+                ll_detail_start.visibility = View.GONE
+                space_detail_button.visibility = View.GONE           }
+
         } else {
             ll_detail_integral.visibility = View.GONE
-//            space_detail_bottom_tab_1.visibility = View.VISIBLE
-//            space_detail_bottom_tab_2.visibility = View.VISIBLE
+            space_detail_button.visibility = View.GONE
+
+            if (BaseAppUpdateSetting.isShangJiaVersion) {
+                ll_detail_bottom_tab.visibility = View.GONE
+                space_detail_bottom_tab.visibility = View.GONE
+            }
         }
-        ll_detail_bottom_tab.visibility =
-            if (BaseAppUpdateSetting.isShangJiaVersion) View.GONE else View.VISIBLE
-        space_detail_bottom_tab.visibility =
-            if (BaseAppUpdateSetting.isShangJiaVersion) View.GONE else View.VISIBLE
     }
 
     /**

@@ -3,9 +3,9 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="@dimen/dp_90"
     android:layout_height="wrap_content"
-    android:layout_marginBottom="@dimen/dp_6">
+    android:layout_marginBottom="@dimen/dp_10">
 
-    <RelativeLayout
+    <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:gravity="center_horizontal"
@@ -14,8 +14,7 @@
         <RelativeLayout
             android:layout_width="@dimen/dp_54"
             android:layout_height="@dimen/dp_54"
-            android:layout_centerHorizontal="true"
-            android:layout_marginTop="@dimen/dp_5">
+            android:layout_centerHorizontal="true">
 
             <com.fortune.tejiebox.widget.RunView
                 android:id="@+id/runView_item_gameFragment"
@@ -52,7 +51,7 @@
             android:id="@+id/tv_item_gameFragment_name"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="@dimen/dp_60"
+            android:layout_marginTop="@dimen/dp_2"
             android:ellipsize="end"
             android:gravity="center"
             android:maxLength="6"
@@ -65,7 +64,6 @@
             android:id="@+id/tv_item_gameFragment_des"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="@dimen/dp_72"
             android:ellipsize="end"
             android:gravity="center"
             android:maxLines="1"
@@ -73,7 +71,7 @@
             android:text="特戒盒子非常好用"
             android:textColor="#767676"
             android:textSize="@dimen/sp_9" />
-    </RelativeLayout>
+    </LinearLayout>
 
     <ImageView
         android:id="@+id/iv_item_gameFragment_delete"

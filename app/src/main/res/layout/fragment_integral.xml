@@ -29,7 +29,7 @@
                     android:id="@+id/riv_integralFragment_icon"
                     android:layout_width="@dimen/dp_60"
                     android:layout_height="@dimen/dp_60"
-                    android:scaleType="fitCenter"
+                    android:scaleType="centerCrop"
                     android:src="@mipmap/icon"
                     app:radius="@dimen/dp_10"
                     app:type="round" />

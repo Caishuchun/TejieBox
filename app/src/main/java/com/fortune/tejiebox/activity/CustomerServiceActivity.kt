@@ -265,7 +265,7 @@ class CustomerServiceActivity : BaseActivity() {
                                             requestResponseNormalQuest(
                                                 "盒子无法下载或更新",
                                                 0,
-                                                "3111423308 您加一下这个QQ，让技术排查一下原因"
+                                                "2703159366 您加一下这个QQ，让技术排查一下原因"
                                             )
                                         }
 
@@ -298,7 +298,7 @@ class CustomerServiceActivity : BaseActivity() {
                                             requestResponseNormalQuest(
                                                 "为什么被封号了",
                                                 0,
-                                                "游戏内的问题, 1可以在游戏里找到当前游戏里的客服处理"
+                                                "游戏内的问题, 可以在游戏里找到当前游戏里的客服处理"
                                             )
                                         }
 
@@ -315,6 +315,7 @@ class CustomerServiceActivity : BaseActivity() {
                                         it.highlightColor = Color.TRANSPARENT
                                     }
                                 }
+
                                 4 -> {
                                     //是否想问
                                     val ssb = SpannableStringBuilder(
@@ -357,6 +358,7 @@ class CustomerServiceActivity : BaseActivity() {
 
                                             }, 20, 28, 0)
                                         }
+
                                         2 -> {
                                             ssb.append(SpannableStringBuilder("游戏内玩法或者游戏bug等问题\n\n为何不能免费充值"))
                                             //如何下载特戒盒子
@@ -392,6 +394,7 @@ class CustomerServiceActivity : BaseActivity() {
 
                                             }, 37, 45, 0)
                                         }
+
                                         4 -> {
                                             ssb.append(SpannableStringBuilder("盒子无法下载或更新"))
                                             //如何下载特戒盒子
@@ -400,7 +403,7 @@ class CustomerServiceActivity : BaseActivity() {
                                                     requestResponseNormalQuest(
                                                         "盒子无法下载或更新",
                                                         0,
-                                                        "3111423308 您加一下这个QQ，让技术排查一下原因"
+                                                        "2703159366 您加一下这个QQ，让技术排查一下原因"
                                                     )
                                                 }
 
@@ -411,6 +414,7 @@ class CustomerServiceActivity : BaseActivity() {
 
                                             }, 20, 29, 0)
                                         }
+
                                         5 -> {
                                             ssb.append(SpannableStringBuilder("游戏内白嫖的余额使用介绍"))
                                             //如何下载特戒盒子
@@ -432,6 +436,7 @@ class CustomerServiceActivity : BaseActivity() {
 
                                             }, 20, 32, 0)
                                         }
+
                                         6 -> {
                                             ssb.append(SpannableStringBuilder("为什么被封号了"))
                                             //如何下载特戒盒子
@@ -440,7 +445,7 @@ class CustomerServiceActivity : BaseActivity() {
                                                     requestResponseNormalQuest(
                                                         "为什么被封号了",
                                                         0,
-                                                        "游戏内的问题, 1可以在游戏里找到当前游戏里的客服处理"
+                                                        "游戏内的问题, 可以在游戏里找到当前游戏里的客服处理"
                                                     )
                                                 }
 
@@ -458,6 +463,7 @@ class CustomerServiceActivity : BaseActivity() {
                                         it.highlightColor = Color.TRANSPARENT
                                     }
                                 }
+
                                 else -> {
                                     itemView.tv_item_customerService_left_msg.text =
                                         itemData.chat_content
@@ -510,6 +516,7 @@ class CustomerServiceActivity : BaseActivity() {
                                 }
                         }
                     }
+
                     1 -> {
                         //用户方消息
                         if (itemData.chat_content != null) {
@@ -655,7 +662,20 @@ class CustomerServiceActivity : BaseActivity() {
     private fun isNormalQuest(quest: String): Int {
         val list4Quest1 = mutableListOf("下载", "更新", "掉签")
         val list4Quest23 =
-            mutableListOf("bug", "BUG", "新区", "角色", "测试", "充值", "开区", "称号", "大陆", "版本", "充值", "免费")
+            mutableListOf(
+                "bug",
+                "BUG",
+                "新区",
+                "角色",
+                "测试",
+                "充值",
+                "开区",
+                "称号",
+                "大陆",
+                "版本",
+                "充值",
+                "免费"
+            )
         val list4Quest4 = mutableListOf("怎么更新", "下载不了")
         val list4Quest5 = mutableListOf("白嫖", "签到", "余额")
         val list4Quest6 = mutableListOf("封号", "被封")
@@ -723,16 +743,19 @@ class CustomerServiceActivity : BaseActivity() {
                 val sb = SimpleDateFormat("HH:mm")
                 sb.format(chatTime)
             }
-            chatTime in (yesterdayZeroTime + 1)..todayZeroTime -> {
+
+            chatTime >= yesterdayZeroTime + 1 && chatTime <= todayZeroTime -> {
                 // 昨天发送的消息
                 val sb = SimpleDateFormat("HH:mm")
                 "昨天 ${sb.format(chatTime)}"
             }
-            chatTime in (oneYearTime + 1)..yesterdayZeroTime -> {
+
+            chatTime >= oneYearTime + 1 && chatTime <= yesterdayZeroTime -> {
                 // 其他时间
                 val sb = SimpleDateFormat("MM月dd日 HH:mm")
                 sb.format(chatTime)
             }
+
             else -> {
                 chatTimeStr
             }
@@ -792,6 +815,7 @@ class CustomerServiceActivity : BaseActivity() {
                             rv_customerService_info?.scrollToPosition(mData.size - 1)
                         }
                     }
+
                     else -> {
                         ToastUtils.show(it.msg)
                     }
@@ -903,6 +927,7 @@ class CustomerServiceActivity : BaseActivity() {
                                 picIndex == result.size - 1
                             )
                         }
+
                         else -> {
                             mAdapter?.notifyItemRemoved(mData.size - 1)
                             ToastUtils.show("发送图片异常,请稍后重试! ")

@@ -433,7 +433,7 @@ class MainActivity : BaseActivity() {
      * 删除已经替换了的封面图
      */
     private fun toDeleteSplashImg(deleteSplashImg: MutableList<File>) {
-        if (deleteSplashImg.isNullOrEmpty()) {
+        if (deleteSplashImg.isEmpty()) {
             return
         }
         for (deleteSplash in deleteSplashImg) {

@@ -521,7 +521,7 @@
             android:id="@+id/iv_detail_back"
             android:layout_width="@dimen/dp_44"
             android:layout_height="@dimen/dp_44"
-            android:background="@drawable/bg_unload_shade"
+            android:background="@drawable/bg_splash_countdown"
             android:padding="@dimen/dp_10"
             android:src="@mipmap/back_white" />
 
@@ -534,7 +534,7 @@
             android:id="@+id/ll_detail_bottom_tab"
             android:layout_width="match_parent"
             android:layout_height="@dimen/dp_60"
-            android:background="@color/white_FFFFFF"
+            android:background="@drawable/bg_white_gradient"
             android:gravity="center_vertical"
             android:orientation="horizontal"
             android:paddingStart="@dimen/dp_20"
@@ -545,15 +545,14 @@
                 android:id="@+id/ll_detail_integral"
                 android:layout_width="0dp"
                 android:layout_height="@dimen/dp_38"
-                android:layout_marginEnd="@dimen/dp_10"
                 android:layout_weight="3"
                 android:background="@drawable/bg_integral_btn"
                 android:gravity="center">
 
                 <ImageView
                     android:layout_width="@dimen/dp_16"
-                    android:layout_marginTop="@dimen/dp_1"
                     android:layout_height="@dimen/dp_16"
+                    android:layout_marginTop="@dimen/dp_1"
                     android:layout_marginEnd="@dimen/dp_3"
                     android:src="@mipmap/icon_recharge" />
 
@@ -564,15 +563,12 @@
                     android:text="免费充值"
                     android:textColor="@color/white_FFFFFF"
                     android:textSize="@dimen/sp_16" />
-
             </LinearLayout>
 
             <View
-                android:id="@+id/space_detail_bottom_tab_1"
-                android:layout_width="0dp"
-                android:layout_height="match_parent"
-                android:layout_weight="1"
-                android:visibility="gone" />
+                android:id="@+id/space_detail_button"
+                android:layout_width="10dp"
+                android:layout_height="0dp" />
 
             <LinearLayout
                 android:id="@+id/ll_detail_start"
@@ -598,13 +594,6 @@
                     android:textColor="@color/white_FFFFFF"
                     android:textSize="@dimen/sp_16" />
             </LinearLayout>
-
-            <View
-                android:id="@+id/space_detail_bottom_tab_2"
-                android:layout_width="0dp"
-                android:layout_height="match_parent"
-                android:layout_weight="1"
-                android:visibility="gone" />
         </LinearLayout>
 
         <TextView

@@ -629,16 +629,18 @@ class SearchGameActivity : BaseActivity() {
                             LayoutInflater.from(this)
                                 .inflate(R.layout.layout_item_tag, null)
                         tagView.tv_tag.text = itemData.game_tag[index]
-                        when (index % 2 == 0) {
-                            true -> {
-                                tagView.tv_tag.setTextColor(Color.parseColor("#5CE6FF"))
-                                tagView.tv_tag.setBackgroundResource(R.drawable.bg_tag2)
-                            }
-                            false -> {
-                                tagView.tv_tag.setTextColor(Color.parseColor("#FF5FEB"))
-                                tagView.tv_tag.setBackgroundResource(R.drawable.bg_tag3)
-                            }
-                        }
+                        tagView.tv_tag.setTextColor(Color.parseColor("#5F60FF"))
+                        tagView.tv_tag.setBackgroundResource(R.drawable.bg_tag1)
+//                        when (index % 2 == 0) {
+//                            true -> {
+//                                tagView.tv_tag.setTextColor(Color.parseColor("#5CE6FF"))
+//                                tagView.tv_tag.setBackgroundResource(R.drawable.bg_tag2)
+//                            }
+//                            false -> {
+//                                tagView.tv_tag.setTextColor(Color.parseColor("#FF5FEB"))
+//                                tagView.tv_tag.setBackgroundResource(R.drawable.bg_tag3)
+//                            }
+//                        }
                         itemView.flowLayout_item_mainFragment.addView(tagView)
                     }
                 } else {
