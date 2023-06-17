@@ -12,6 +12,7 @@ import com.fortune.tejiebox.R
 import com.fortune.tejiebox.activity.GiftActivity
 import com.fortune.tejiebox.activity.MainActivity
 import com.fortune.tejiebox.base.BaseAppUpdateSetting
+import com.fortune.tejiebox.bean.VersionBean
 import com.fortune.tejiebox.listener.OnBottomBarItemSelectListener
 import com.fortune.tejiebox.myapp.MyApp
 import com.fortune.tejiebox.utils.FlipAnimUtils
@@ -91,7 +92,8 @@ class BottomTabNew(context: Context, attrs: AttributeSet) : LinearLayout(context
             mView.iv_bottomTab_whitePiao.setImageResource(R.mipmap.white_piao_audit)
         }
 
-        if (BaseAppUpdateSetting.isShangJiaVersion) {
+//        if (BaseAppUpdateSetting.isShangJiaVersion) {
+        if (VersionBean.getData()?.isShowStartGameBtn == 0) {
             mView.tv_bottomTab_playing.text = "收藏"
         }
 
@@ -173,14 +175,17 @@ class BottomTabNew(context: Context, attrs: AttributeSet) : LinearLayout(context
                 mView.iv_bottomTab_home.setImageResource(R.mipmap.icon_home_selected)
                 mView.tv_bottomTab_home.setTextColor(Color.parseColor("#6E6FFF"))
             }
+
             1 -> {
                 mView.iv_bottomTab_playing.setImageResource(R.mipmap.icon_playing_selected)
                 mView.tv_bottomTab_playing.setTextColor(Color.parseColor("#6E6FFF"))
             }
+
             2 -> {
                 mView.iv_bottomTab_like.setImageResource(R.mipmap.icon_like_selected)
                 mView.tv_bottomTab_like.setTextColor(Color.parseColor("#6E6FFF"))
             }
+
             3 -> {
                 mView.iv_bottomTab_me.setImageResource(R.mipmap.icon_me_selected)
                 mView.tv_bottomTab_me.setTextColor(Color.parseColor("#6E6FFF"))

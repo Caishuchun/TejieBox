@@ -15,6 +15,7 @@ import com.fortune.tejiebox.R
 import com.fortune.tejiebox.adapter.BaseAdapterWithPosition
 import com.fortune.tejiebox.base.BaseActivity
 import com.fortune.tejiebox.bean.GameListBean
+import com.fortune.tejiebox.bean.VersionBean
 import com.fortune.tejiebox.constants.SPArgument
 import com.fortune.tejiebox.event.PlayingDataChange
 import com.fortune.tejiebox.http.RetrofitUtils
@@ -139,6 +140,7 @@ class SearchGameActivity : BaseActivity() {
                             view_search_line.visibility = View.GONE
                         }
                 }
+
                 2 -> {
                     //仅有两条搜索记录
                     //1.显示两条搜索记录
@@ -183,6 +185,7 @@ class SearchGameActivity : BaseActivity() {
                             }
                         }
                 }
+
                 3 -> {
                     //仅有三条条搜索记录
                     //1.显示三条条搜索记录
@@ -242,6 +245,7 @@ class SearchGameActivity : BaseActivity() {
                             }
                         }
                 }
+
                 4 -> {
                     //仅有四条条搜索记录
                     //1.显示四条条搜索记录
@@ -316,6 +320,7 @@ class SearchGameActivity : BaseActivity() {
                             }
                         }
                 }
+
                 else -> {
                     //搜索记录大于四条
                     //1.显示前四条记录
@@ -425,10 +430,12 @@ class SearchGameActivity : BaseActivity() {
                         itemView.tv_hot_search_item_num.setTextColor(resources.getColor(R.color.red_F03D3D))
                         itemView.tv_hot_search_item_hot.setTextColor(resources.getColor(R.color.red_F03D3D))
                     }
+
                     1 -> {
                         itemView.tv_hot_search_item_num.setTextColor(resources.getColor(R.color.orange_FF774E))
                         itemView.tv_hot_search_item_hot.setTextColor(resources.getColor(R.color.orange_FF774E))
                     }
+
                     2 -> {
                         itemView.tv_hot_search_item_num.setTextColor(resources.getColor(R.color.orange_FFA855))
                         itemView.tv_hot_search_item_hot.setTextColor(resources.getColor(R.color.orange_FFA855))
@@ -603,6 +610,11 @@ class SearchGameActivity : BaseActivity() {
             .setLayoutId(R.layout.item_main_frament_game)
             .setData(searchList)
             .addBindView { itemView, itemData, position ->
+                if (VersionBean.getData()?.isShowStartGameBtn == 1) {
+                    itemView.tv_item_mainFragment_start.visibility = View.VISIBLE
+                } else {
+                    itemView.tv_item_mainFragment_start.visibility = View.GONE
+                }
                 if (itemData.game_id < 10000) {
                     Glide.with(this)
                         .load(itemData.game_cover)
@@ -660,14 +672,16 @@ class SearchGameActivity : BaseActivity() {
                             startActivity(intent)
                         } else {
                             //全部游戏,展示Dialog
-                            if (MyApp.getInstance().isHaveToken()) {
-                                toGetAllAccount(
-                                    itemData.game_id,
-                                    itemData.game_name,
-                                    itemData.game_channelId
-                                )
-                            } else {
-                                LoginUtils.toQuickLogin(this)
+                            if (VersionBean.getData()?.isShowStartGameBtn == 1) {
+                                if (MyApp.getInstance().isHaveToken()) {
+                                    toGetAllAccount(
+                                        itemData.game_id,
+                                        itemData.game_name,
+                                        itemData.game_channelId
+                                    )
+                                } else {
+                                    LoginUtils.toQuickLogin(this)
+                                }
                             }
                         }
                     }
@@ -719,10 +733,12 @@ class SearchGameActivity : BaseActivity() {
                             1 -> {
                                 DialogActivity.showGiftCode(this, giftNum)
                             }
+
                             -1 -> {
                                 ToastUtils.show(it.msg)
                                 ActivityManager.toSplashActivity(this)
                             }
+
                             else -> {
                                 ToastUtils.show(it.msg)
                             }
@@ -766,10 +782,12 @@ class SearchGameActivity : BaseActivity() {
                                     }
                                 })
                         }
+
                         -1 -> {
                             ToastUtils.show(it.msg)
                             ActivityManager.toSplashActivity(this)
                         }
+
                         else -> {
                             ToastUtils.show(it.msg)
                         }
@@ -804,10 +822,12 @@ class SearchGameActivity : BaseActivity() {
                             DialogUtils.dismissLoading()
                             toStartGame(gameId, gameChannelId, account, password)
                         }
+
                         -1 -> {
                             ToastUtils.show(it.msg)
                             ActivityManager.toSplashActivity(this)
                         }
+
                         else -> {
                             ToastUtils.show(it.msg)
                         }
@@ -847,10 +867,12 @@ class SearchGameActivity : BaseActivity() {
                                     null
                                 )
                             }
+
                             -1 -> {
                                 ToastUtils.show(it.msg)
                                 ActivityManager.toSplashActivity(this)
                             }
+
                             else -> {
                                 ToastUtils.show(it.msg)
                             }
@@ -908,10 +930,12 @@ class SearchGameActivity : BaseActivity() {
                                     gameStyle
                                 )
                             }
+
                             -1 -> {
                                 ToastUtils.show(it.msg)
                                 ActivityManager.toSplashActivity(this)
                             }
+
                             else -> {
                                 ToastUtils.show(it.msg)
                             }
@@ -1022,10 +1046,12 @@ class SearchGameActivity : BaseActivity() {
                                     }
                                 }
                             }
+
                             -1 -> {
                                 it.msg.let { it1 -> ToastUtils.show(it1) }
                                 ActivityManager.toSplashActivity(this)
                             }
+
                             else -> {
                                 it.msg.let { it1 -> ToastUtils.show(it1) }
                             }
@@ -1075,6 +1101,7 @@ class SearchGameActivity : BaseActivity() {
                             }
                             hotSearchAdapter.notifyDataSetChanged()
                         }
+
                         -1 -> {
                             it.getMsg()?.let { it1 -> ToastUtils.show(it1) }
                             ActivityManager.toSplashActivity(this)

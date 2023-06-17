@@ -15,15 +15,22 @@ import com.fortune.tejiebox.R
 import com.fortune.tejiebox.activity.IdCardActivity
 import com.fortune.tejiebox.activity.ProcessActivity
 import com.fortune.tejiebox.adapter.BaseAdapterWithPosition
-import com.fortune.tejiebox.base.BaseAppUpdateSetting
 import com.fortune.tejiebox.bean.AllAccountBean
 import com.fortune.tejiebox.bean.BaseGameListInfoBean
 import com.fortune.tejiebox.bean.GameInfo4ClipboardBean
+import com.fortune.tejiebox.bean.VersionBean
 import com.fortune.tejiebox.constants.SPArgument
 import com.fortune.tejiebox.event.PlayingDataChange
 import com.fortune.tejiebox.http.RetrofitUtils
 import com.fortune.tejiebox.myapp.MyApp
-import com.fortune.tejiebox.utils.*
+import com.fortune.tejiebox.utils.ActivityManager
+import com.fortune.tejiebox.utils.Box2GameUtils
+import com.fortune.tejiebox.utils.DialogUtils
+import com.fortune.tejiebox.utils.HttpExceptionUtils
+import com.fortune.tejiebox.utils.LogUtils
+import com.fortune.tejiebox.utils.LoginUtils
+import com.fortune.tejiebox.utils.SPUtils
+import com.fortune.tejiebox.utils.ToastUtils
 import com.fortune.tejiebox.widget.SafeStaggeredGridLayoutManager
 import com.google.gson.Gson
 import com.jakewharton.rxbinding2.view.RxView
@@ -36,8 +43,14 @@ import io.reactivex.Observable
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.Disposable
 import io.reactivex.schedulers.Schedulers
-import kotlinx.android.synthetic.main.fragment_game.view.*
-import kotlinx.android.synthetic.main.item_game_fragment_more_game.view.*
+import kotlinx.android.synthetic.main.fragment_game.view.ll_gameFragment_search
+import kotlinx.android.synthetic.main.fragment_game.view.refresh_gameFragment_game
+import kotlinx.android.synthetic.main.fragment_game.view.rl_gameFragment_title
+import kotlinx.android.synthetic.main.fragment_game.view.rv_gameFragment_game
+import kotlinx.android.synthetic.main.fragment_game.view.tv_gameFragment_cancel
+import kotlinx.android.synthetic.main.fragment_game.view.tv_gameFragment_nothing
+import kotlinx.android.synthetic.main.fragment_game.view.tv_gameFragment_title
+import kotlinx.android.synthetic.main.item_game_fragment_more_game.view.tv_item_gameFragment_name
 import org.greenrobot.eventbus.EventBus
 import java.util.concurrent.TimeUnit
 
@@ -78,6 +91,10 @@ class MoreGameFragment : Fragment() {
         getGameList(true)
         return mView
     }
+    /**
+     * 这是一个时间工具累
+     *
+     */
 
     /**
      * 初始化布局
@@ -98,7 +115,8 @@ class MoreGameFragment : Fragment() {
                 RxView.clicks(itemView)
                     .throttleFirst(200, TimeUnit.MILLISECONDS)
                     .subscribe {
-                        if (BaseAppUpdateSetting.isShangJiaVersion) {
+//                        if (BaseAppUpdateSetting.isShangJiaVersion) {
+                        if (VersionBean.getData()?.isShowStartGameBtn == 0) {
                             return@subscribe
                         }
                         if (MyApp.getInstance().isHaveToken()) {
@@ -119,7 +137,8 @@ class MoreGameFragment : Fragment() {
             it.setItemViewCacheSize(20)
             it.isDrawingCacheEnabled = true
             it.drawingCacheQuality = View.DRAWING_CACHE_QUALITY_HIGH
-            (it.itemAnimator as SimpleItemAnimator).supportsChangeAnimations = false //取消默认动画
+            (it.itemAnimator as SimpleItemAnimator).supportsChangeAnimations =
+                false //取消默认动画
             it.adapter = mAdapter
             it.layoutManager = SafeStaggeredGridLayoutManager(4, OrientationHelper.VERTICAL)
         }
@@ -190,15 +209,20 @@ class MoreGameFragment : Fragment() {
                                         toStartGame(gameId, gameChannelId, null, null)
                                     }
 
-                                    override fun accountStart(account: String, password: String) {
+                                    override fun accountStart(
+                                        account: String,
+                                        password: String
+                                    ) {
                                         toSaveAccount(gameId, gameChannelId, account, password)
                                     }
                                 })
                         }
+
                         -1 -> {
                             ToastUtils.show(it.msg)
                             ActivityManager.toSplashActivity(requireActivity())
                         }
+
                         else -> {
                             ToastUtils.show(it.msg)
                         }
@@ -233,10 +257,12 @@ class MoreGameFragment : Fragment() {
                             DialogUtils.dismissLoading()
                             toStartGame(gameId, gameChannelId, account, password)
                         }
+
                         -1 -> {
                             ToastUtils.show(it.msg)
                             ActivityManager.toSplashActivity(requireActivity())
                         }
+
                         else -> {
                             ToastUtils.show(it.msg)
                         }
@@ -253,7 +279,12 @@ class MoreGameFragment : Fragment() {
     /**
      * 启动游戏
      */
-    private fun toStartGame(gameId: Int, gameChannel: String, account: String?, password: String?) {
+    private fun toStartGame(
+        gameId: Int,
+        gameChannel: String,
+        account: String?,
+        password: String?
+    ) {
         val isHaveId = SPUtils.getInt(SPArgument.IS_HAVE_ID)
         if (isHaveId == 1) {
             DialogUtils.showBeautifulDialog(requireContext())
@@ -267,7 +298,12 @@ class MoreGameFragment : Fragment() {
                         when (it.code) {
                             1 -> {
                                 //起个子线程的页面
-                                startActivity(Intent(requireContext(), ProcessActivity::class.java))
+                                startActivity(
+                                    Intent(
+                                        requireContext(),
+                                        ProcessActivity::class.java
+                                    )
+                                )
 
                                 EventBus.getDefault().post(PlayingDataChange(""))
                                 if (account == null) {
@@ -284,10 +320,12 @@ class MoreGameFragment : Fragment() {
                                     )
                                 }
                             }
+
                             -1 -> {
                                 ToastUtils.show(it.msg)
                                 ActivityManager.toSplashActivity(requireActivity())
                             }
+
                             else -> {
                                 ToastUtils.show(it.msg)
                             }
@@ -368,10 +406,12 @@ class MoreGameFragment : Fragment() {
                                     getGameList(needLoading = false)
                                 }
                             }
+
                             -1 -> {
                                 ToastUtils.show(it.msg)
                                 ActivityManager.toSplashActivity(requireActivity())
                             }
+
                             else -> {
                                 ToastUtils.show(it.msg)
                             }

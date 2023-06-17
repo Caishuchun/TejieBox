@@ -19,8 +19,8 @@ import com.bumptech.glide.load.engine.DiskCacheStrategy
 import com.fortune.tejiebox.R
 import com.fortune.tejiebox.adapter.BaseAdapterWithPosition
 import com.fortune.tejiebox.base.BaseActivity
-import com.fortune.tejiebox.base.BaseAppUpdateSetting
 import com.fortune.tejiebox.bean.GameInfoBean
+import com.fortune.tejiebox.bean.VersionBean
 import com.fortune.tejiebox.constants.SPArgument
 import com.fortune.tejiebox.event.LikeDataChange
 import com.fortune.tejiebox.event.PlayingDataChange
@@ -259,10 +259,12 @@ class GameDetailActivity : BaseActivity() {
                                     gameStyle
                                 )
                             }
+
                             -1 -> {
                                 ToastUtils.show(it.msg)
                                 ActivityManager.toSplashActivity(this)
                             }
+
                             else -> {
                                 ToastUtils.show(it.msg)
                             }
@@ -316,10 +318,12 @@ class GameDetailActivity : BaseActivity() {
                                 else Color.parseColor("#534F64")
                             )
                         }
+
                         -1 -> {
                             ToastUtils.show(it.msg)
                             ActivityManager.toSplashActivity(this)
                         }
+
                         else -> {
                             ToastUtils.show(it.msg)
                         }
@@ -344,9 +348,11 @@ class GameDetailActivity : BaseActivity() {
                     v.onTouchEvent(event)
                     return true
                 }
+
                 MotionEvent.ACTION_MOVE -> {
                     v.parent.requestDisallowInterceptTouchEvent(true)
                 }
+
                 MotionEvent.ACTION_UP, MotionEvent.ACTION_CANCEL -> {
                     v.parent.requestDisallowInterceptTouchEvent(false)
                 }
@@ -377,11 +383,13 @@ class GameDetailActivity : BaseActivity() {
                             gameStyle = it.data.game_style
                             toInitView(data)
                         }
+
                         -1 -> {
                             DialogUtils.dismissLoading()
                             it.msg?.let { it1 -> ToastUtils.show(it1) }
                             ActivityManager.toSplashActivity(this)
                         }
+
                         else -> {
                             DialogUtils.dismissLoading()
                             it.msg?.let { it1 -> ToastUtils.show(it1) }
@@ -517,7 +525,7 @@ class GameDetailActivity : BaseActivity() {
             val gameOpenTimes = info.game_open_times[0]
             val serverNameAndTime = getServerNameAndTime(gameOpenTimes)
             tv_detail_open_date1.text = serverNameAndTime[0]
-            tv_detail_open_time2.text = serverNameAndTime[1]
+            tv_detail_open_time1.text = serverNameAndTime[1]
             val openTime = serverNameAndTime[1]
                 .replace("今日", "")
                 .replace(" ", "")
@@ -585,15 +593,17 @@ class GameDetailActivity : BaseActivity() {
             ll_detail_bottom_tab.visibility = View.VISIBLE
             space_detail_bottom_tab.visibility = View.VISIBLE
 
-            if (BaseAppUpdateSetting.isShangJiaVersion) {
+            if (VersionBean.getData()?.isShowStartGameBtn == 0) {
                 ll_detail_start.visibility = View.GONE
-                space_detail_button.visibility = View.GONE           }
-
+                space_detail_button.visibility = View.GONE
+            }
         } else {
+            ll_detail_bottom_tab.visibility = View.VISIBLE
+
             ll_detail_integral.visibility = View.GONE
             space_detail_button.visibility = View.GONE
 
-            if (BaseAppUpdateSetting.isShangJiaVersion) {
+            if (VersionBean.getData()?.isShowStartGameBtn == 0) {
                 ll_detail_bottom_tab.visibility = View.GONE
                 space_detail_bottom_tab.visibility = View.GONE
             }

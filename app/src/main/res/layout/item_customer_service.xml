@@ -23,7 +23,7 @@
             android:id="@+id/tv_item_customerService_left_msg"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginEnd="@dimen/dp_10"
+            android:layout_marginEnd="@dimen/dp_5"
             android:background="@drawable/bubble_left"
             android:maxWidth="@dimen/dp_250"
             android:paddingStart="@dimen/dp_20"
@@ -67,7 +67,7 @@
             android:id="@+id/tv_item_customerService_right_msg"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginStart="@dimen/dp_10"
+            android:layout_marginStart="@dimen/dp_5"
             android:background="@drawable/bubble_right"
             android:maxWidth="@dimen/dp_250"
             android:paddingStart="@dimen/dp_10"
@@ -104,7 +104,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginStart="@dimen/dp_13"
-            android:layout_marginEnd="@dimen/dp_10">
+            android:layout_marginEnd="@dimen/dp_5">
 
             <com.fortune.tejiebox.widget.RoundImageView
                 android:id="@+id/iv_item_customerService_left_img"
@@ -150,7 +150,7 @@
             android:id="@+id/rl_item_customerService_right_img"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginStart="@dimen/dp_13"
+            android:layout_marginStart="@dimen/dp_5"
             android:layout_marginEnd="@dimen/dp_10">
 
             <com.fortune.tejiebox.widget.RoundImageView

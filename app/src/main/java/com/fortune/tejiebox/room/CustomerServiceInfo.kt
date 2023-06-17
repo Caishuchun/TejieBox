@@ -33,7 +33,7 @@ class CustomerServiceInfo(
     //时间戳
     @ColumnInfo(name = "chat_time") val chat_time: Long,
 
-    //是否是已读消息 0-未读 1-已读
+    //是否是已读消息 0-未读 1-已读    -1 正在发送 -2 发送失败
     @ColumnInfo(name = "is_read") var is_read: Int,
 
     @PrimaryKey(autoGenerate = true)

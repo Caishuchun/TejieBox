@@ -60,10 +60,12 @@ class MineFragment : Fragment() {
                         it.text = "未绑定手机号"
                         it.setTextColor(Color.parseColor("#FF982E"))
                     }
+
                     account.isNullOrBlank() -> {
                         it.text = "未绑定账号"
                         it.setTextColor(Color.parseColor("#FF982E"))
                     }
+
                     else -> {
                         it.text = "已绑定"
                         it.setTextColor(Color.parseColor("#5F60FF"))
@@ -170,9 +172,9 @@ class MineFragment : Fragment() {
 
         mView?.ll_mineFragment_privacy?.let {
             RxView.clicks(it)
-                .throttleFirst(200,TimeUnit.MILLISECONDS)
+                .throttleFirst(200, TimeUnit.MILLISECONDS)
                 .subscribe {
-                    startActivity(Intent(requireContext(),PrivacyActivity::class.java))
+                    startActivity(Intent(requireContext(), PrivacyActivity::class.java))
                 }
         }
 
@@ -208,6 +210,17 @@ class MineFragment : Fragment() {
                     }
                 }
         }
+
+        mView?.ll_mineFragment_share?.let {
+            RxView.clicks(it)
+                .throttleFirst(200, TimeUnit.MILLISECONDS)
+                .subscribe {
+                    ShareJumpUtils.showDefaultDialog(
+                        requireActivity(),
+                        message = "免费充值天天送，好玩的服处处有 点击下载${resources.getString(R.string.app_name)}: https://www.69t.top",
+                    )
+                }
+        }
     }
 
     @SuppressLint("SetTextI18n")
@@ -225,10 +238,12 @@ class MineFragment : Fragment() {
                         it.text = "未绑定手机号"
                         it.setTextColor(Color.parseColor("#FF982E"))
                     }
+
                     account.isNullOrBlank() -> {
                         it.text = "未绑定账号"
                         it.setTextColor(Color.parseColor("#FF982E"))
                     }
+
                     else -> {
                         it.text = "已绑定"
                         it.setTextColor(Color.parseColor("#5F60FF"))
@@ -314,10 +329,12 @@ class MineFragment : Fragment() {
                             it.text = "未绑定手机号"
                             it.setTextColor(Color.parseColor("#FF982E"))
                         }
+
                         account.isNullOrBlank() -> {
                             it.text = "未绑定账号"
                             it.setTextColor(Color.parseColor("#FF982E"))
                         }
+
                         else -> {
                             it.text = "已绑定"
                             it.setTextColor(Color.parseColor("#5F60FF"))
@@ -342,10 +359,12 @@ class MineFragment : Fragment() {
                         it.text = "未绑定手机号"
                         it.setTextColor(Color.parseColor("#FF982E"))
                     }
+
                     account.isNullOrBlank() -> {
                         it.text = "未绑定账号"
                         it.setTextColor(Color.parseColor("#FF982E"))
                     }
+
                     else -> {
                         it.text = "已绑定"
                         it.setTextColor(Color.parseColor("#5F60FF"))

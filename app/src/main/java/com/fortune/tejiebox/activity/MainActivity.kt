@@ -149,8 +149,7 @@ class MainActivity : BaseActivity() {
         } else {
             ToastUtils.show(getString(R.string.double_click_quit))
             canQuit = true
-            Observable.timer(2, TimeUnit.SECONDS)
-                .subscribe {
+            Observable.timer(2, TimeUnit.SECONDS).subscribe {
                     canQuit = false
                 }
         }
@@ -198,42 +197,44 @@ class MainActivity : BaseActivity() {
      */
     private fun toCheckCanGetIntegral() {
         val canGetIntegral = RetrofitUtils.builder().canGetIntegral()
-        canGetIntegralObservable = canGetIntegral.subscribeOn(Schedulers.io())
-            .observeOn(AndroidSchedulers.mainThread())
-            .subscribe({
-                if (it != null) {
-                    when (it.code) {
-                        1 -> {
-                            val data = it.data
-                            if (null != data) {
-                                if (data.daily_clock_in == 1 || data.limit_time == 1 || data.invite == 1) {
-                                    //取消了这里进入App后主动弹出余额页面的功能
+        canGetIntegralObservable =
+            canGetIntegral.subscribeOn(Schedulers.io()).observeOn(AndroidSchedulers.mainThread())
+                .subscribe({
+                    if (it != null) {
+                        when (it.code) {
+                            1 -> {
+                                val data = it.data
+                                if (null != data) {
+                                    if (data.daily_clock_in == 1 || data.limit_time == 1 || data.invite == 1) {
+                                        //取消了这里进入App后主动弹出余额页面的功能
 //                                    if (null != data.is_click && data.is_click == 0) {
 //                                        startActivity(Intent(this, GiftActivity::class.java))
 //                                    }
-                                    EventBus.getDefault().postSticky(RedPointChange(true))
-                                    tab_main.showRedPoint(true)
-                                } else {
-                                    EventBus.getDefault().postSticky(RedPointChange(false))
-                                    tab_main.showRedPoint(false)
+                                        EventBus.getDefault().postSticky(RedPointChange(true))
+                                        tab_main.showRedPoint(true)
+                                    } else {
+                                        EventBus.getDefault().postSticky(RedPointChange(false))
+                                        tab_main.showRedPoint(false)
+                                    }
                                 }
                             }
+
+                            -1 -> {
+                                ToastUtils.show(it.msg)
+                                ActivityManager.toSplashActivity(this)
+                            }
+
+                            else -> {
+                                ToastUtils.show(it.msg)
+                            }
                         }
-                        -1 -> {
-                            ToastUtils.show(it.msg)
-                            ActivityManager.toSplashActivity(this)
-                        }
-                        else -> {
-                            ToastUtils.show(it.msg)
-                        }
+                    } else {
+                        ToastUtils.show(getString(R.string.network_fail_to_responseDate))
                     }
-                } else {
-                    ToastUtils.show(getString(R.string.network_fail_to_responseDate))
-                }
-            }, {
-                LogUtils.d("fail=>${it.message.toString()}")
-                ToastUtils.show(HttpExceptionUtils.getExceptionMsg(this, it))
-            })
+                }, {
+                    LogUtils.d("fail=>${it.message.toString()}")
+                    ToastUtils.show(HttpExceptionUtils.getExceptionMsg(this, it))
+                })
     }
 
     override fun onAttachFragment(fragment: Fragment) {
@@ -251,24 +252,19 @@ class MainActivity : BaseActivity() {
 
     @SuppressLint("CheckResult")
     private fun initView() {
-        supportFragmentManager.beginTransaction()
-            .add(R.id.fl_main, mainFragment!!)
-            .commit()
+        supportFragmentManager.beginTransaction().add(R.id.fl_main, mainFragment!!).commit()
 
         val data = VersionBean.getData()
         if (data != null) {
-            val isNeedUpdateDialog =
-                SPUtils.getBoolean(SPArgument.IS_NEED_UPDATE_DIALOG, false)
+            val isNeedUpdateDialog = SPUtils.getBoolean(SPArgument.IS_NEED_UPDATE_DIALOG, false)
             if (isNeedUpdateDialog) {
                 SPUtils.putValue(SPArgument.IS_NEED_UPDATE_DIALOG, false)
-                VersionDialog.show(
-                    this@MainActivity,
+                VersionDialog.show(this@MainActivity,
                     data.update_msg.toString(),
                     object : VersionDialog.OnUpdateAPP {
                         override fun onUpdate() {
                         }
-                    }
-                )
+                    })
             } else {
                 if (data.notice != null && data.notice?.contains("@") == true) {
                     val noticeId = data.notice!!.split("@")[0].toInt()
@@ -276,29 +272,23 @@ class MainActivity : BaseActivity() {
                     val currentNoticeId = SPUtils.getInt(SPArgument.NOTICE_ID, -1)
                     if (noticeId > currentNoticeId) {
                         SPUtils.putValue(SPArgument.NOTICE_ID, noticeId)
-                        VersionDialog.show(
-                            this@MainActivity,
+                        VersionDialog.show(this@MainActivity,
                             noticeStr,
                             object : VersionDialog.OnUpdateAPP {
                                 override fun onUpdate() {
                                 }
-                            }
-                        )
+                            })
                     }
                 }
             }
         }
 
-        RxView.clicks(tv_know)
-            .throttleFirst(200, TimeUnit.MILLISECONDS)
-            .subscribe {
+        RxView.clicks(tv_know).throttleFirst(200, TimeUnit.MILLISECONDS).subscribe {
                 SPUtils.putValue(SPArgument.IS_NEED_SHADE_NEW, false)
                 ll_shade_root.visibility = View.GONE
             }
 
-        RxView.clicks(ll_shade_root)
-            .throttleFirst(200, TimeUnit.MILLISECONDS)
-            .subscribe {
+        RxView.clicks(ll_shade_root).throttleFirst(200, TimeUnit.MILLISECONDS).subscribe {
                 //作用就是,禁止点击遮罩层下面的东西
             }
 
@@ -340,23 +330,22 @@ class MainActivity : BaseActivity() {
             if (BaseAppUpdateSetting.isToPromoteVersion) 1
             else null
         )
-        getSplashUrlObservable = getSplashUrl.subscribeOn(Schedulers.io())
-            .observeOn(AndroidSchedulers.mainThread())
-            .subscribe({
-                if (it != null) {
-                    when (it.code) {
-                        1 -> {
-                            if (it.data.isNotEmpty()) {
-                                splashUrlList.addAll(it.data)
-                                toCheckSplashImg()
-                            } else {
-                                toDeleteAllSplashImg()
+        getSplashUrlObservable =
+            getSplashUrl.subscribeOn(Schedulers.io()).observeOn(AndroidSchedulers.mainThread())
+                .subscribe({
+                    if (it != null) {
+                        when (it.code) {
+                            1 -> {
+                                if (it.data.isNotEmpty()) {
+                                    splashUrlList.addAll(it.data)
+                                    toCheckSplashImg()
+                                } else {
+                                    toDeleteAllSplashImg()
+                                }
                             }
                         }
                     }
-                }
-            }, {
-            })
+                }, {})
     }
 
     /**
@@ -419,14 +408,9 @@ class MainActivity : BaseActivity() {
             val fileName = splashUrl.substring(splashUrl.lastIndexOf("/") + 1)
             fileNameList.add(fileName)
         }
-        Aria.download(this)
-            .loadGroup(splashUrlList)
-            .setDirPath(splashDir.path)
-            .setSubFileName(fileNameList)
-            .unknownSize()
-            .ignoreFilePathOccupy()
-            .ignoreCheckPermissions()
-            .create()
+        Aria.download(this).loadGroup(splashUrlList).setDirPath(splashDir.path)
+            .setSubFileName(fileNameList).unknownSize().ignoreFilePathOccupy()
+            .ignoreCheckPermissions().create()
     }
 
     /**
@@ -478,14 +462,10 @@ class MainActivity : BaseActivity() {
             val endTime = split[2].toLong()
 //            if (endTime - startTime >= 1 * 60 * 1000) {
             val updateGameTimeInfo = RetrofitUtils.builder().updateGameTimeInfo(
-                gameId,
-                startTime.toString(),
-                endTime.toString()
+                gameId, startTime.toString(), endTime.toString()
             )
             updateGameTimeInfoObservable = updateGameTimeInfo.subscribeOn(Schedulers.io())
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribe({
-                }, {})
+                .observeOn(AndroidSchedulers.mainThread()).subscribe({}, {})
 //            }
         }
         SPUtils.putValue(SPArgument.GAME_TIME_INFO, null)
@@ -510,14 +490,17 @@ class MainActivity : BaseActivity() {
                     tab_main.setCurrentItem(0)
                     toChangeFragment(0)
                 }
+
                 MainPage.PLAYING -> {
                     tab_main.setCurrentItem(1)
                     toChangeFragment(1)
                 }
+
                 MainPage.ALL -> {
                     tab_main.setCurrentItem(2)
                     toChangeFragment(2)
                 }
+
                 MainPage.ME -> {
                     tab_main.setCurrentItem(3)
                     toChangeFragment(3)
@@ -577,8 +560,7 @@ class MainActivity : BaseActivity() {
                     LogUtils.d("==========================OpenInstall_data: ${Gson().toJson(appData)}")
                     if (appData.data != "") {
                         //data不为空
-                        val dataInfo =
-                            Gson().fromJson(appData.data, OpenInstallBean::class.java)
+                        val dataInfo = Gson().fromJson(appData.data, OpenInstallBean::class.java)
                         dealOpenInstallInfo(dataInfo.i, isLogined)
                     } else {
                         LogUtils.d("==========================OpenInstall_data is null")
@@ -678,6 +660,7 @@ class MainActivity : BaseActivity() {
                             LoginUtils.toQuickLogin(this)
                         }
                     }
+
                     map["type"] == 2 -> {
                         //2.游戏内跳转下载
                         LogUtils.d("==========================TJ_map[\"type\"] == 2")
@@ -705,6 +688,7 @@ class MainActivity : BaseActivity() {
                             toGetGameInfo(gameInfo4ClipboardBean.version)
                         }
                     }
+
                     map["type"] == 3 -> {
                         //3.GM分享
                         LogUtils.d("==========================TJ_map[\"type\"] == 3")
@@ -719,6 +703,7 @@ class MainActivity : BaseActivity() {
                             mainFragment?.openGameDetailActivity(gameId)
                         }
                     }
+
                     else -> {
                         LogUtils.d("==========================TJ_type is not available")
                     }
@@ -736,10 +721,9 @@ class MainActivity : BaseActivity() {
      */
     private fun toGetGameInfo(channelId: String) {
         val getGameId = RetrofitUtils.builder().getGameId(channelId)
-        getGameIdObservable = getGameId.subscribeOn(Schedulers.io())
-            .observeOn(AndroidSchedulers.mainThread())
-            .subscribe(
-                {
+        getGameIdObservable =
+            getGameId.subscribeOn(Schedulers.io()).observeOn(AndroidSchedulers.mainThread())
+                .subscribe({
                     if (it.code == 1 && it.data != null && it.data.game_id != null) {
                         if (it.data.game_id < 10000) {
                             //上架游戏
@@ -769,45 +753,50 @@ class MainActivity : BaseActivity() {
 
     /**
      * 获取客服回复信息
+     * 仅请求的时候获取当前和上次请求之间的数据
      */
     private fun toGetCustomerServiceInfo() {
         val getMsg = RetrofitUtils.builder().getMsg()
-        getReCustomerInfoObservable = getMsg.subscribeOn(Schedulers.io())
-            .observeOn(AndroidSchedulers.mainThread())
-            .subscribe({
-                when (it.code) {
-                    1 -> {
-                        val dataBase = CustomerServiceInfoDataBase.getDataBase(this)
-                        val customerServiceInfoDao = dataBase.customerServiceInfoDao()
-                        if (it.data.isNotEmpty()) {
-                            for (data in it.data) {
-                                val customerServiceInfo = CustomerServiceInfo(
-                                    data.id, 0, data.type,
-                                    if (data.type == 1) data.content else null,
-                                    if (data.type == 2) data.content else null,
-                                    data.img_width, data.img_height,
-                                    data.create_stamp,
-                                    0
-                                )
-                                customerServiceInfoDao.addInfo(customerServiceInfo)
+        getReCustomerInfoObservable =
+            getMsg.subscribeOn(Schedulers.io()).observeOn(AndroidSchedulers.mainThread())
+                .subscribe({
+                    when (it.code) {
+                        1 -> {
+                            val dataBase = CustomerServiceInfoDataBase.getDataBase(this)
+                            val customerServiceInfoDao = dataBase.customerServiceInfoDao()
+                            if (it.data.isNotEmpty()) {
+                                for (data in it.data) {
+                                    val customerServiceInfo = CustomerServiceInfo(
+                                        data.id,
+                                        0,
+                                        data.type,
+                                        if (data.type == 1) data.content else null,
+                                        if (data.type == 2) data.content else null,
+                                        data.img_width,
+                                        data.img_height,
+                                        data.create_stamp,
+                                        0
+                                    )
+                                    customerServiceInfoDao.addInfo(customerServiceInfo)
+                                }
                             }
-                        }
-                        val all = customerServiceInfoDao.all
-                        var notRead = 0
-                        for (info in all) {
-                            if (info.is_read == 0) {
-                                notRead++
+                            val all = customerServiceInfoDao.all
+                            var notRead = 0
+                            for (info in all) {
+                                if (info.is_read == 0) {
+                                    notRead++
+                                }
                             }
+                            tab_main.showMsgNum(notRead)
+                            EventBus.getDefault().postSticky(ShowNumChange(notRead))
                         }
-                        tab_main.showMsgNum(notRead)
-                        EventBus.getDefault().postSticky(ShowNumChange(notRead))
+
+                        -1 -> {
+                            ToastUtils.show(it.msg)
+                            ActivityManager.toSplashActivity(this)
+                        }
                     }
-                    -1 -> {
-                        ToastUtils.show(it.msg)
-                        ActivityManager.toSplashActivity(this)
-                    }
-                }
-            }, {})
+                }, {})
     }
 
     /**
@@ -834,55 +823,51 @@ class MainActivity : BaseActivity() {
                 mainPage = MainPage.MAIN
                 hideAll()
                 currentFragment = mainFragment
-                supportFragmentManager.beginTransaction()
-                    .show(currentFragment!!)
+                supportFragmentManager.beginTransaction().show(currentFragment!!)
                     .commitAllowingStateLoss()
             }
+
             1 -> {
                 mainPage = MainPage.PLAYING
                 hideAll()
                 if (null == playingFragment) {
                     playingFragment = PlayingAndCollectionFatherFragment.newInstance()
                     currentFragment = playingFragment
-                    supportFragmentManager.beginTransaction()
-                        .add(R.id.fl_main, currentFragment!!)
+                    supportFragmentManager.beginTransaction().add(R.id.fl_main, currentFragment!!)
                         .commitAllowingStateLoss()
                 } else {
                     currentFragment = playingFragment
-                    supportFragmentManager.beginTransaction()
-                        .show(currentFragment!!)
+                    supportFragmentManager.beginTransaction().show(currentFragment!!)
                         .commitAllowingStateLoss()
                 }
             }
+
             2 -> {
                 mainPage = MainPage.ALL
                 hideAll()
                 if (null == moreGameFragment) {
                     moreGameFragment = MoreGameFragment.newInstance()
                     currentFragment = moreGameFragment
-                    supportFragmentManager.beginTransaction()
-                        .add(R.id.fl_main, currentFragment!!)
+                    supportFragmentManager.beginTransaction().add(R.id.fl_main, currentFragment!!)
                         .commitAllowingStateLoss()
                 } else {
                     currentFragment = moreGameFragment
-                    supportFragmentManager.beginTransaction()
-                        .show(currentFragment!!)
+                    supportFragmentManager.beginTransaction().show(currentFragment!!)
                         .commitAllowingStateLoss()
                 }
             }
+
             3 -> {
                 mainPage = MainPage.ME
                 hideAll()
                 if (null == mineFragment) {
                     mineFragment = MineFragment.newInstance()
                     currentFragment = mineFragment
-                    supportFragmentManager.beginTransaction()
-                        .add(R.id.fl_main, currentFragment!!)
+                    supportFragmentManager.beginTransaction().add(R.id.fl_main, currentFragment!!)
                         .commitAllowingStateLoss()
                 } else {
                     currentFragment = mineFragment
-                    supportFragmentManager.beginTransaction()
-                        .show(currentFragment!!)
+                    supportFragmentManager.beginTransaction().show(currentFragment!!)
                         .commitAllowingStateLoss()
                 }
             }
@@ -893,12 +878,9 @@ class MainActivity : BaseActivity() {
      * 隐藏掉所有东西
      */
     private fun hideAll() {
-        supportFragmentManager.beginTransaction()
-            .hide(mainFragment!!)
-            .hide(playingFragment ?: mainFragment!!)
-            .hide(moreGameFragment ?: mainFragment!!)
-            .hide(mineFragment ?: mainFragment!!)
-            .commitAllowingStateLoss()
+        supportFragmentManager.beginTransaction().hide(mainFragment!!)
+            .hide(playingFragment ?: mainFragment!!).hide(moreGameFragment ?: mainFragment!!)
+            .hide(mineFragment ?: mainFragment!!).commitAllowingStateLoss()
     }
 
     override fun destroy() {
@@ -937,9 +919,7 @@ class MainActivity : BaseActivity() {
             val animationSet = AnimationSet(true)
             val alphaAnimation = AlphaAnimation(0f, 1f)
             val scaleAnimation = ScaleAnimation(
-                0f, 1f, 0.1f, 1f,
-                Animation.RELATIVE_TO_SELF, 0.5f,
-                Animation.RELATIVE_TO_SELF, 1f
+                0f, 1f, 0.1f, 1f, Animation.RELATIVE_TO_SELF, 0.5f, Animation.RELATIVE_TO_SELF, 1f
             )
             animationSet.addAnimation(alphaAnimation)
             animationSet.addAnimation(scaleAnimation)
@@ -972,20 +952,19 @@ class MainActivity : BaseActivity() {
         textFontChangeObservable = null
         var currentIndex = -1
         val textFont = "刚玩的游戏在这里"
-        textFontChangeObservable = Observable.interval(200, TimeUnit.MILLISECONDS)
-            .subscribeOn(Schedulers.io())
-            .observeOn(AndroidSchedulers.mainThread())
-            .subscribe {
-                currentIndex += 1
-                if (currentIndex > 0 && currentIndex <= textFont.length) {
-                    tv_main_tip.text = textFont.substring(0, currentIndex)
-                } else if (currentIndex == textFont.length * 3) {
-                    textFontChangeObservable?.dispose()
-                    textFontChangeObservable = null
-                    tv_main_tip.text = "点击这里查看在玩"
-                    tv_main_tip.startAnimation(animationSet)
+        textFontChangeObservable =
+            Observable.interval(200, TimeUnit.MILLISECONDS).subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread()).subscribe {
+                    currentIndex += 1
+                    if (currentIndex > 0 && currentIndex <= textFont.length) {
+                        tv_main_tip.text = textFont.substring(0, currentIndex)
+                    } else if (currentIndex == textFont.length * 3) {
+                        textFontChangeObservable?.dispose()
+                        textFontChangeObservable = null
+                        tv_main_tip.text = "点击这里查看在玩"
+                        tv_main_tip.startAnimation(animationSet)
+                    }
                 }
-            }
     }
 
     override fun onResume() {

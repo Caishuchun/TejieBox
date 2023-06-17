@@ -127,6 +127,7 @@ class AccountLoginFragment : Fragment() {
                     } else {
                         DialogUtils.showAgreementDialog(
                             requireContext(),
+                            false,
                             object : DialogUtils.OnDialogListener {
                                 override fun next() {
                                     mView?.cb_account_login?.isChecked = true

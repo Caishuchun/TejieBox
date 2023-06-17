@@ -20,9 +20,15 @@ object BaseAppUpdateSetting {
     const val appType = true
 
     /**
-     * 是否是上架版本
+     * 上架市场渠道
+     * @param 0 代表默认
+     * @param 1 代表应用宝
+     * @param 2 代表华为
+     * @param 3 代表小米
+     * @param 4 代表vivo
+     * @param 5 代表oppo
      */
-    const val isShangJiaVersion = false
+    const val marketChannel = 0
 
     /**
      * 网络请求标志, 热更包版本

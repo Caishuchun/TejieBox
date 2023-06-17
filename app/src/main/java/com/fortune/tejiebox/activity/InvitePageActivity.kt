@@ -142,7 +142,6 @@ class InvitePageActivity : BaseActivity() {
             if (file.exists() && file.length() > 100) {
                 runOnUiThread {
                     ShareJumpUtils.showDefaultDialog(this, bitmapFilePath = file.path)
-//                    ShareUtils.shareImage(this, bitmap)
                 }
             }
 //            try {

@@ -18,7 +18,6 @@ import android.widget.TextView
 import com.fortune.tejiebox.R
 import com.fortune.tejiebox.activity.WebActivity
 import com.fortune.tejiebox.adapter.BaseAdapterWithPosition
-import com.fortune.tejiebox.base.BaseAppUpdateSetting
 import com.fortune.tejiebox.base.BaseDialog
 import com.fortune.tejiebox.bean.AllAccountBean
 import com.fortune.tejiebox.constants.SPArgument
@@ -27,13 +26,34 @@ import com.jakewharton.rxbinding2.view.RxView
 import com.jakewharton.rxbinding2.widget.RxTextView
 import com.snail.antifake.jni.EmulatorDetectUtil
 import io.reactivex.disposables.Disposable
-import kotlinx.android.synthetic.main.dialog_beautiful.*
-import kotlinx.android.synthetic.main.dialog_loading.*
-import kotlinx.android.synthetic.main.item_popup_account.view.*
-import kotlinx.android.synthetic.main.layout_dialog_agreement.*
-import kotlinx.android.synthetic.main.layout_dialog_default.*
-import kotlinx.android.synthetic.main.layout_dialog_start_game.*
-import kotlinx.android.synthetic.main.popupwindow_account.view.*
+import kotlinx.android.synthetic.main.dialog_beautiful.av_dialog
+import kotlinx.android.synthetic.main.dialog_loading.tv_dialog_message
+import kotlinx.android.synthetic.main.item_popup_account.view.tv_item_popup_account
+import kotlinx.android.synthetic.main.layout_dialog_agreement.iv_dialog_agreement_cancel
+import kotlinx.android.synthetic.main.layout_dialog_agreement.tv_dialog_agreement_cancel
+import kotlinx.android.synthetic.main.layout_dialog_agreement.tv_dialog_agreement_content
+import kotlinx.android.synthetic.main.layout_dialog_agreement.tv_dialog_agreement_next
+import kotlinx.android.synthetic.main.layout_dialog_default.tv_dialog_default_cancel
+import kotlinx.android.synthetic.main.layout_dialog_default.tv_dialog_default_message
+import kotlinx.android.synthetic.main.layout_dialog_default.tv_dialog_default_sure
+import kotlinx.android.synthetic.main.layout_dialog_default.tv_dialog_default_title
+import kotlinx.android.synthetic.main.layout_dialog_default.view_dialog_default_line
+import kotlinx.android.synthetic.main.layout_dialog_sms_code.et_dialog_smsCode_code
+import kotlinx.android.synthetic.main.layout_dialog_sms_code.tv_dialog_smsCode_cancel
+import kotlinx.android.synthetic.main.layout_dialog_sms_code.tv_dialog_smsCode_phone
+import kotlinx.android.synthetic.main.layout_dialog_sms_code.tv_dialog_smsCode_sure
+import kotlinx.android.synthetic.main.layout_dialog_start_game.et_dialog_startGame_account
+import kotlinx.android.synthetic.main.layout_dialog_start_game.et_dialog_startGame_password
+import kotlinx.android.synthetic.main.layout_dialog_start_game.iv_dialog_startGame_cancel
+import kotlinx.android.synthetic.main.layout_dialog_start_game.iv_dialog_startGame_more
+import kotlinx.android.synthetic.main.layout_dialog_start_game.ll_dialog_startGame_account
+import kotlinx.android.synthetic.main.layout_dialog_start_game.ll_dialog_startGame_account_view
+import kotlinx.android.synthetic.main.layout_dialog_start_game.tv_dialog_startGame_btn1
+import kotlinx.android.synthetic.main.layout_dialog_start_game.tv_dialog_startGame_btn2
+import kotlinx.android.synthetic.main.layout_dialog_start_game.tv_dialog_startGame_gameName
+import kotlinx.android.synthetic.main.layout_dialog_start_game.tv_dialog_startGame_phone
+import kotlinx.android.synthetic.main.layout_dialog_start_game.tv_dialog_startGame_tips
+import kotlinx.android.synthetic.main.popupwindow_account.view.rv_popupWindow_account
 import java.util.concurrent.TimeUnit
 import kotlin.system.exitProcess
 
@@ -85,8 +105,7 @@ object DialogUtils {
      * 设置提示信息
      */
     fun setDialogMsg(msg: String) {
-        if (mDialog != null && mDialog?.isShowing == true)
-            mDialog?.tv_dialog_message?.text = msg
+        if (mDialog != null && mDialog?.isShowing == true) mDialog?.tv_dialog_message?.text = msg
     }
 
     /**
@@ -104,6 +123,82 @@ object DialogUtils {
         mDialog?.av_dialog?.show()
         mDialog?.setOnCancelListener {
             mDialog?.av_dialog?.hide()
+        }
+        mDialog?.show()
+    }
+
+    /**
+     * 显示短信验证码输入弹框
+     */
+    @SuppressLint("SetTextI18n")
+    fun showSmsCodeDialog(context: Context, listener: OnDialogListener4ShowSmsCode) {
+        if (mDialog != null) {
+            mDialog?.dismiss()
+            mDialog = null
+        }
+        mDialog = BaseDialog(context, R.style.new_circle_progress)
+        mDialog?.setContentView(R.layout.layout_dialog_sms_code)
+        mDialog?.setCancelable(false)
+        mDialog?.setCanceledOnTouchOutside(false)
+        SPUtils.getString(SPArgument.PHONE_NUMBER, "")?.let {
+            mDialog?.tv_dialog_smsCode_phone?.text =
+                "验证码已发送至${it.replaceRange(3, 7, "****")}"
+        }
+        mDialog?.tv_dialog_smsCode_cancel?.setOnClickListener {
+            mDialog?.dismiss()
+        }
+        mDialog?.tv_dialog_smsCode_sure?.setOnClickListener {
+            val code = mDialog?.et_dialog_smsCode_code?.text.toString().trim()
+            if (code.isEmpty() || code.length != 6) {
+                ToastUtils.show("请输入短信验证码")
+                return@setOnClickListener
+            }
+            listener.onSure(code)
+            mDialog?.dismiss()
+        }
+        mDialog?.setOnCancelListener {
+            dismissLoading()
+        }
+        mDialog?.show()
+    }
+
+    /**
+     * 显示仅有确认按钮的弹框
+     */
+    fun showOnlySureDialog(
+        context: Context,
+        title: String,
+        msg: String,
+        sure: String,
+        isBackLastPage: Boolean,
+        listener: OnDialogListener?
+    ) {
+        if (mDialog != null) {
+            mDialog?.dismiss()
+            mDialog = null
+        }
+        mDialog = BaseDialog(context, R.style.new_circle_progress)
+        mDialog?.setContentView(R.layout.layout_dialog_default)
+        mDialog?.setCancelable(false)
+        mDialog?.setCanceledOnTouchOutside(false)
+        mDialog?.tv_dialog_default_title?.text = title
+        mDialog?.tv_dialog_default_cancel?.visibility = View.GONE
+        mDialog?.view_dialog_default_line?.visibility = View.GONE
+        mDialog?.tv_dialog_default_sure?.text = sure
+        mDialog?.tv_dialog_default_message?.text = msg
+        mDialog?.tv_dialog_default_sure?.setOnClickListener {
+            listener?.next()
+            mDialog?.dismiss()
+            if (isBackLastPage) {
+                (context as Activity).finish()
+            }
+        }
+        mDialog?.setOnCancelListener {
+            listener?.next()
+            mDialog?.dismiss()
+            if (isBackLastPage) {
+                (context as Activity).finish()
+            }
         }
         mDialog?.show()
     }
@@ -154,10 +249,10 @@ object DialogUtils {
 
     /**
      * 显示协议Dialog
+     * @param needExit 需要退出APP吗
      */
     fun showAgreementDialog(
-        context: Context,
-        listener: OnDialogListener
+        context: Context, needExit: Boolean = true, listener: OnDialogListener
     ) {
         if (mDialog != null) {
             mDialog?.dismiss()
@@ -168,18 +263,17 @@ object DialogUtils {
         mDialog?.setCancelable(true)
         mDialog?.setCanceledOnTouchOutside(true)
 
-//        if (BaseAppUpdateSetting.isToAuditVersion) {
-            mDialog?.tv_dialog_agreement_cancel?.visibility = View.VISIBLE
-            mDialog?.tv_dialog_agreement_cancel?.let {
-                RxView.clicks(it)
-                    .throttleFirst(200, TimeUnit.MILLISECONDS)
-                    .subscribe {
-                        exitProcess(0)
-                    }
+        mDialog?.tv_dialog_agreement_cancel?.visibility = View.VISIBLE
+        mDialog?.tv_dialog_agreement_cancel?.text = if (needExit) "拒绝并退出应用" else "暂不同意"
+        mDialog?.tv_dialog_agreement_cancel?.let {
+            RxView.clicks(it).throttleFirst(200, TimeUnit.MILLISECONDS).subscribe {
+                if (needExit) {
+                    exitProcess(0)
+                } else {
+                    dismissLoading()
+                }
             }
-//        } else {
-//            mDialog?.tv_dialog_agreement_cancel?.visibility = View.GONE
-//        }
+        }
 
         val ssb =
             SpannableStringBuilder("欢迎使用特戒盒子!\n我们非常重视您的个人信息和隐私协议保护。为了更好地保障您的个人权益, 在使用我们的服务前, 请务必打开链接并审慎阅读《用户协议》和《隐私协议》")
@@ -281,8 +375,8 @@ object DialogUtils {
                 it.setSelection(data[0].password.length)
             }
 
-            val popupWindow = LayoutInflater.from(context)
-                .inflate(R.layout.popupwindow_account, null)
+            val popupWindow =
+                LayoutInflater.from(context).inflate(R.layout.popupwindow_account, null)
             val width = PhoneInfoUtils.getWidth(context)
             mPopupWindow = PopupWindow(
                 popupWindow,
@@ -296,23 +390,20 @@ object DialogUtils {
             mPopupWindow?.isFocusable = true
 
             val adapter = BaseAdapterWithPosition.Builder<AllAccountBean.Data>()
-                .setLayoutId(R.layout.item_popup_account)
-                .setData(data)
+                .setLayoutId(R.layout.item_popup_account).setData(data)
                 .addBindView { itemView, itemData, position ->
                     itemView.tv_item_popup_account.text = itemData.account
-                    RxView.clicks(itemView)
-                        .throttleFirst(200, TimeUnit.MILLISECONDS)
-                        .subscribe {
-                            mDialog?.et_dialog_startGame_account?.let {
-                                it.setText(itemData.account)
-                                it.setSelection(itemData.account.length)
-                            }
-                            mDialog?.et_dialog_startGame_password?.let {
-                                it.setText(itemData.password)
-                                it.setSelection(itemData.password.length)
-                            }
-                            mPopupWindow?.dismiss()
+                    RxView.clicks(itemView).throttleFirst(200, TimeUnit.MILLISECONDS).subscribe {
+                        mDialog?.et_dialog_startGame_account?.let {
+                            it.setText(itemData.account)
+                            it.setSelection(itemData.account.length)
                         }
+                        mDialog?.et_dialog_startGame_password?.let {
+                            it.setText(itemData.password)
+                            it.setSelection(itemData.password.length)
+                        }
+                        mPopupWindow?.dismiss()
+                    }
                 }.create()
             popupWindow.rv_popupWindow_account.adapter = adapter
             popupWindow.rv_popupWindow_account.layoutManager = SafeLinearLayoutManager(context)
@@ -321,36 +412,32 @@ object DialogUtils {
 
         changeView(context)
         mDialog?.tv_dialog_startGame_btn1?.let {
-            RxView.clicks(it)
-                .throttleFirst(200, TimeUnit.MILLISECONDS)
-                .subscribe {
-                    currentPage = if (currentPage == 0) {
-                        1
-                    } else {
-                        0
-                    }
-                    changeView(context)
+            RxView.clicks(it).throttleFirst(200, TimeUnit.MILLISECONDS).subscribe {
+                currentPage = if (currentPage == 0) {
+                    1
+                } else {
+                    0
                 }
+                changeView(context)
+            }
         }
         mDialog?.tv_dialog_startGame_btn2?.let {
-            RxView.clicks(it)
-                .throttleFirst(200, TimeUnit.MILLISECONDS)
-                .subscribe {
-                    if (currentPage == 0) {
-                        //特戒账号登录
-                        listener?.tejieStart()
+            RxView.clicks(it).throttleFirst(200, TimeUnit.MILLISECONDS).subscribe {
+                if (currentPage == 0) {
+                    //特戒账号登录
+                    listener?.tejieStart()
+                } else {
+                    //账号密码登录
+                    val account = mDialog?.et_dialog_startGame_account?.text?.toString()?.trim()
+                    val password =
+                        mDialog?.et_dialog_startGame_password?.text?.toString()?.trim()
+                    if (account != null && account != "" && password != null && password != "") {
+                        listener?.accountStart(account, password)
                     } else {
-                        //账号密码登录
-                        val account = mDialog?.et_dialog_startGame_account?.text?.toString()?.trim()
-                        val password =
-                            mDialog?.et_dialog_startGame_password?.text?.toString()?.trim()
-                        if (account != null && account != "" && password != null && password != "") {
-                            listener?.accountStart(account, password)
-                        } else {
-                            ToastUtils.show("请检查账号密码是否输入正确")
-                        }
+                        ToastUtils.show("请检查账号密码是否输入正确")
                     }
                 }
+            }
         }
 
         mDialog?.iv_dialog_startGame_cancel?.setOnClickListener {
@@ -402,25 +489,21 @@ object DialogUtils {
             }
 
             mDialog?.et_dialog_startGame_account?.let {
-                RxTextView.textChanges(it)
-                    .skipInitialValue()
-                    .subscribe {
-                        mDialog?.et_dialog_startGame_password?.setText("")
-                    }
+                RxTextView.textChanges(it).skipInitialValue().subscribe {
+                    mDialog?.et_dialog_startGame_password?.setText("")
+                }
             }
 
             mDialog?.iv_dialog_startGame_more?.let {
-                RxView.clicks(it)
-                    .throttleFirst(200, TimeUnit.MILLISECONDS)
-                    .subscribe {
-                        OtherUtils.hindKeyboard(context, mDialog?.et_dialog_startGame_account!!)
-                        if (isShowPopupWindow) {
-                            mPopupWindow?.dismiss()
-                        } else {
-                            mPopupWindow?.showAsDropDown(mDialog?.ll_dialog_startGame_account_view!!)
-                        }
-                        isShowPopupWindow = !isShowPopupWindow
+                RxView.clicks(it).throttleFirst(200, TimeUnit.MILLISECONDS).subscribe {
+                    OtherUtils.hindKeyboard(context, mDialog?.et_dialog_startGame_account!!)
+                    if (isShowPopupWindow) {
+                        mPopupWindow?.dismiss()
+                    } else {
+                        mPopupWindow?.showAsDropDown(mDialog?.ll_dialog_startGame_account_view!!)
                     }
+                    isShowPopupWindow = !isShowPopupWindow
+                }
             }
 
             mDialog?.tv_dialog_startGame_btn1?.let {
@@ -440,6 +523,10 @@ object DialogUtils {
     private fun formatPhone(): String {
         val phone = SPUtils.getString(SPArgument.PHONE_NUMBER, null)!!
         return "${phone.substring(0, 3)}****${phone.substring(7)}"
+    }
+
+    interface OnDialogListener4ShowSmsCode {
+        fun onSure(code: String)
     }
 
     /**

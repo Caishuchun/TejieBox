@@ -24,15 +24,25 @@ import com.fortune.tejiebox.event.GiftShowState
 import com.fortune.tejiebox.event.IntegralChange
 import com.fortune.tejiebox.http.RetrofitUtils
 import com.fortune.tejiebox.myapp.MyApp
-import com.fortune.tejiebox.utils.*
+import com.fortune.tejiebox.utils.ActivityManager
+import com.fortune.tejiebox.utils.DialogUtils
+import com.fortune.tejiebox.utils.HttpExceptionUtils
+import com.fortune.tejiebox.utils.IsMultipleOpenAppUtils
+import com.fortune.tejiebox.utils.LogUtils
+import com.fortune.tejiebox.utils.PhoneInfoUtils
+import com.fortune.tejiebox.utils.SPUtils
+import com.fortune.tejiebox.utils.ToastUtils
 import com.fortune.tejiebox.widget.SafeStaggeredGridLayoutManager
 import com.google.gson.Gson
 import com.jakewharton.rxbinding2.view.RxView
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.Disposable
 import io.reactivex.schedulers.Schedulers
-import kotlinx.android.synthetic.main.fragment_daily_check.view.*
-import kotlinx.android.synthetic.main.item_daily_check.view.*
+import kotlinx.android.synthetic.main.fragment_daily_check.view.rv_gift_dailyCheck
+import kotlinx.android.synthetic.main.item_daily_check.view.iv_item_dailyCheck_type
+import kotlinx.android.synthetic.main.item_daily_check.view.rl_item_dailyCheck_bg
+import kotlinx.android.synthetic.main.item_daily_check.view.tv_item_dailyCheck_num
+import kotlinx.android.synthetic.main.item_daily_check.view.tv_item_dailyCheck_title
 import org.greenrobot.eventbus.EventBus
 import org.greenrobot.eventbus.Subscribe
 import java.util.concurrent.TimeUnit
@@ -59,6 +69,18 @@ class DailyCheckFragment : Fragment() {
         initView()
         getData()
         return mView
+    }
+
+    /**
+     * 展示维护弹框
+     */
+    private fun showMaintenanceDialog() {
+        DialogUtils.showOnlySureDialog(
+            requireContext(),
+            "维护提示",
+            "签到系统维护中...",
+            "确认", true, null
+        )
     }
 
     private fun getData() {
@@ -118,11 +140,17 @@ class DailyCheckFragment : Fragment() {
                             mView?.rv_gift_dailyCheck?.scrollToPosition(scrollToPosition)
                             LogUtils.d("canClickPosition:$canClickPosition")
                             adapter?.notifyDataSetChanged()
+
+                            if (it.getData()?.is_open == 0) {
+                                showMaintenanceDialog()
+                            }
                         }
+
                         -1 -> {
                             it.getMsg()?.let { it1 -> ToastUtils.show(it1) }
                             ActivityManager.toSplashActivity(requireActivity())
                         }
+
                         else -> {
                             (requireActivity()).finish()
                             it.getMsg()?.let { it1 -> ToastUtils.show(it1) }
@@ -201,6 +229,11 @@ class DailyCheckFragment : Fragment() {
                 RxView.clicks(itemView)
                     .throttleFirst(200, TimeUnit.MILLISECONDS)
                     .subscribe {
+                        if (IsMultipleOpenAppUtils.isMultipleOpenApp(requireContext())) {
+                            //如果检测到有多开软件存在
+                            ToastUtils.show("检测到设备存在恶意多开软件, 无法进行签到")
+                            return@subscribe
+                        }
                         if (itemData.status == 0 && position == canClickPosition && !isTodayGet) {
                             val phone = SPUtils.getString(SPArgument.PHONE_NUMBER, null)
                             if (phone.isNullOrBlank()) {
@@ -286,10 +319,12 @@ class DailyCheckFragment : Fragment() {
                                     }
                                 })
                         }
+
                         -1 -> {
                             it.getMsg()?.let { it1 -> ToastUtils.show(it1) }
                             ActivityManager.toSplashActivity(requireActivity())
                         }
+
                         3 -> {
                             it.getMsg()?.let { it1 ->
                                 DialogUtils.showDefaultDialog(
@@ -297,6 +332,7 @@ class DailyCheckFragment : Fragment() {
                                 )
                             }
                         }
+
                         else -> {
                             it.getMsg()?.let { it1 -> ToastUtils.show(it1) }
                         }

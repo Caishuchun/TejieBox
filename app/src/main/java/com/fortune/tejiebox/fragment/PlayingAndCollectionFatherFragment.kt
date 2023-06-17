@@ -7,9 +7,12 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import com.fortune.tejiebox.R
-import com.fortune.tejiebox.base.BaseAppUpdateSetting
+import com.fortune.tejiebox.bean.VersionBean
 import com.jakewharton.rxbinding2.view.RxView
-import kotlinx.android.synthetic.main.fragment_playing_and_collection_father.view.*
+import kotlinx.android.synthetic.main.fragment_playing_and_collection_father.view.ll_fragment_playingAndCollection
+import kotlinx.android.synthetic.main.fragment_playing_and_collection_father.view.tv_fragment_playingAndCollection_collection
+import kotlinx.android.synthetic.main.fragment_playing_and_collection_father.view.tv_fragment_playingAndCollection_onlyCollection
+import kotlinx.android.synthetic.main.fragment_playing_and_collection_father.view.tv_fragment_playingAndCollection_playing
 import java.util.concurrent.TimeUnit
 
 class PlayingAndCollectionFatherFragment : Fragment() {
@@ -36,13 +39,14 @@ class PlayingAndCollectionFatherFragment : Fragment() {
     private fun initView() {
         changeTitle()
         changeFragment()
-        if(BaseAppUpdateSetting.isShangJiaVersion){
+//        if(BaseAppUpdateSetting.isShangJiaVersion){
+        if (VersionBean.getData()?.isShowStartGameBtn == 0) {
             mView?.ll_fragment_playingAndCollection?.visibility = View.GONE
             mView?.tv_fragment_playingAndCollection_onlyCollection?.visibility = View.VISIBLE
 
             currentPage = 1
             changeFragment()
-        }else {
+        } else {
             mView?.ll_fragment_playingAndCollection?.visibility = View.VISIBLE
             mView?.tv_fragment_playingAndCollection_onlyCollection?.visibility = View.GONE
         }
@@ -89,6 +93,7 @@ class PlayingAndCollectionFatherFragment : Fragment() {
                         .commitAllowingStateLoss()
                 }
             }
+
             1 -> {
                 hideAll()
                 if (collectionFragment == null) {
@@ -125,6 +130,7 @@ class PlayingAndCollectionFatherFragment : Fragment() {
             0 -> {
                 mView?.tv_fragment_playingAndCollection_playing?.setTextColor(Color.parseColor("#6E6FFF"))
             }
+
             1 -> {
                 mView?.tv_fragment_playingAndCollection_collection?.setTextColor(Color.parseColor("#6E6FFF"))
             }

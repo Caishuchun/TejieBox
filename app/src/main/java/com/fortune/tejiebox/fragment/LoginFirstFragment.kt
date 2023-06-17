@@ -119,6 +119,7 @@ class LoginFirstFragment : Fragment() {
                 } else {
                     DialogUtils.showAgreementDialog(
                         requireContext(),
+                        false,
                         object : DialogUtils.OnDialogListener {
                             override fun next() {
                                 view.cb_login_first?.isChecked = true

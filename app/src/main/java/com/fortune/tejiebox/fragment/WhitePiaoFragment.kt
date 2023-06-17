@@ -62,7 +62,7 @@ class WhitePiaoFragment : Fragment() {
      * 获取数据
      */
     private fun getInfo() {
-//        DialogUtils.showBeautifulDialog(requireContext())
+        DialogUtils.showBeautifulDialog(requireContext())
         val whitePiaoList = RetrofitUtils.builder().whitePiaoList()
         whitePiaoListObservable = whitePiaoList.subscribeOn(Schedulers.io())
             .observeOn(AndroidSchedulers.mainThread())
@@ -325,6 +325,11 @@ class WhitePiaoFragment : Fragment() {
                     .throttleFirst(200, TimeUnit.MILLISECONDS)
                     .subscribe {
                         if (itemData.status == 1 && canClick) {
+                            if(IsMultipleOpenAppUtils.isMultipleOpenApp(requireContext())){
+                                //如果检测到有多开软件存在
+                                ToastUtils.show("检测到设备存在恶意多开软件, 无法进行白嫖领取")
+                                return@subscribe
+                            }
                             val phone = SPUtils.getString(SPArgument.PHONE_NUMBER, null)
                             if (phone.isNullOrBlank()) {
                                 DialogUtils.showDefaultDialog(

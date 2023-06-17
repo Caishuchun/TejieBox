@@ -22,7 +22,7 @@
             android:layout_height="wrap_content"
             android:layout_marginStart="@dimen/dp_8"
             android:gravity="center"
-            android:text="分享邀请好友每玩 1 小时游戏可获得 2 元"
+            android:text="每天首次分享邀请好友每玩1小时游戏可获得2元"
             android:textColor="@color/black_1A241F"
             android:textSize="@dimen/sp_14" />
 

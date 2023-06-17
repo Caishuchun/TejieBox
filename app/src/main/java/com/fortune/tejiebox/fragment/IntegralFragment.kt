@@ -112,10 +112,12 @@ class IntegralFragment : Fragment() {
                             }
                             SPUtils.putValue(SPArgument.INTEGRAL, it.data.integral)
                         }
+
                         -1 -> {
                             ToastUtils.show(it.msg)
                             ActivityManager.toSplashActivity(requireActivity())
                         }
+
                         else -> {
                             ToastUtils.show(it.msg)
                         }
@@ -275,10 +277,12 @@ class IntegralFragment : Fragment() {
                                 SPUtils.putValue(SPArgument.INTEGRAL, residue)
                             }
                         }
+
                         -1 -> {
                             ToastUtils.show(it.msg)
                             ActivityManager.toSplashActivity(requireActivity())
                         }
+
                         else -> {
                             DialogActivity.showRechargeResult(
                                 requireActivity(),
@@ -355,10 +359,12 @@ class IntegralFragment : Fragment() {
                             mData.clear()
                             sort(it.data.pricelist)
                         }
+
                         -1 -> {
                             ToastUtils.show(it.msg)
                             ActivityManager.toSplashActivity(requireActivity())
                         }
+
                         else -> {
                             ToastUtils.show(it.msg)
                             mAdapter?.notifyDataSetChanged()

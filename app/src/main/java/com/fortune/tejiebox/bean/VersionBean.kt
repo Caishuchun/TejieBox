@@ -48,16 +48,22 @@ class VersionBean {
         this.data = data
     }
 
+    /**
+     * version_name : 1.0.0
+     * version_number : 20210119
+     * update_type : 2
+     * update_msg : 更新信息
+     * update_url : 正常普通下载地址
+     * update_url2 : 百度推广下载地址,专属名称"特戒"
+     * default_page : 默认页
+     * channel : 渠道号
+     * activity_is_open : 活动是否开启 1开启 0关闭
+     * notice : 公告
+     * gm_user_fee_duration : 0
+     * isShowStartGameBtn: 是否显示开始游戏按钮 1显示 0不显示
+     * isCanUseShare: 是否可以使用分享 1可以 0不可以
+     */
     class DataBean {
-        /**
-         * version_name : 1.0.0
-         * version_number : 20210119
-         * update_type : 2
-         * update_msg : 更新信息
-         * 更新信息
-         * update_url : 正常普通下载地址
-         * update_url2 : 百度推广下载地址,专属名称"特戒"
-         */
         var version_name: String? = null
         var version_number: Int? = null
         var update_type: Int? = null
@@ -69,5 +75,7 @@ class VersionBean {
         var activity_is_open: Int? = null
         var notice: String? = null
         var gm_user_fee_duration: Int? = null
+        var isShowStartGameBtn: Int = 1
+        var isCanUseShare: Int = 1
     }
 }

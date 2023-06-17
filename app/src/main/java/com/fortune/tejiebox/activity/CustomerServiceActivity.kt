@@ -27,6 +27,8 @@ import com.fortune.tejiebox.http.RetrofitUtils
 import com.fortune.tejiebox.room.CustomerServiceInfo
 import com.fortune.tejiebox.room.CustomerServiceInfoDao
 import com.fortune.tejiebox.room.CustomerServiceInfoDataBase
+import com.fortune.tejiebox.utils.HttpExceptionUtils
+import com.fortune.tejiebox.utils.LogUtils
 import com.fortune.tejiebox.utils.PhoneInfoUtils
 import com.fortune.tejiebox.utils.SoftKeyBoardListener
 import com.fortune.tejiebox.utils.StatusBarUtils
@@ -55,6 +57,7 @@ import top.zibin.luban.OnNewCompressListener
 import java.io.File
 import java.net.URLEncoder
 import java.text.SimpleDateFormat
+import java.util.Date
 import java.util.concurrent.TimeUnit
 
 class CustomerServiceActivity : BaseActivity() {
@@ -723,44 +726,75 @@ class CustomerServiceActivity : BaseActivity() {
      */
     @SuppressLint("SimpleDateFormat")
     private fun formatChatTime(chatTime: Long): String {
-        val simpleDateFormat = SimpleDateFormat("yyyy年MM月dd日 HH:mm:ss")
-        // 聊天时间
-        val chatTimeStr = simpleDateFormat.format(chatTime)
-        // 当前时间
-        val currentTime = System.currentTimeMillis()
-        val currentTimeStr = simpleDateFormat.format(currentTime)
-        // 今日0点时间
-        val todayZeroTimeStr = "${currentTimeStr.split(" ")[0]} 00:00:00"
-        val todayZeroTime = simpleDateFormat.parse(todayZeroTimeStr).time
-        // 昨日零点时间
-        val yesterdayZeroTime = todayZeroTime - 1000 * 60 * 60 * 24L
-        // 时隔一年的时间
-        val oneYearTime = currentTime - 1000 * 60 * 60 * 24 * 365L
+        return  getTime(chatTime)
 
-        val result = when {
-            chatTime > todayZeroTime -> {
-                // 今日发送的消息
-                val sb = SimpleDateFormat("HH:mm")
-                sb.format(chatTime)
-            }
+//        val simpleDateFormat = SimpleDateFormat("yyyy年MM月dd日 HH:mm:ss")
+//        // 聊天时间
+//        val chatTimeStr = simpleDateFormat.format(chatTime)
+//        // 当前时间
+//        val currentTime = System.currentTimeMillis()
+//        val currentTimeStr = simpleDateFormat.format(currentTime)
+//        // 今日0点时间
+//        val todayZeroTimeStr = "${currentTimeStr.split(" ")[0]} 00:00:00"
+//        val todayZeroTime = simpleDateFormat.parse(todayZeroTimeStr).time
+//        // 昨日零点时间
+//        val yesterdayZeroTime = todayZeroTime - 1000 * 60 * 60 * 24L
+//        // 时隔一年的时间
+//        val oneYearTime = currentTime - 1000 * 60 * 60 * 24 * 365L
+//
+//        val result = when {
+//            chatTime > todayZeroTime -> {
+//                // 今日发送的消息
+//                val sb = SimpleDateFormat("HH:mm")
+//                sb.format(chatTime)
+//            }
+//
+//            chatTime >= yesterdayZeroTime + 1 && chatTime <= todayZeroTime -> {
+//                // 昨天发送的消息
+//                val sb = SimpleDateFormat("HH:mm")
+//                "昨天 ${sb.format(chatTime)}"
+//            }
+//
+//            chatTime >= oneYearTime + 1 && chatTime <= yesterdayZeroTime -> {
+//                // 其他时间
+//                val sb = SimpleDateFormat("MM月dd日 HH:mm")
+//                sb.format(chatTime)
+//            }
+//
+//            else -> {
+//                chatTimeStr
+//            }
+//        }
+//        return result.replace(" ", "\n")
+    }
 
-            chatTime >= yesterdayZeroTime + 1 && chatTime <= todayZeroTime -> {
-                // 昨天发送的消息
-                val sb = SimpleDateFormat("HH:mm")
-                "昨天 ${sb.format(chatTime)}"
-            }
-
-            chatTime >= oneYearTime + 1 && chatTime <= yesterdayZeroTime -> {
-                // 其他时间
-                val sb = SimpleDateFormat("MM月dd日 HH:mm")
-                sb.format(chatTime)
-            }
-
-            else -> {
-                chatTimeStr
-            }
+    /**
+     * 获取时间
+     * @param time 时间戳
+     * @return 时间 今天 昨天 月日 时分
+     */
+    @SuppressLint("SimpleDateFormat")
+    fun getTime(time: Long): String {
+        val now = System.currentTimeMillis()
+        val today = SimpleDateFormat("yyyy-MM-dd").format(Date(now))
+        val yesterday = SimpleDateFormat("yyyy-MM-dd").format(Date(now - 24 * 60 * 60 * 1000))
+        val year = SimpleDateFormat("yyyy").format(Date(now))
+        val timeStr = SimpleDateFormat("HH:mm").format(Date(time))
+        val date4Time = SimpleDateFormat("yyyy-MM-dd").format(Date(time))
+        val year4Time = SimpleDateFormat("yyyy").format(Date(time))
+        val month4Time = SimpleDateFormat("MM").format(Date(time))
+        val day4Time = SimpleDateFormat("dd").format(Date(time))
+        val hour4Time = SimpleDateFormat("HH").format(Date(time))
+        val minute4Time = SimpleDateFormat("mm").format(Date(time))
+        return if (date4Time == today) {
+            timeStr
+        } else if (date4Time == yesterday) {
+            "昨日\n$timeStr"
+        } else if (year == year4Time) {
+            "${month4Time}月${day4Time}日\n$hour4Time:$minute4Time"
+        } else {
+            "${year4Time}年${month4Time}月${day4Time}日\n$hour4Time:$minute4Time"
         }
-        return result.replace(" ", "\n")
     }
 
     /**
@@ -815,13 +849,12 @@ class CustomerServiceActivity : BaseActivity() {
                             rv_customerService_info?.scrollToPosition(mData.size - 1)
                         }
                     }
-
                     else -> {
-                        ToastUtils.show(it.msg)
+                        ToastUtils.show(getString(R.string.network_fail_to_responseDate))
                     }
                 }
             }, {
-                ToastUtils.show(it.message)
+                ToastUtils.show(HttpExceptionUtils.getExceptionMsg(this, it))
             })
     }
 
@@ -937,7 +970,8 @@ class CustomerServiceActivity : BaseActivity() {
                     toSendPic(result)
                 }, {
                     mAdapter?.notifyItemRemoved(mData.size - 1)
-                    ToastUtils.show(it.message)
+//                    ToastUtils.show(it.message)
+                    LogUtils.d("${javaClass.simpleName}=fail=>${it.message.toString()}")
                 })
         } else {
             //图片上传结束

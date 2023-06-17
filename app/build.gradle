@@ -10,8 +10,8 @@ android {
         applicationId "com.fortune.tejiebox"
         minSdkVersion 21
         targetSdkVersion 29
-        versionCode 20230512
-        versionName "3.2.7"
+        versionCode 20230617
+        versionName "3.2.8"
         multiDexEnabled true
         aaptOptions {
             cruncherEnabled = false
@@ -19,8 +19,7 @@ android {
         }
         ndk {
             //选择要添加的对应cpu类型的.so库。
-            //热修复支持五种
-            abiFilters 'armeabi', 'armeabi-v7a', 'armeabi-v8a'
+            abiFilters 'armeabi', 'armeabi-v7a'
         }
 
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
@@ -172,4 +171,8 @@ dependencies {
     implementation 'io.github.lucksiege:compress:v3.10.7'
     //二维码
     implementation 'com.google.zxing:core:3.3.0'
+    //QQ 分享
+    implementation 'com.tencent.tauth:qqopensdk:3.52.0'
+    //微信 分享
+    api 'com.tencent.mm.opensdk:wechat-sdk-android:+'
 }

@@ -19,6 +19,7 @@ import com.fortune.tejiebox.R
 import com.fortune.tejiebox.base.BaseActivity
 import com.fortune.tejiebox.base.BaseAppUpdateSetting
 import com.fortune.tejiebox.bean.GameInfo4ClipboardBean
+import com.fortune.tejiebox.bean.ShelfDataBean
 import com.fortune.tejiebox.bean.VersionBean
 import com.fortune.tejiebox.constants.SPArgument
 import com.fortune.tejiebox.http.RetrofitUtils
@@ -35,7 +36,13 @@ import kotlinx.android.synthetic.main.fragment_account_login.view.*
 import me.weyye.hipermission.HiPermission
 import me.weyye.hipermission.PermissionCallback
 import me.weyye.hipermission.PermissionItem
+import okhttp3.Call
+import okhttp3.Callback
+import okhttp3.OkHttpClient
+import okhttp3.Request
+import okhttp3.Response
 import java.io.File
+import java.io.IOException
 import java.util.concurrent.TimeUnit
 import kotlin.system.exitProcess
 
@@ -127,6 +134,7 @@ class NewSplashActivity : BaseActivity() {
         ) {
             DialogUtils.showAgreementDialog(
                 this,
+                true,
                 object : DialogUtils.OnDialogListener {
                     override fun next() {
                         SPUtils.putValue(SPArgument.IS_CHECK_AGREEMENT_SPLASH, true)
@@ -218,7 +226,7 @@ class NewSplashActivity : BaseActivity() {
 
                 override fun onFinish() {
                     LogUtils.d("HiPermission=>onFinish()")
-                    toMain4CheckVersion()
+                    toGetShelfData()
                 }
 
                 override fun onDeny(permission: String?, position: Int) {
@@ -230,6 +238,88 @@ class NewSplashActivity : BaseActivity() {
                 }
             })
     }
+
+    /**
+     * 获取服务器上的.JSON文件
+     */
+    private fun toGetShelfData() {
+        val shelfDataRequest = Request.Builder()
+            .url("http://tejie-box.oss-cn-hangzhou.aliyuncs.com/apk/setting/shelf_setting.json")
+            .build()
+        val shelfDataCall = OkHttpClient().newCall(shelfDataRequest)
+        shelfDataCall.enqueue(object : Callback {
+            override fun onFailure(call: Call, e: IOException) {
+                LogUtils.d("getShelfData=>onFailure(e:$e)")
+                toMain4CheckVersion()
+            }
+
+            override fun onResponse(call: Call, response: Response) {
+                val responseStr = response.body()?.string()
+                if (responseStr == null) {
+                    toMain4CheckVersion()
+                    return
+                }
+                val shelfDataBean = Gson().fromJson(responseStr, ShelfDataBean::class.java)
+                LogUtils.d("getShelfData=>onResponse: $shelfDataBean")
+                getDateFromShelfDate(shelfDataBean)
+            }
+        })
+    }
+
+    private fun getDateFromShelfDate(shelfDataBean: ShelfDataBean?) {
+        if (shelfDataBean == null) {
+            toMain4CheckVersion()
+            return
+        }
+
+        //marketChannel 0:默认 1:应用宝 2:华为 3:小米 4:vivo 5:oppo
+        when (BaseAppUpdateSetting.marketChannel) {
+            1 -> {
+                toMain4CheckVersion(
+                    isShowStartGameBtn = 0,
+                    isCanUseShare = shelfDataBean.isCanUseShare,
+                    isDirectToJump = shelfDataBean.tencet_market == 0
+                )
+            }
+
+            2 -> {
+                toMain4CheckVersion(
+                    isShowStartGameBtn = 0,
+                    isCanUseShare = shelfDataBean.isCanUseShare,
+                    isDirectToJump = shelfDataBean.huawei_market == 0
+                )
+            }
+
+            3 -> {
+                toMain4CheckVersion(
+                    isShowStartGameBtn = 0,
+                    isCanUseShare = shelfDataBean.isCanUseShare,
+                    isDirectToJump = shelfDataBean.xiaomi_market == 0
+                )
+            }
+
+            4 -> {
+                toMain4CheckVersion(
+                    isShowStartGameBtn = 0,
+                    isCanUseShare = shelfDataBean.isCanUseShare,
+                    isDirectToJump = shelfDataBean.vivo_market == 0
+                )
+            }
+
+            5 -> {
+                toMain4CheckVersion(
+                    isShowStartGameBtn = 0,
+                    isCanUseShare = shelfDataBean.isCanUseShare,
+                    isDirectToJump = shelfDataBean.oppo_market == 0
+                )
+            }
+
+            else -> {
+                toMain4CheckVersion()
+            }
+        }
+    }
+
 
     /**
      * 倒计时5s进入下一个页面
@@ -261,9 +351,16 @@ class NewSplashActivity : BaseActivity() {
 
     /**
      * 跳转到主界面前,先检查版本更新状态
+     * @param isShowStartGameBtn 是否显示开始游戏按钮 1:显示 0:不显示
+     * @param isCanUseShare 是否可以使用分享 1:可以 0:不可以
+     * @param isDirectToJump 是否直接跳转到主界面
      */
     @SuppressLint("CheckResult")
-    private fun toMain4CheckVersion() {
+    private fun toMain4CheckVersion(
+        isShowStartGameBtn: Int = 1,
+        isCanUseShare: Int = 1,
+        isDirectToJump: Boolean = false
+    ) {
         val deviceId = GetDeviceId.getDeviceId(this)
         LogUtils.d("===============$deviceId")
         SPUtils.putValue(SPArgument.ONLY_DEVICE_ID_NEW, GetDeviceId.getDeviceId(this))
@@ -275,8 +372,15 @@ class NewSplashActivity : BaseActivity() {
                 LogUtils.d("${javaClass.simpleName}=success=>${Gson().toJson(it)}")
                 if (it != null) {
                     if (it.getCode() == 1) {
-                        VersionBean.setData(it.getData()!!)
-                        toCheckVersion(it.getData()!!)
+                        val data = it.getData()!!
+                        data.isShowStartGameBtn = isShowStartGameBtn
+                        data.isCanUseShare = isCanUseShare
+                        VersionBean.setData(data)
+                        if (isDirectToJump) {
+                            toCountDown()
+                        } else {
+                            toCheckVersion(it.getData()!!)
+                        }
                     } else {
                         toCountDown()
                     }

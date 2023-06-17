@@ -55,10 +55,10 @@ class GiftActivity : BaseActivity() {
         StatusBarUtils.setTextDark(this, true)
         EventBus.getDefault().register(this)
         dailyCheckFragment = DailyCheckFragment.newInstance()
-        whitePiaoFragment = WhitePiaoFragment.newInstance()
-        inviteGiftFragment = InviteGiftFragment.newInstance()
+
         initView()
         getIntegral()
+        toCheckCanGetIntegral()
     }
 
     //为了不保存Fragment,直接清掉
@@ -77,7 +77,7 @@ class GiftActivity : BaseActivity() {
         getIntegralObservable = getIntegral.subscribeOn(Schedulers.io())
             .observeOn(AndroidSchedulers.mainThread())
             .subscribe({
-                DialogUtils.dismissLoading()
+//                DialogUtils.dismissLoading()
                 when (it.code) {
                     1 -> {
                         SPUtils.putValue(SPArgument.INTEGRAL, it.data.integral)
@@ -88,16 +88,18 @@ class GiftActivity : BaseActivity() {
                         }
                         EventBus.getDefault().postSticky(IntegralChange(it.data.integral))
                     }
+
                     -1 -> {
                         ToastUtils.show(it.msg)
                         ActivityManager.toSplashActivity(this)
                     }
+
                     else -> {
                         ToastUtils.show(it.msg)
                     }
                 }
             }, {
-                DialogUtils.dismissLoading()
+//                DialogUtils.dismissLoading()
                 LogUtils.d("${javaClass.simpleName}=fail=>${it.message.toString()}")
                 ToastUtils.show(HttpExceptionUtils.getExceptionMsg(this, it))
             })
@@ -112,8 +114,6 @@ class GiftActivity : BaseActivity() {
 
         supportFragmentManager.beginTransaction()
             .add(R.id.fl_gift, dailyCheckFragment!!)
-            .add(R.id.fl_gift, whitePiaoFragment!!)
-            .add(R.id.fl_gift, inviteGiftFragment!!)
             .commit()
 
         RxView.clicks(iv_gift_back)
@@ -130,7 +130,8 @@ class GiftActivity : BaseActivity() {
             }
         })
 
-        tv_gift_tips.text = "进入任一游戏详情页 --> 点击\"免费充值\" --> 选择区服角色 --> 选择充值额度 --> 点击\"确认充值\" --> 充值成功"
+        tv_gift_tips.text =
+            "进入任一游戏详情页 --> 点击\"免费充值\" --> 选择区服角色 --> 选择充值额度 --> 点击\"确认充值\" --> 充值成功"
 
         RxView.clicks(tv_gift_tip2)
             .throttleFirst(200, TimeUnit.MILLISECONDS)
@@ -157,17 +158,33 @@ class GiftActivity : BaseActivity() {
                     .show(currentFragment!!)
                     .commit()
             }
+
             1 -> {
+                if (whitePiaoFragment == null) {
+                    whitePiaoFragment = WhitePiaoFragment.newInstance()
+                    supportFragmentManager.beginTransaction()
+                        .add(R.id.fl_gift, whitePiaoFragment!!)
+                        .commit()
+                } else {
+                    supportFragmentManager.beginTransaction()
+                        .show(whitePiaoFragment!!)
+                        .commit()
+                }
                 currentFragment = whitePiaoFragment
-                supportFragmentManager.beginTransaction()
-                    .show(currentFragment!!)
-                    .commit()
             }
+
             2 -> {
+                if (inviteGiftFragment == null) {
+                    inviteGiftFragment = InviteGiftFragment.newInstance()
+                    supportFragmentManager.beginTransaction()
+                        .add(R.id.fl_gift, inviteGiftFragment!!)
+                        .commit()
+                } else {
+                    supportFragmentManager.beginTransaction()
+                        .show(inviteGiftFragment!!)
+                        .commit()
+                }
                 currentFragment = inviteGiftFragment
-                supportFragmentManager.beginTransaction()
-                    .show(currentFragment!!)
-                    .commit()
             }
         }
     }
@@ -175,8 +192,8 @@ class GiftActivity : BaseActivity() {
     private fun hideAll() {
         supportFragmentManager.beginTransaction()
             .hide(dailyCheckFragment!!)
-            .hide(whitePiaoFragment!!)
-            .hide(inviteGiftFragment!!)
+            .hide(whitePiaoFragment ?: dailyCheckFragment!!)
+            .hide(inviteGiftFragment ?: dailyCheckFragment!!)
             .commit()
     }
 
@@ -244,8 +261,6 @@ class GiftActivity : BaseActivity() {
                 //啥也不干就可以
             }
         }
-
-        toCheckCanGetIntegral()
     }
 
     /**
@@ -263,15 +278,24 @@ class GiftActivity : BaseActivity() {
                             if (null != data) {
                                 if (data.daily_clock_in == 1 || data.limit_time == 1 || data.invite == 1) {
                                     EventBus.getDefault().postSticky(RedPointChange(true))
+                                    EventBus.getDefault().postSticky(
+                                        GiftShowPoint(
+                                            if (data.daily_clock_in == 1) GiftShowState.SHOW else GiftShowState.UN_SHOW,
+                                            if (data.limit_time == 1) GiftShowState.SHOW else GiftShowState.UN_SHOW,
+                                            if (data.invite == 1) GiftShowState.SHOW else GiftShowState.UN_SHOW
+                                        )
+                                    )
                                 } else {
                                     EventBus.getDefault().postSticky(RedPointChange(false))
                                 }
                             }
                         }
+
                         -1 -> {
                             ToastUtils.show(it.msg)
                             ActivityManager.toSplashActivity(this)
                         }
+
                         else -> {
                             ToastUtils.show(it.msg)
                         }

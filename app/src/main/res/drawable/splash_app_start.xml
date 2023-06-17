@@ -9,6 +9,6 @@
         android:width="@dimen/dp_79"
         android:height="@dimen/dp_79"
         android:gravity="center">
-        <bitmap android:src="@drawable/icon" />
+        <bitmap android:src="@drawable/icon_round" />
     </item>
 </layer-list>

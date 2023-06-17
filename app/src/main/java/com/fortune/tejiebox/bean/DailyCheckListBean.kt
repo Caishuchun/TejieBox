@@ -33,6 +33,7 @@ class DailyCheckListBean {
     class DataBean {
         var list: List<ListBean>? = null
         var is_clock_in: Int? = null
+        var is_open: Int? = null
 
         class ListBean {
             var type: Int? = null
