@@ -6,10 +6,8 @@ import android.content.Intent
 import android.graphics.Color
 import android.view.Gravity
 import android.view.LayoutInflater
-import com.fm.openinstall.OpenInstall
 import com.fortune.tejiebox.R
 import com.fortune.tejiebox.activity.DialogActivity
-import com.fortune.tejiebox.activity.InviteCodeActivity
 import com.fortune.tejiebox.activity.Login4AccountActivity
 import com.fortune.tejiebox.activity.LoginActivity
 import com.fortune.tejiebox.base.BaseAppUpdateSetting
@@ -118,7 +116,8 @@ object LoginUtils {
                 .setCheckboxHidden(false)
                 .setCheckBoxWidth(px2dp(activity, 24f))
                 .setCheckBoxHeight(px2dp(activity, 24f))
-                .setPrivacyState(isAgree
+                .setPrivacyState(
+                    isAgree
 //                        || !BaseAppUpdateSetting.isToPromoteVersion
                 )
                 .setCheckedImgDrawable(activity.getDrawable(R.drawable.checked))
@@ -208,9 +207,14 @@ object LoginUtils {
 
     /**
      * 阿里云一键登录
+     * @param directJumpLoginPage 是否直接跳转到登录界面
      */
     @SuppressLint("CheckResult")
-    fun toQuickLogin(activity: Activity) {
+    fun toQuickLogin(activity: Activity, directJumpLoginPage: Boolean = false) {
+        if(directJumpLoginPage){
+            toLogin(activity, false)
+            return
+        }
         isInit = false
         helper?.getLoginToken(activity, 1500)
         DialogUtils.showBeautifulDialog(activity)
@@ -230,101 +234,118 @@ object LoginUtils {
                 //获取token成功
                 toRealLogin4Ail(activity, tokenRet.token)
             }
+
             "600001" -> {
                 if (isInit) return
                 //唤起授权⻚成功
                 DialogUtils.dismissLoading()
             }
+
             "600002" -> {
                 if (isInit) return
                 //唤起授权⻚失败,建议切换到其他登录⽅式
                 hideLoadingAndQuitLoginPage()
                 toLogin(activity, true)
             }
+
             "600004" -> {
                 if (isInit) return
                 //获取运营商配置信息失败,创建⼯单联系⼯程师
                 hideLoadingAndQuitLoginPage()
                 toLogin(activity, false)
             }
+
             "600005" -> {
                 if (isInit) return
                 //⼿机终端不安全,切换到其他登录⽅式
                 hideLoadingAndQuitLoginPage()
                 toLogin(activity, false)
             }
+
             "600007" -> {
                 if (isInit) return
                 //未检测到sim卡,提示⽤户检查 SIM 卡后重试
                 hideLoadingAndQuitLoginPage()
                 toLogin(activity, false)
             }
+
             "600008" -> {
                 if (isInit) return
                 //蜂窝⽹络未开启,提示⽤户开启移动⽹络后重试
                 hideLoadingAndQuitLoginPage()
                 toLogin(activity, false)
             }
+
             "600009" -> {
                 if (isInit) return
                 //⽆法判断运营商,创建⼯单联系⼯程师
                 hideLoadingAndQuitLoginPage()
                 toLogin(activity, false)
             }
+
             "600010" -> {
                 if (isInit) return
                 //未知异常,创建⼯单联系⼯程师
                 hideLoadingAndQuitLoginPage()
                 toLogin(activity, false)
             }
+
             "600011" -> {
                 if (isInit) return
                 //创建⼯单联系⼯程师,切换到其他登录⽅式
                 hideLoadingAndQuitLoginPage()
                 toLogin(activity, false)
             }
+
             "600012" -> {
                 if (isInit) return
                 //预取号失败
                 hideLoadingAndQuitLoginPage()
                 toLogin(activity, true)
             }
+
             "600013" -> {
                 if (isInit) return
                 //运营商维护升级,该功能不可⽤,创建⼯单联系⼯程师
                 hideLoadingAndQuitLoginPage()
                 toLogin(activity, false)
             }
+
             "600014" -> {
                 if (isInit) return
                 //运营商维护升级，该功能已达最⼤调⽤次数,创建⼯单联系⼯程师
                 hideLoadingAndQuitLoginPage()
                 toLogin(activity, false)
             }
+
             "600015" -> {
                 if (isInit) return
                 //接⼝超时,切换到其他登录⽅式
                 hideLoadingAndQuitLoginPage()
                 toLogin(activity, false)
             }
+
             "600017" -> {
                 if (isInit) return
                 //AppID、Appkey解析失败
                 hideLoadingAndQuitLoginPage()
                 toLogin(activity, true)
             }
+
             "600021" -> {
                 if (isInit) return
                 //点击登录时检测到运营商已切换,提示⽤户退出授权⻚，重新登录
                 hideLoadingAndQuitLoginPage()
                 toLogin(activity, true)
             }
+
             "600023" -> {
                 if (isInit) return
                 //加载⾃定义控件异常
                 hideLoadingAndQuitLoginPage()
                 toLogin(activity, true)
             }
+
             "600024" -> {
                 //终端环境检查⽀持认证
                 helper?.accelerateLoginPage(3000, object : PreLoginResultListener {
@@ -339,21 +360,25 @@ object LoginUtils {
                     }
                 })
             }
+
             "600025" -> {
                 if (isInit) return
                 //终端检测参数错误,检查传⼊参数类型与范围是否正确
                 hideLoadingAndQuitLoginPage()
                 toLogin(activity, true)
             }
+
             "600026" -> {
                 if (isInit) return
                 //授权⻚已加载时不允许调⽤加速或预取号接⼝, 检查是否有授权⻚拉起后，去调⽤preLogin 或者accelerateAuthPage的接⼝，该⾏为不 允许
             }
+
             "700000" -> {
                 if (isInit) return
                 //点击返回，⽤户取消免密登录
                 hideLoadingAndQuitLoginPage()
             }
+
             "700001" -> {
                 if (isInit) return
                 //点击切换按钮，⽤户取消免密登录
@@ -400,6 +425,7 @@ object LoginUtils {
         SPUtils.putValue(SPArgument.PHONE_NUMBER, null)
         SPUtils.putValue(SPArgument.LOGIN_ACCOUNT, null)
         SPUtils.putValue(SPArgument.USER_ID, null)
+        SPUtils.putValue(SPArgument.USER_ID_NEW, null)
         SPUtils.putValue(SPArgument.IS_HAVE_ID, 0)
         SPUtils.putValue(SPArgument.ID_NAME, null)
         SPUtils.putValue(SPArgument.ID_NUM, null)
@@ -434,6 +460,7 @@ object LoginUtils {
                             SPUtils.putValue(SPArgument.PHONE_NUMBER, it.data?.phone)
                             SPUtils.putValue(SPArgument.LOGIN_ACCOUNT, it.data?.account)
                             SPUtils.putValue(SPArgument.USER_ID, it.data?.user_id)
+                            SPUtils.putValue(SPArgument.USER_ID_NEW, it.data?.user_id_raw)
                             SPUtils.putValue(SPArgument.IS_HAVE_ID, it.data?.id_card)
                             if (it.data?.id_card == 1) {
                                 SPUtils.putValue(SPArgument.ID_NAME, it.data?.card_name)
@@ -471,6 +498,7 @@ object LoginUtils {
                             )
                             hideLoadingAndQuitLoginPage()
                         }
+
                         else -> {
                             helper?.hideLoginLoading()
                             it.msg?.let { it1 -> ToastUtils.show(it1) }

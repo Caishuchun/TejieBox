@@ -150,8 +150,8 @@ class MainActivity : BaseActivity() {
             ToastUtils.show(getString(R.string.double_click_quit))
             canQuit = true
             Observable.timer(2, TimeUnit.SECONDS).subscribe {
-                    canQuit = false
-                }
+                canQuit = false
+            }
         }
     }
 
@@ -283,14 +283,17 @@ class MainActivity : BaseActivity() {
             }
         }
 
+        //TODO 这里是需要修改的
+        tab_main.isShowGiftIcon(BaseAppUpdateSetting.marketChannel == 0)
+
         RxView.clicks(tv_know).throttleFirst(200, TimeUnit.MILLISECONDS).subscribe {
-                SPUtils.putValue(SPArgument.IS_NEED_SHADE_NEW, false)
-                ll_shade_root.visibility = View.GONE
-            }
+            SPUtils.putValue(SPArgument.IS_NEED_SHADE_NEW, false)
+            ll_shade_root.visibility = View.GONE
+        }
 
         RxView.clicks(ll_shade_root).throttleFirst(200, TimeUnit.MILLISECONDS).subscribe {
-                //作用就是,禁止点击遮罩层下面的东西
-            }
+            //作用就是,禁止点击遮罩层下面的东西
+        }
 
         tab_main.setCurrentItem(0)
         toChangeFragment(0)
@@ -480,6 +483,7 @@ class MainActivity : BaseActivity() {
         if (loginStatusChange == null) {
             return
         }
+        SPUtils.putValue(SPArgument.ONLY_DEVICE_ID_NEW, GetDeviceId.getDeviceId(this))
         LogUtils.d("loginStatusChange.isLogin:${loginStatusChange.isLogin}")
         if (loginStatusChange.isLogin) {
             if (loginStatusChange.isHaveRewardInteger == null || !loginStatusChange.isHaveRewardInteger) {

@@ -71,7 +71,7 @@ object DialogUtils {
                 mDialog?.dismiss()
             }
         } catch (e: Exception) {
-
+            e.printStackTrace()
         } finally {
             getStarObservable?.dispose()
             getStarObservable = null

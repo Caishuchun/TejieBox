@@ -115,18 +115,16 @@ class MoreGameFragment : Fragment() {
                 RxView.clicks(itemView)
                     .throttleFirst(200, TimeUnit.MILLISECONDS)
                     .subscribe {
-//                        if (BaseAppUpdateSetting.isShangJiaVersion) {
-                        if (VersionBean.getData()?.isShowStartGameBtn == 0) {
-                            return@subscribe
-                        }
-                        if (MyApp.getInstance().isHaveToken()) {
-                            toGetAllAccount(
-                                itemData.game_id,
-                                itemData.game_name,
-                                itemData.game_channelId
-                            )
-                        } else {
-                            LoginUtils.toQuickLogin(requireActivity())
+                        if (VersionBean.getData()?.isShowStartGameBtn == 1) {
+                            if (MyApp.getInstance().isHaveToken()) {
+                                toGetAllAccount(
+                                    itemData.game_id,
+                                    itemData.game_name,
+                                    itemData.game_channelId
+                                )
+                            } else {
+                                LoginUtils.toQuickLogin(requireActivity())
+                            }
                         }
                     }
             }

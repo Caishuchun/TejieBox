@@ -1,6 +1,8 @@
 package com.fortune.tejiebox.fragment
 
 import android.annotation.SuppressLint
+import android.app.Activity
+import android.content.Intent
 import android.graphics.Color
 import android.os.Bundle
 import android.view.LayoutInflater
@@ -13,6 +15,7 @@ import com.bumptech.glide.load.engine.DiskCacheStrategy
 import com.fortune.tejiebox.R
 import com.fortune.tejiebox.activity.DialogActivity
 import com.fortune.tejiebox.activity.IntegralActivity
+import com.fortune.tejiebox.activity.VerificationCodeActivity
 import com.fortune.tejiebox.adapter.BaseAdapterWithPosition
 import com.fortune.tejiebox.base.BaseAppUpdateSetting
 import com.fortune.tejiebox.bean.RechargeListBean
@@ -281,6 +284,20 @@ class IntegralFragment : Fragment() {
                         -1 -> {
                             ToastUtils.show(it.msg)
                             ActivityManager.toSplashActivity(requireActivity())
+                        }
+
+                        4 -> {
+                            val intent = Intent(
+                                requireContext(),
+                                VerificationCodeActivity::class.java
+                            )
+                            val bundle = Bundle()
+                            bundle.putSerializable(
+                                VerificationCodeActivity.TYPE,
+                                VerificationCodeActivity.TITLE.FIRST_USE_BALANCE
+                            )
+                            intent.putExtras(bundle)
+                            requireActivity().startActivity(intent)
                         }
 
                         else -> {

@@ -8,7 +8,6 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
-import com.fm.openinstall.OpenInstall
 import com.fortune.tejiebox.R
 import com.fortune.tejiebox.activity.DialogActivity
 import com.fortune.tejiebox.activity.MainActivity
@@ -78,9 +77,11 @@ class LoginSecondFragment() : Fragment() {
                 currentTimeMillis - oldTimeMillis > 60 * 1000 -> {
                     //当前时间超过历史时间1分钟,重新倒计时
                 }
+
                 currentTimeMillis < oldTimeMillis -> {
                     //当前时间小于历史时间,说明重新开机过,重新倒计时
                 }
+
                 else -> {
                     //直接获取剩余时间,倒计时
                     lastTime -= ((currentTimeMillis - oldTimeMillis) / 1000).toInt()
@@ -171,6 +172,7 @@ class LoginSecondFragment() : Fragment() {
         SPUtils.putValue(SPArgument.PHONE_NUMBER, null)
         SPUtils.putValue(SPArgument.LOGIN_ACCOUNT, null)
         SPUtils.putValue(SPArgument.USER_ID, null)
+        SPUtils.putValue(SPArgument.USER_ID_NEW, null)
         SPUtils.putValue(SPArgument.IS_HAVE_ID, 0)
         SPUtils.putValue(SPArgument.ID_NAME, null)
         SPUtils.putValue(SPArgument.ID_NUM, null)
@@ -190,6 +192,7 @@ class LoginSecondFragment() : Fragment() {
                             SPUtils.putValue(SPArgument.LOGIN_ACCOUNT, it.data?.account)
                             SPUtils.putValue(SPArgument.IS_HAVE_ID, it.data?.id_card)
                             SPUtils.putValue(SPArgument.USER_ID, it.data?.user_id)
+                            SPUtils.putValue(SPArgument.USER_ID_NEW, it.data?.user_id_raw)
                             if (it.data?.id_card == 1) {
                                 SPUtils.putValue(SPArgument.ID_NAME, it.data?.card_name)
                                 SPUtils.putValue(SPArgument.ID_NUM, it.data?.car_num)
@@ -225,6 +228,7 @@ class LoginSecondFragment() : Fragment() {
                             )
                             requireActivity().finish()
                         }
+
                         else -> {
                             it.msg?.let { it1 -> ToastUtils.show(it1) }
                             et_login_second_code.setText("")
@@ -269,11 +273,13 @@ class LoginSecondFragment() : Fragment() {
             0 -> {
                 view.tv_code_1.setBackgroundResource(R.drawable.bg_code_entering)
             }
+
             1 -> {
                 view.tv_code_2.setBackgroundResource(R.drawable.bg_code_entering)
                 view.tv_code_1.text = code[0].toString()
                 view.tv_code_1.setBackgroundResource(R.drawable.bg_code_entered)
             }
+
             2 -> {
                 view.tv_code_3.setBackgroundResource(R.drawable.bg_code_entering)
                 view.tv_code_1.text = code[0].toString()
@@ -281,6 +287,7 @@ class LoginSecondFragment() : Fragment() {
                 view.tv_code_1.setBackgroundResource(R.drawable.bg_code_entered)
                 view.tv_code_2.setBackgroundResource(R.drawable.bg_code_entered)
             }
+
             3 -> {
                 view.tv_code_4.setBackgroundResource(R.drawable.bg_code_entering)
                 view.tv_code_1.text = code[0].toString()
@@ -290,6 +297,7 @@ class LoginSecondFragment() : Fragment() {
                 view.tv_code_2.setBackgroundResource(R.drawable.bg_code_entered)
                 view.tv_code_3.setBackgroundResource(R.drawable.bg_code_entered)
             }
+
             4 -> {
                 view.tv_code_5.setBackgroundResource(R.drawable.bg_code_entering)
                 view.tv_code_1.text = code[0].toString()
@@ -301,6 +309,7 @@ class LoginSecondFragment() : Fragment() {
                 view.tv_code_3.setBackgroundResource(R.drawable.bg_code_entered)
                 view.tv_code_4.setBackgroundResource(R.drawable.bg_code_entered)
             }
+
             5 -> {
                 view.tv_code_6.setBackgroundResource(R.drawable.bg_code_entering)
                 view.tv_code_1.text = code[0].toString()
@@ -314,6 +323,7 @@ class LoginSecondFragment() : Fragment() {
                 view.tv_code_4.setBackgroundResource(R.drawable.bg_code_entered)
                 view.tv_code_5.setBackgroundResource(R.drawable.bg_code_entered)
             }
+
             6 -> {
                 view.tv_code_1.text = code[0].toString()
                 view.tv_code_2.text = code[1].toString()
@@ -347,6 +357,7 @@ class LoginSecondFragment() : Fragment() {
                         1 -> {
                             toShowTime(view)
                         }
+
                         else -> {
                             ToastUtils.show(it.msg)
                         }

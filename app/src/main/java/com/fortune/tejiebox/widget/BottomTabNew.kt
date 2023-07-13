@@ -51,10 +51,16 @@ class BottomTabNew(context: Context, attrs: AttributeSet) : LinearLayout(context
     }
 
     /**
+     * 是否显示白嫖图标
+     */
+    fun isShowGiftIcon(isShow: Boolean) {
+        mView.iv_bottomTab_whitePiao.visibility = if (isShow) View.VISIBLE else View.GONE
+    }
+
+    /**
      * 小红点的展示与否
      */
     fun showRedPoint(isShow: Boolean) {
-//        mView.iv_bottomTab_me_point.visibility = if (isShow) View.VISIBLE else View.GONE
         isIconFlip(isShow)
     }
 

@@ -146,7 +146,8 @@ object RetrofitUtils {
         @FormUrlEncoded
         @POST(HttpUrls.SEND_CODE_4_CHANGE_PHONE)
         fun sendCode4changePhone(
-            @Field("phone", encoded = true) phone: String
+            @Field("phone", encoded = true) phone: String,
+            @Field("type", encoded = true) type: Int? = null,
         ): Flowable<BaseBean>
 
         /**
@@ -156,7 +157,9 @@ object RetrofitUtils {
         @POST(HttpUrls.CHANGE_PHONE)
         fun changePhone(
             @Field("phone", encoded = true) phone: String,
-            @Field("captcha", encoded = true) captcha: Int
+            @Field("captcha", encoded = true) captcha: Int,
+            @Field("old_phone", encoded = true) old_phone: String,
+            @Field("old_captcha", encoded = true) old_captcha: String
         ): Flowable<BaseBean>
 
         /**
@@ -592,5 +595,27 @@ object RetrofitUtils {
             @Field("share_id", encoded = true) share_id: Int,
             @Field("h_id", encoded = true) h_id: Int
         ): Flowable<DailyCheckBean>
+
+        /**
+         * 校验短信验证码
+         */
+        @FormUrlEncoded
+        @POST(HttpUrls.VERIFICATION_CODE)
+        fun verificationCode(
+            @Field("phone", encoded = true) phone: String,
+            @Field("captcha", encoded = true) captcha: String,
+            @Field("type", encoded = true) type: Int,
+        ): Flowable<BaseBean>
+
+        /**
+         * 校验短信验证码
+         */
+        @FormUrlEncoded
+        @POST(HttpUrls.CHECK_ACCOUNT_PHONE)
+        fun checkAccountAndPhone(
+            @Field("phone", encoded = true) phone: String,
+            @Field("account", encoded = true) account: String
+        ): Flowable<BaseBean>
+
     }
 }

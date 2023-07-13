@@ -8,16 +8,12 @@ import android.graphics.*
 import android.os.Build
 import android.os.Bundle
 import android.webkit.WebView
-import com.fortune.tejiebox.base.BaseAppUpdateSetting
 import com.fortune.tejiebox.constants.SPArgument
 import com.fortune.tejiebox.utils.*
 import com.orhanobut.logger.AndroidLogAdapter
 import com.orhanobut.logger.FormatStrategy
 import com.orhanobut.logger.Logger
 import com.orhanobut.logger.PrettyFormatStrategy
-import com.umeng.analytics.MobclickAgent
-import com.umeng.commonsdk.UMConfigure
-import com.umeng.umcrash.UMCrash
 
 /**
  * MyApp

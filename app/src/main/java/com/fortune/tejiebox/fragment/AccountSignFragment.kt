@@ -386,6 +386,7 @@ class AccountSignFragment : Fragment() {
         SPUtils.putValue(SPArgument.LOGIN_ACCOUNT, null)
         SPUtils.putValue(SPArgument.LOGIN_ACCOUNT_PASS, null)
         SPUtils.putValue(SPArgument.USER_ID, null)
+        SPUtils.putValue(SPArgument.USER_ID_NEW, null)
         SPUtils.putValue(SPArgument.IS_HAVE_ID, 0)
         SPUtils.putValue(SPArgument.ID_NAME, null)
         SPUtils.putValue(SPArgument.ID_NUM, null)
@@ -404,6 +405,7 @@ class AccountSignFragment : Fragment() {
                         SPUtils.putValue(SPArgument.LOGIN_ACCOUNT, it.data?.account)
                         SPUtils.putValue(SPArgument.LOGIN_ACCOUNT_PASS, pass)
                         SPUtils.putValue(SPArgument.USER_ID, it.data?.user_id)
+                        SPUtils.putValue(SPArgument.USER_ID_NEW, it.data?.user_id_raw)
                         SPUtils.putValue(SPArgument.IS_HAVE_ID, it.data?.id_card)
                         if (it.data?.id_card == 1) {
                             SPUtils.putValue(SPArgument.ID_NAME, it.data?.card_name)

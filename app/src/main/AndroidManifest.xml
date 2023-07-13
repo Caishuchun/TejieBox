@@ -54,6 +54,11 @@
         tools:ignore="LockedOrientationActivity,UnusedAttribute"
         tools:replace="android:icon,android:theme,android:name,android:allowBackup">
         <activity
+            android:name=".activity.VerificationCodeActivity"
+            android:screenOrientation="portrait"
+            android:theme="@style/ActivityTheme4Dialog" />
+
+        <activity
             android:name=".activity.PrivacyActivity"
             android:screenOrientation="portrait" />
         <activity
@@ -104,6 +109,7 @@
         </activity>
         <activity
             android:name=".activity.DialogActivity"
+            android:screenOrientation="portrait"
             android:theme="@style/ActivityTheme4Dialog" />
         <activity
             android:name=".activity.IntegralActivity"
@@ -202,8 +208,7 @@
             android:name="com.tencent.connect.common.AssistActivity"
             android:configChanges="orientation|keyboardHidden"
             android:screenOrientation="behind"
-            android:theme="@android:style/Theme.Translucent.NoTitleBar"/>
-        <!--qq分享-->
+            android:theme="@android:style/Theme.Translucent.NoTitleBar" /> <!-- qq分享 -->
         <activity
             android:name="com.tencent.tauth.AuthActivity"
             android:launchMode="singleTask"
@@ -218,4 +223,5 @@
             </intent-filter>
         </activity>
     </application>
+
 </manifest>

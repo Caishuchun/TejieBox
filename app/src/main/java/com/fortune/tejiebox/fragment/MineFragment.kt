@@ -10,6 +10,7 @@ import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import com.fortune.tejiebox.R
 import com.fortune.tejiebox.activity.*
+import com.fortune.tejiebox.base.BaseAppUpdateSetting
 import com.fortune.tejiebox.constants.SPArgument
 import com.fortune.tejiebox.event.IsHaveIdChange
 import com.fortune.tejiebox.event.LoginStatusChange
@@ -51,6 +52,15 @@ class MineFragment : Fragment() {
 
     @SuppressLint("SetTextI18n")
     private fun initView() {
+
+        mView?.ll_mineFragment_privacy?.let {
+            if (BaseAppUpdateSetting.marketChannel == 0) {
+                it.visibility = View.GONE
+            } else {
+                it.visibility = View.VISIBLE
+            }
+        }
+
         mView?.tv_mineFragment_phone?.let {
             if (MyApp.getInstance().isHaveToken()) {
                 val phone = SPUtils.getString(SPArgument.PHONE_NUMBER)
@@ -90,6 +100,19 @@ class MineFragment : Fragment() {
             } else {
                 it.text = "未认证"
                 it.setTextColor(Color.parseColor("#FF982E"))
+            }
+        }
+
+        mView?.tv_mineFragment_userId?.let {
+            if (MyApp.getInstance().isHaveToken()) {
+                val userId = SPUtils.getString(SPArgument.USER_ID_NEW)
+                if (userId == null) {
+                    it.text = "重新登录获取"
+                } else {
+                    it.text = userId
+                }
+            } else {
+                it.text = "未登录"
             }
         }
 
@@ -221,6 +244,20 @@ class MineFragment : Fragment() {
                     )
                 }
         }
+
+        mView?.ll_mineFragment_logOff?.let {
+            RxView.clicks(it)
+                .throttleFirst(200, TimeUnit.MILLISECONDS)
+                .subscribe {
+                    DialogUtils.showOnlySureDialog(
+                        requireContext(),
+                        "账号注销",
+                        "确定要注销账号吗?\n若您需要注销账号, 请联系我们的QQ客服 3111423308 , 预计在3-5个工作日内完成",
+                        "确定",
+                        false, null
+                    )
+                }
+        }
     }
 
     @SuppressLint("SetTextI18n")
@@ -267,6 +304,19 @@ class MineFragment : Fragment() {
             } else {
                 it.text = "未认证"
                 it.setTextColor(Color.parseColor("#FF982E"))
+            }
+        }
+
+        mView?.tv_mineFragment_userId?.let {
+            if (MyApp.getInstance().isHaveToken()) {
+                val userId = SPUtils.getString(SPArgument.USER_ID_NEW)
+                if (userId == null) {
+                    it.text = "重新登录获取"
+                } else {
+                    it.text = userId
+                }
+            } else {
+                it.text = "未登录"
             }
         }
 

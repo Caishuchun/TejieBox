@@ -9,6 +9,7 @@ import com.fortune.tejiebox.fragment.IntegralFragment
 import com.fortune.tejiebox.fragment.RoleFragment
 import com.fortune.tejiebox.utils.StatusBarUtils
 import com.jakewharton.rxbinding2.view.RxView
+import com.umeng.analytics.MobclickAgent
 import kotlinx.android.synthetic.main.activity_integral.*
 import java.util.concurrent.TimeUnit
 
@@ -110,5 +111,15 @@ class IntegralActivity : BaseActivity() {
     }
 
     override fun destroy() {
+    }
+
+    override fun onResume() {
+        super.onResume()
+        MobclickAgent.onResume(this)
+    }
+
+    override fun onPause() {
+        super.onPause()
+        MobclickAgent.onPause(this)
     }
 }

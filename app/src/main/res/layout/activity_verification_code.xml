@@ -1,0 +1,161 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="#50000000"
+    tools:context=".activity.VerificationCodeActivity">
+
+    <LinearLayout
+        android:layout_width="@dimen/dp_250"
+        android:layout_height="wrap_content"
+        android:layout_centerInParent="true"
+        android:background="@drawable/bg_white_card"
+        android:orientation="vertical">
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/dp_40">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_centerInParent="true"
+                android:text="安全校验"
+                android:textColor="@color/black_1A241F"
+                android:textSize="@dimen/sp_16"
+                android:textStyle="bold" />
+
+            <ImageView
+                android:id="@+id/iv_verification_code_close"
+                android:layout_width="@dimen/dp_40"
+                android:layout_height="@dimen/dp_40"
+                android:layout_alignParentEnd="true"
+                android:padding="@dimen/dp_5"
+                android:src="@mipmap/delete_search" />
+
+        </RelativeLayout>
+
+        <TextView
+            android:id="@+id/tv_verification_code_title"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/dp_10"
+            android:gravity="center"
+            android:text="首次签到"
+            android:textColor="@color/black_1A241F"
+            android:textSize="@dimen/sp_14"
+            android:textStyle="bold" />
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/dp_10"
+            android:gravity="center"
+            android:text="需要进行短信验证码校验"
+            android:textColor="@color/black_1A241F"
+            android:textSize="@dimen/sp_12" />
+
+        <TextView
+            android:id="@+id/tv_verification_code_phone"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/dp_20"
+            android:layout_marginBottom="@dimen/dp_20"
+            android:gravity="center"
+            android:text="188****7718"
+            android:textColor="@color/black_1A241F"
+            android:textSize="@dimen/sp_18"
+            android:textStyle="bold" />
+
+
+        <LinearLayout
+            android:id="@+id/ll_verification_code_phone"
+            android:layout_width="wrap_content"
+            android:layout_height="@dimen/dp_40"
+            android:layout_gravity="center_horizontal"
+            android:layout_marginTop="@dimen/dp_20"
+            android:layout_marginBottom="@dimen/dp_20"
+            android:gravity="center"
+            android:orientation="horizontal"
+            android:visibility="gone">
+
+            <EditText
+                android:id="@+id/et_verification_code_phoneStart"
+                android:layout_width="@dimen/dp_100"
+                android:layout_height="match_parent"
+                android:gravity="center"
+                android:hint="补全手机号"
+                android:inputType="number"
+                android:maxLength="7"
+                android:maxLines="1"
+                android:singleLine="true"
+                android:textColor="@color/black_1A241F"
+                android:textSize="@dimen/sp_16" />
+
+            <TextView
+                android:id="@+id/tv_verification_code_phoneEnd"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="7718"
+                android:textColor="@color/black_1A241F"
+                android:textSize="@dimen/sp_18" />
+
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_horizontal"
+            android:gravity="center"
+            android:orientation="horizontal">
+
+            <View
+                android:layout_width="@dimen/dp_60"
+                android:layout_height="@dimen/dp_30"
+                android:layout_margin="@dimen/dp_10"
+                android:visibility="invisible" />
+
+            <EditText
+                android:id="@+id/et_verification_code_code"
+                android:layout_width="0dp"
+                android:layout_height="@dimen/dp_40"
+                android:layout_weight="1"
+                android:gravity="center"
+                android:hint="验证码"
+                android:inputType="number"
+                android:maxLength="6"
+                android:maxLines="1"
+                android:singleLine="true"
+                android:textColor="@color/black_1A241F"
+                android:textSize="@dimen/sp_16" />
+
+            <TextView
+                android:id="@+id/tv_verification_code_send"
+                android:layout_width="@dimen/dp_60"
+                android:layout_height="@dimen/dp_30"
+                android:layout_margin="@dimen/dp_10"
+                android:background="@drawable/bg_start_btn_circle"
+                android:gravity="center"
+                android:text="发送"
+                android:textColor="@color/white_FFFFFF"
+                android:textSize="@dimen/sp_14" />
+        </LinearLayout>
+
+        <TextView
+            android:id="@+id/tv_verification_code_sure"
+            android:layout_width="@dimen/dp_150"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_horizontal"
+            android:layout_margin="@dimen/dp_20"
+            android:background="@drawable/bg_start_btn_big"
+            android:gravity="center"
+            android:paddingTop="@dimen/dp_5"
+            android:paddingBottom="@dimen/dp_5"
+            android:text="立即验证"
+            android:textColor="@color/white_FFFFFF"
+            android:textSize="@dimen/sp_16" />
+
+    </LinearLayout>
+
+</RelativeLayout>

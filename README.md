@@ -5,6 +5,11 @@
 2. git config --global http.proxy 127.0.0.1:7890
 3. git config --global https.proxy 127.0.0.1:7890
 
+### V3.2.9
+1. 新增短信验证码校验
+2. 用户id外显
+3. 小bug
+
 ### V3.2.8
 1. 单开区时间异常修复
 2. 白嫖限制, 邀请分享外迁移

@@ -608,6 +608,14 @@ class GameDetailActivity : BaseActivity() {
                 space_detail_bottom_tab.visibility = View.GONE
             }
         }
+
+        if (VersionBean.getData()?.isShowStartGameBtn == 0) {
+            space_detail_button.visibility = View.GONE
+            ll_detail_start.visibility = View.GONE
+        } else {
+            space_detail_button.visibility = View.VISIBLE
+            ll_detail_start.visibility = View.VISIBLE
+        }
     }
 
     /**

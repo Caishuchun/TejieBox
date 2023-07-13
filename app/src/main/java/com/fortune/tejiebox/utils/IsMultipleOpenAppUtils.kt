@@ -1,6 +1,14 @@
 package com.fortune.tejiebox.utils
 
 import android.content.Context
+import android.os.Build
+import android.os.Process
+import com.fortune.tejiebox.bean.ShelfDataBean
+import com.snail.antifake.jni.EmulatorDetectUtil
+import java.io.File
+import java.io.FileOutputStream
+import java.nio.file.Files
+import java.nio.file.Paths
 
 /**
  * 用于判断是否多开
@@ -9,11 +17,101 @@ object IsMultipleOpenAppUtils {
 
     /**
      * 是否算是多开
-     * 一棒子打死系列, 只要安装有多开应用的设备都不行
      */
     fun isMultipleOpenApp(context: Context): Boolean {
+        ShelfDataBean.getData()?.let {
+            if (it.multipleOpenAppType == 1) {
+                return isDualApp4System() || isDualApp4App(context) || isDualApp4Ex(context)
+            }
+        }
+        //一棒子打死系列, 只要安装有多开应用的设备都不行
         return checkByOriginApkPackageName(context)
     }
+
+    /**
+     * 反系统级应用多开
+     */
+    private fun isDualApp4System(): Boolean {
+        val isDualApp4System = 0 != Process.myUid() / 100000
+        LogUtils.d("isMultipleOpenApp==>isDualApp4System=$isDualApp4System")
+        return isDualApp4System
+    }
+
+    /**
+     * 反应用级应用多开
+     */
+    private fun isDualApp4App(context: Context): Boolean {
+        val isDualApp4App = try {
+            val dataDir = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+                context.applicationContext.dataDir.toString()
+            } else {
+                val manager = context.packageManager
+                manager.getPackageInfo(context.packageName, 0).applicationInfo.dataDir.toString()
+            }
+            val file = File(dataDir + File.separator + "..")
+            file.canRead()
+        } catch (e: Exception) {
+            e.printStackTrace()
+            false
+        }
+        LogUtils.d("isMultipleOpenApp==>isDualApp4App=$isDualApp4App")
+        return isDualApp4App
+    }
+
+    /**
+     * 反应用级应用多开加强版
+     */
+    private fun isDualApp4Ex(context: Context): Boolean {
+        val isDualApp4Ex = try {
+            val simpleName = "DualApp"
+            val dataDir = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+                context.applicationContext.dataDir.toString()
+            } else {
+                val manager = context.packageManager
+                manager.getPackageInfo(context.packageName, 0).applicationInfo.dataDir.toString()
+            }
+            val testPath = dataDir + File.separator + simpleName
+            val fos = FileOutputStream(testPath)
+            val fileDescriptor = fos.fd
+            val fid_decriptor = fileDescriptor.javaClass.getDeclaredField("descriptor")
+            fid_decriptor.isAccessible = true
+            //获取fd
+            val fd = fid_decriptor.get(fileDescriptor) as Int
+            //fd 反查真实路径
+            val fdPath = String.format("/proc/self/fd/%d", fd)
+            val realPath = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+                Files.readSymbolicLink(Paths.get(fdPath)).toString()
+            } else {
+                //但版本模拟器都不支持多开应用，所以这里不做兼容设计，直接返回null
+                null
+            }
+            LogUtils.d("isMultipleOpenApp==>realPath=$realPath")
+            if (realPath == null) {
+                return false
+            }
+            if (!realPath.startsWith("/data/user/0/") && !EmulatorDetectUtil.isEmulator(context)) {
+                //不是正常的data目录
+                true
+            } else if (realPath.substring(realPath.lastIndexOf(File.separator)) != File.separator + simpleName) {
+                // 文件名被修改
+                true
+            } else {
+                //尝试访问真实路径的父目录
+                val fatherDirPath = realPath.replace(simpleName, "..")
+                LogUtils.d("isMultipleOpenApp==>fatherDirPath=$fatherDirPath")
+                File(fatherDirPath).canRead()
+            }
+        } catch (e: ClassNotFoundException) {
+            e.printStackTrace()
+            false
+        } catch (e: Exception) {
+            e.printStackTrace()
+            false
+        }
+        LogUtils.d("isMultipleOpenApp==>isDualApp4Ex=$isDualApp4Ex")
+        return isDualApp4Ex
+    }
+
 
     /**
      * 维护一份市面多开应用的包名列表
@@ -88,3 +186,4 @@ object IsMultipleOpenAppUtils {
         return false
     }
 }
+

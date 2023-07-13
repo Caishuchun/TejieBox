@@ -43,4 +43,7 @@ object SPArgument {
     const val OPEN_INSTALL_INFO_INVITE = "openInstallInfoInvite" //openInstall传递的值_分享来的
 
     const val GET_GAME_LIST_TIME = "getGameListTime" //获取游戏列表的时间
+
+    const val VERIFICATION_CODE_TIME = "verification_code_time" //获取验证码的时间
+    const val USER_ID_NEW = "user_id_new" //明文userid
 }

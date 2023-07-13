@@ -726,46 +726,7 @@ class CustomerServiceActivity : BaseActivity() {
      */
     @SuppressLint("SimpleDateFormat")
     private fun formatChatTime(chatTime: Long): String {
-        return  getTime(chatTime)
-
-//        val simpleDateFormat = SimpleDateFormat("yyyy年MM月dd日 HH:mm:ss")
-//        // 聊天时间
-//        val chatTimeStr = simpleDateFormat.format(chatTime)
-//        // 当前时间
-//        val currentTime = System.currentTimeMillis()
-//        val currentTimeStr = simpleDateFormat.format(currentTime)
-//        // 今日0点时间
-//        val todayZeroTimeStr = "${currentTimeStr.split(" ")[0]} 00:00:00"
-//        val todayZeroTime = simpleDateFormat.parse(todayZeroTimeStr).time
-//        // 昨日零点时间
-//        val yesterdayZeroTime = todayZeroTime - 1000 * 60 * 60 * 24L
-//        // 时隔一年的时间
-//        val oneYearTime = currentTime - 1000 * 60 * 60 * 24 * 365L
-//
-//        val result = when {
-//            chatTime > todayZeroTime -> {
-//                // 今日发送的消息
-//                val sb = SimpleDateFormat("HH:mm")
-//                sb.format(chatTime)
-//            }
-//
-//            chatTime >= yesterdayZeroTime + 1 && chatTime <= todayZeroTime -> {
-//                // 昨天发送的消息
-//                val sb = SimpleDateFormat("HH:mm")
-//                "昨天 ${sb.format(chatTime)}"
-//            }
-//
-//            chatTime >= oneYearTime + 1 && chatTime <= yesterdayZeroTime -> {
-//                // 其他时间
-//                val sb = SimpleDateFormat("MM月dd日 HH:mm")
-//                sb.format(chatTime)
-//            }
-//
-//            else -> {
-//                chatTimeStr
-//            }
-//        }
-//        return result.replace(" ", "\n")
+        return getTime(chatTime)
     }
 
     /**
@@ -813,45 +774,50 @@ class CustomerServiceActivity : BaseActivity() {
         sendMsgObservable = sendMsg.subscribeOn(Schedulers.io())
             .observeOn(AndroidSchedulers.mainThread())
             .subscribe({
-                when (it.code) {
-                    1 -> {
-                        if (type == 2) {
-                            customerServiceInfo4Pic?.chat_id = it.data.chat_id
-                            mCustomerServiceDao.addInfo(customerServiceInfo4Pic!!)
-                            rv_customerService_info?.scrollToPosition(mData.size - 1)
-                            picNum++
-                            if (isUploadPicOver == true && picNum >= 3) {
-                                picNum = 0
-                                //图片上传结束, 且图片个数大于等于3张, 则
-                                Thread.sleep(200)
-                                val customerServiceInfo4Response = CustomerServiceInfo(
-                                    System.currentTimeMillis().toInt(), 0,
-                                    4, "2", null, null, null,
-                                    System.currentTimeMillis(),
-                                    1
+                if (it != null) {
+                    when (it.code) {
+                        1 -> {
+                            if (type == 2) {
+                                customerServiceInfo4Pic?.chat_id = it.data.chat_id
+                                mCustomerServiceDao.addInfo(customerServiceInfo4Pic!!)
+                                rv_customerService_info?.scrollToPosition(mData.size - 1)
+                                picNum++
+                                if (isUploadPicOver == true && picNum >= 3) {
+                                    picNum = 0
+                                    //图片上传结束, 且图片个数大于等于3张, 则
+                                    Thread.sleep(200)
+                                    val customerServiceInfo4Response = CustomerServiceInfo(
+                                        System.currentTimeMillis().toInt(), 0,
+                                        4, "2", null, null, null,
+                                        System.currentTimeMillis(),
+                                        1
+                                    )
+                                    mCustomerServiceDao.addInfo(customerServiceInfo4Response)
+                                    val oldSize = mData.size
+                                    mData.add(customerServiceInfo4Response)
+                                    mAdapter?.notifyItemChanged(oldSize)
+                                    rv_customerService_info.scrollToPosition(oldSize)
+                                }
+                            } else {
+                                et_customerService_msg.setText("")
+                                val customerServiceInfo = CustomerServiceInfo(
+                                    it.data.chat_id,
+                                    1, 1, msg,
+                                    null, null, null,
+                                    System.currentTimeMillis(), 1
                                 )
-                                mCustomerServiceDao.addInfo(customerServiceInfo4Response)
-                                val oldSize = mData.size
-                                mData.add(customerServiceInfo4Response)
-                                mAdapter?.notifyItemChanged(oldSize)
-                                rv_customerService_info.scrollToPosition(oldSize)
+                                mData.add(customerServiceInfo)
+                                mCustomerServiceDao.addInfo(customerServiceInfo)
+                                rv_customerService_info?.scrollToPosition(mData.size - 1)
                             }
-                        } else {
-                            et_customerService_msg.setText("")
-                            val customerServiceInfo = CustomerServiceInfo(
-                                it.data.chat_id,
-                                1, 1, msg,
-                                null, null, null,
-                                System.currentTimeMillis(), 1
-                            )
-                            mData.add(customerServiceInfo)
-                            mCustomerServiceDao.addInfo(customerServiceInfo)
-                            rv_customerService_info?.scrollToPosition(mData.size - 1)
+                        }
+
+                        else -> {
+                            ToastUtils.show(it.msg)
                         }
                     }
-                    else -> {
-                        ToastUtils.show(getString(R.string.network_fail_to_responseDate))
-                    }
+                } else {
+                    ToastUtils.show(getString(R.string.network_fail_to_responseDate))
                 }
             }, {
                 ToastUtils.show(HttpExceptionUtils.getExceptionMsg(this, it))

@@ -185,4 +185,10 @@ object HttpUrls {
 
     //新邀请列表的领取积分
     const val INVITE_LIST_GET_RECHARGE = "/android/activity.invite/newReceive"
+
+    //短信验证码的校验
+    const val VERIFICATION_CODE = "/android/user/codeVerify"
+
+    //账号和手机号关联性检查
+    const val CHECK_ACCOUNT_PHONE = "/android/v2.accountLogin/checkAccount"
 }

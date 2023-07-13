@@ -2,6 +2,7 @@ package com.fortune.tejiebox.activity
 
 import android.animation.ValueAnimator
 import android.annotation.SuppressLint
+import android.content.Intent
 import android.os.Bundle
 import android.view.animation.LinearInterpolator
 import androidx.fragment.app.Fragment
@@ -326,5 +327,15 @@ class GiftActivity : BaseActivity() {
     override fun onPause() {
         super.onPause()
         MobclickAgent.onPause(this)
+    }
+
+    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+        super.onActivityResult(requestCode, resultCode, data)
+        val fragments = supportFragmentManager.fragments
+        if (fragments.size > 0) {
+            for (fragment in fragments) {
+                fragment.onActivityResult(requestCode, resultCode, data)
+            }
+        }
     }
 }

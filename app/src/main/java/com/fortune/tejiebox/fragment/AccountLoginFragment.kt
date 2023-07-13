@@ -8,25 +8,38 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
-import com.fm.openinstall.OpenInstall
 import com.fortune.tejiebox.R
 import com.fortune.tejiebox.activity.DialogActivity
 import com.fortune.tejiebox.activity.Login4AccountActivity
 import com.fortune.tejiebox.activity.LoginActivity
+import com.fortune.tejiebox.activity.VerificationCodeActivity
 import com.fortune.tejiebox.activity.WebActivity
 import com.fortune.tejiebox.base.BaseAppUpdateSetting
 import com.fortune.tejiebox.constants.SPArgument
 import com.fortune.tejiebox.event.LoginStatusChange
 import com.fortune.tejiebox.http.RetrofitUtils
-import com.fortune.tejiebox.utils.*
+import com.fortune.tejiebox.utils.DialogUtils
+import com.fortune.tejiebox.utils.HttpExceptionUtils
+import com.fortune.tejiebox.utils.LogUtils
+import com.fortune.tejiebox.utils.PromoteUtils
+import com.fortune.tejiebox.utils.SPUtils
+import com.fortune.tejiebox.utils.ToastUtils
 import com.google.gson.Gson
 import com.jakewharton.rxbinding2.view.RxView
 import com.jakewharton.rxbinding2.widget.RxTextView
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.Disposable
 import io.reactivex.schedulers.Schedulers
-import kotlinx.android.synthetic.main.fragment_account_login.view.*
-import kotlinx.android.synthetic.main.fragment_login_normal.view.*
+import kotlinx.android.synthetic.main.fragment_account_login.view.cb_account_login
+import kotlinx.android.synthetic.main.fragment_account_login.view.et_account_login_account
+import kotlinx.android.synthetic.main.fragment_account_login.view.et_account_login_pass
+import kotlinx.android.synthetic.main.fragment_account_login.view.iv_account_login_back
+import kotlinx.android.synthetic.main.fragment_account_login.view.iv_account_login_pass
+import kotlinx.android.synthetic.main.fragment_account_login.view.iv_account_login_title
+import kotlinx.android.synthetic.main.fragment_account_login.view.tv_account_login_login
+import kotlinx.android.synthetic.main.fragment_account_login.view.tv_account_login_privacyAgreement
+import kotlinx.android.synthetic.main.fragment_account_login.view.tv_account_login_sign
+import kotlinx.android.synthetic.main.fragment_account_login.view.tv_account_login_userAgreement
 import org.greenrobot.eventbus.EventBus
 import java.util.concurrent.TimeUnit
 
@@ -178,9 +191,11 @@ class AccountLoginFragment : Fragment() {
             account.length < 8 -> {
                 ToastUtils.show("登录账号长度不足8位字符")
             }
+
             pass.length < 8 -> {
                 ToastUtils.show("登录密码长度不足8位字符")
             }
+
             else -> {
                 toLogin(account, pass)
             }
@@ -196,6 +211,7 @@ class AccountLoginFragment : Fragment() {
         SPUtils.putValue(SPArgument.LOGIN_ACCOUNT, null)
         SPUtils.putValue(SPArgument.LOGIN_ACCOUNT_PASS, null)
         SPUtils.putValue(SPArgument.USER_ID, null)
+        SPUtils.putValue(SPArgument.USER_ID_NEW, null)
         SPUtils.putValue(SPArgument.IS_HAVE_ID, 0)
         SPUtils.putValue(SPArgument.ID_NAME, null)
         SPUtils.putValue(SPArgument.ID_NUM, null)
@@ -214,6 +230,7 @@ class AccountLoginFragment : Fragment() {
                         SPUtils.putValue(SPArgument.LOGIN_ACCOUNT, it.data?.account)
                         SPUtils.putValue(SPArgument.LOGIN_ACCOUNT_PASS, pass)
                         SPUtils.putValue(SPArgument.USER_ID, it.data?.user_id)
+                        SPUtils.putValue(SPArgument.USER_ID_NEW, it.data?.user_id_raw)
                         SPUtils.putValue(SPArgument.IS_HAVE_ID, it.data?.id_card)
                         if (it.data?.id_card == 1) {
                             SPUtils.putValue(SPArgument.ID_NAME, it.data?.card_name)
@@ -251,6 +268,21 @@ class AccountLoginFragment : Fragment() {
                         )
                         toFinishAllLogin()
                     }
+
+                    4 -> {
+                        // 设备登录新账号，需要先进行手机号登录进行校验才可正常登录
+                        val intent = Intent(requireContext(), VerificationCodeActivity::class.java)
+                        val bundle = Bundle()
+                        bundle.putSerializable(
+                            VerificationCodeActivity.TYPE,
+                            VerificationCodeActivity.TITLE.CHANGE_DEVICE
+                        )
+                        bundle.putString(VerificationCodeActivity.ACCOUNT, account)
+                        bundle.putString(VerificationCodeActivity.PHONE_END, it.msg)
+                        intent.putExtras(bundle)
+                        requireContext().startActivity(intent)
+                    }
+
                     else -> {
                         ToastUtils.show(it.msg)
                     }

@@ -15,6 +15,7 @@ import com.fortune.tejiebox.utils.*
 import com.fortune.tejiebox.widget.bloom.ExplosionField
 import com.google.gson.Gson
 import com.jakewharton.rxbinding2.view.RxView
+import com.umeng.analytics.MobclickAgent
 import io.reactivex.Observable
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.Disposable
@@ -325,5 +326,15 @@ class DialogActivity : BaseActivity() {
 
     interface OnCallback {
         fun cancel()
+    }
+
+    override fun onResume() {
+        super.onResume()
+        MobclickAgent.onResume(this)
+    }
+
+    override fun onPause() {
+        super.onPause()
+        MobclickAgent.onPause(this)
     }
 }

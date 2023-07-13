@@ -1,6 +1,7 @@
 package com.fortune.tejiebox.fragment
 
 import android.annotation.SuppressLint
+import android.app.Activity
 import android.content.Intent
 import android.os.Bundle
 import android.view.LayoutInflater
@@ -11,6 +12,7 @@ import com.fortune.tejiebox.R
 import com.fortune.tejiebox.activity.AccountSafeActivity
 import com.fortune.tejiebox.activity.DialogActivity
 import com.fortune.tejiebox.activity.GiftActivity
+import com.fortune.tejiebox.activity.VerificationCodeActivity
 import com.fortune.tejiebox.adapter.BaseAdapterWithPosition
 import com.fortune.tejiebox.base.BaseAppUpdateSetting
 import com.fortune.tejiebox.bean.RedPointBean
@@ -22,15 +24,24 @@ import com.fortune.tejiebox.event.GiftShowState
 import com.fortune.tejiebox.event.IntegralChange
 import com.fortune.tejiebox.http.RetrofitUtils
 import com.fortune.tejiebox.myapp.MyApp
-import com.fortune.tejiebox.utils.*
+import com.fortune.tejiebox.utils.ActivityManager
+import com.fortune.tejiebox.utils.DialogUtils
+import com.fortune.tejiebox.utils.HttpExceptionUtils
+import com.fortune.tejiebox.utils.IsMultipleOpenAppUtils
+import com.fortune.tejiebox.utils.LogUtils
+import com.fortune.tejiebox.utils.SPUtils
+import com.fortune.tejiebox.utils.ToastUtils
 import com.fortune.tejiebox.widget.SafeLinearLayoutManager
 import com.google.gson.Gson
 import com.jakewharton.rxbinding2.view.RxView
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.Disposable
 import io.reactivex.schedulers.Schedulers
-import kotlinx.android.synthetic.main.fragment_white_piao.view.*
-import kotlinx.android.synthetic.main.item_white_piao.view.*
+import kotlinx.android.synthetic.main.fragment_white_piao.view.rv_whitePiao
+import kotlinx.android.synthetic.main.item_white_piao.view.iv_white_piao_integral
+import kotlinx.android.synthetic.main.item_white_piao.view.rl_white_piao_bg
+import kotlinx.android.synthetic.main.item_white_piao.view.tv_white_piao_btn
+import kotlinx.android.synthetic.main.item_white_piao.view.tv_white_piao_integral
 import org.greenrobot.eventbus.EventBus
 import org.greenrobot.eventbus.Subscribe
 import java.text.SimpleDateFormat
@@ -87,10 +98,12 @@ class WhitePiaoFragment : Fragment() {
                             }
                             initView()
                         }
+
                         -1 -> {
                             it.getMsg()?.let { it1 -> ToastUtils.show(it1) }
                             ActivityManager.toSplashActivity(requireActivity())
                         }
+
                         else -> {
                             (requireActivity()).finish()
                             it.getMsg()?.let { it1 -> ToastUtils.show(it1) }
@@ -119,45 +132,6 @@ class WhitePiaoFragment : Fragment() {
             .setLayoutId(R.layout.item_white_piao)
             .setData(mDate)
             .addBindView { itemView, itemData, position ->
-                /**
-                 * 已领取
-                 */
-                fun got(time: String) {
-                    itemView.rl_white_piao_bg.setBackgroundResource(R.drawable.bg_white_piao_got)
-                    itemView.iv_white_piao_integral.setImageResource(R.mipmap.money_ed)
-                    itemView.tv_white_piao_btn.text =
-                        "$time  已领取"
-                }
-
-                /**
-                 * 点击领取
-                 */
-                fun get(time: String) {
-                    itemView.rl_white_piao_bg.setBackgroundResource(R.drawable.bg_white_piao_get)
-                    itemView.iv_white_piao_integral.setImageResource(R.mipmap.money)
-                    itemView.tv_white_piao_btn.text =
-                        "$time  点击领取"
-                }
-
-                /**
-                 * 可以领取
-                 */
-                fun canGet(time: String) {
-                    itemView.rl_white_piao_bg.setBackgroundResource(R.drawable.bg_white_piao_can_get)
-                    itemView.iv_white_piao_integral.setImageResource(R.mipmap.money_ed)
-                    itemView.tv_white_piao_btn.text =
-                        "$time  ${resources.getString(R.string.can_get)}"
-                }
-
-                /**
-                 * 已过期
-                 */
-                fun overdue(time: String) {
-                    itemView.rl_white_piao_bg.setBackgroundResource(R.drawable.bg_white_piao_overdue)
-                    itemView.iv_white_piao_integral.setImageResource(R.mipmap.money_ed)
-                    itemView.tv_white_piao_btn.text =
-                        "$time  ${resources.getString(R.string.overdue)}"
-                }
 
                 itemView.tv_white_piao_integral.text =
                     if (BaseAppUpdateSetting.isToAuditVersion) "+${itemData.integral}"
@@ -166,170 +140,88 @@ class WhitePiaoFragment : Fragment() {
                     1 -> {
                         when (itemData.status) {
                             0 -> {
-                                canGet(resources.getString(R.string.time_5_9))
+                                canGet(resources.getString(R.string.time_5_9), itemView)
                             }
+
                             1 -> {
-                                get(resources.getString(R.string.time_5_9))
+                                get(resources.getString(R.string.time_5_9), itemView)
                             }
+
                             2 -> {
-                                overdue(resources.getString(R.string.time_5_9))
+                                overdue(resources.getString(R.string.time_5_9), itemView)
                             }
+
                             3 -> {
-                                got(resources.getString(R.string.time_5_9))
+                                got(resources.getString(R.string.time_5_9), itemView)
                             }
                         }
                     }
+
                     2 -> {
                         when (itemData.status) {
                             0 -> {
-                                canGet(resources.getString(R.string.time_10_14))
+                                canGet(resources.getString(R.string.time_10_14), itemView)
                             }
+
                             1 -> {
-                                get(resources.getString(R.string.time_10_14))
+                                get(resources.getString(R.string.time_10_14), itemView)
                             }
+
                             2 -> {
-                                overdue(resources.getString(R.string.time_10_14))
+                                overdue(resources.getString(R.string.time_10_14), itemView)
                             }
+
                             3 -> {
-                                got(resources.getString(R.string.time_10_14))
+                                got(resources.getString(R.string.time_10_14), itemView)
                             }
                         }
                     }
+
                     3 -> {
                         when (itemData.status) {
                             0 -> {
-                                canGet(resources.getString(R.string.time_15_19))
+                                canGet(resources.getString(R.string.time_15_19), itemView)
                             }
+
                             1 -> {
-                                get(resources.getString(R.string.time_15_19))
+                                get(resources.getString(R.string.time_15_19), itemView)
                             }
+
                             2 -> {
-                                overdue(resources.getString(R.string.time_15_19))
+                                overdue(resources.getString(R.string.time_15_19), itemView)
                             }
+
                             3 -> {
-                                got(resources.getString(R.string.time_15_19))
+                                got(resources.getString(R.string.time_15_19), itemView)
                             }
                         }
                     }
+
                     4 -> {
                         when (itemData.status) {
                             0 -> {
-                                canGet(resources.getString(R.string.time_20_24))
+                                canGet(resources.getString(R.string.time_20_24), itemView)
                             }
+
                             1 -> {
-                                get(resources.getString(R.string.time_20_24))
+                                get(resources.getString(R.string.time_20_24), itemView)
                             }
+
                             2 -> {
-                                overdue(resources.getString(R.string.time_20_24))
+                                overdue(resources.getString(R.string.time_20_24), itemView)
                             }
+
                             3 -> {
-                                got(resources.getString(R.string.time_20_24))
+                                got(resources.getString(R.string.time_20_24), itemView)
                             }
                         }
                     }
-                }
-
-                /**
-                 * 进行白嫖
-                 */
-                fun toWhitePiao(id: Int) {
-                    DialogUtils.showBeautifulDialog(requireContext())
-                    val whitePiao = RetrofitUtils.builder().whitePiao(id)
-                    whitePiaoObservable = whitePiao.subscribeOn(Schedulers.io())
-                        .observeOn(AndroidSchedulers.mainThread())
-                        .subscribe({
-                            DialogUtils.dismissLoading()
-                            LogUtils.d("${javaClass.simpleName}=success=>${Gson().toJson(it)}")
-                            if (it != null) {
-                                when (it.getCode()) {
-                                    1 -> {
-                                        canClick = false
-                                        //白嫖成功后,去掉小红点
-                                        if (RedPointBean.getData() != null) {
-                                            val data = RedPointBean.getData()!!
-                                            data.limit_time = 0
-                                            RedPointBean.setData(data)
-                                            EventBus.getDefault().postSticky(data)
-                                        }
-                                        EventBus.getDefault().postSticky(
-                                            GiftShowPoint(
-                                                GiftShowState.USELESS,
-                                                GiftShowState.UN_SHOW,
-                                                GiftShowState.USELESS
-                                            )
-                                        )
-
-                                        (activity as GiftActivity).isFirstCreate = false
-                                        SPUtils.putValue(
-                                            SPArgument.INTEGRAL,
-                                            it.getData()?.user_integral
-                                        )
-                                        DialogActivity.showGetIntegral(
-                                            requireActivity(),
-                                            itemData.integral!!,
-                                            true,
-                                            object : DialogActivity.OnCallback {
-                                                override fun cancel() {
-                                                    EventBus.getDefault().postSticky(
-                                                        IntegralChange(it.getData()?.user_integral!!)
-                                                    )
-
-                                                    when (position) {
-                                                        0 -> {
-                                                            got(resources.getString(R.string.time_5_9))
-                                                        }
-                                                        1 -> {
-                                                            got(resources.getString(R.string.time_10_14))
-                                                        }
-                                                        2 -> {
-                                                            got(resources.getString(R.string.time_15_19))
-                                                        }
-                                                        3 -> {
-                                                            got(resources.getString(R.string.time_20_24))
-                                                        }
-                                                    }
-                                                }
-                                            })
-                                    }
-                                    -1 -> {
-                                        it.getMsg()?.let { it1 -> ToastUtils.show(it1) }
-                                        ActivityManager.toSplashActivity(requireActivity())
-                                    }
-                                    3 -> {
-                                        it.getMsg()?.let { it1 ->
-                                            DialogUtils.showDefaultDialog(
-                                                requireContext(), "提醒", it1, null, "好的", null
-                                            )
-                                        }
-                                    }
-                                    else -> {
-                                        it.getMsg()?.let { it1 -> ToastUtils.show(it1) }
-                                    }
-                                }
-                            } else {
-                                ToastUtils.show(resources.getString(R.string.network_fail_to_responseDate))
-                            }
-                        }, {
-                            DialogUtils.dismissLoading()
-                            LogUtils.d("${javaClass.simpleName}=fail=>${it.message.toString()}")
-                            ToastUtils.show(
-                                HttpExceptionUtils.getExceptionMsg(
-                                    requireContext(),
-                                    it
-                                )
-                            )
-                        })
                 }
 
                 RxView.clicks(itemView)
                     .throttleFirst(200, TimeUnit.MILLISECONDS)
                     .subscribe {
                         if (itemData.status == 1 && canClick) {
-                            if(IsMultipleOpenAppUtils.isMultipleOpenApp(requireContext())){
-                                //如果检测到有多开软件存在
-                                ToastUtils.show("检测到设备存在恶意多开软件, 无法进行白嫖领取")
-                                return@subscribe
-                            }
                             val phone = SPUtils.getString(SPArgument.PHONE_NUMBER, null)
                             if (phone.isNullOrBlank()) {
                                 DialogUtils.showDefaultDialog(
@@ -350,7 +242,13 @@ class WhitePiaoFragment : Fragment() {
                                     }
                                 )
                             } else {
-                                toWhitePiao(itemData.id!!)
+                                if (IsMultipleOpenAppUtils.isMultipleOpenApp(requireContext())) {
+                                    //如果检测到有多开软件存在
+                                    ToastUtils.show("检测到设备存在恶意多开软件, 无法进行白嫖领取")
+                                    return@subscribe
+                                } else {
+                                    toWhitePiao(itemData.id!!, position, itemData, itemView)
+                                }
                             }
                         }
                     }
@@ -359,6 +257,206 @@ class WhitePiaoFragment : Fragment() {
         mView?.rv_whitePiao?.adapter = adapter
         mView?.rv_whitePiao?.layoutManager =
             SafeLinearLayoutManager(requireContext())
+    }
+
+    /**
+     * 进行白嫖
+     */
+    fun toWhitePiao(id: Int, position: Int, itemData: WhitePiaoListBean.DataBean, itemView: View) {
+        DialogUtils.showBeautifulDialog(requireContext())
+        val whitePiao = RetrofitUtils.builder().whitePiao(id)
+        whitePiaoObservable = whitePiao.subscribeOn(Schedulers.io())
+            .observeOn(AndroidSchedulers.mainThread())
+            .subscribe({
+                DialogUtils.dismissLoading()
+                LogUtils.d("${javaClass.simpleName}=success=>${Gson().toJson(it)}")
+                if (it != null) {
+                    when (it.getCode()) {
+                        1 -> {
+                            canClick = false
+                            //白嫖成功后,去掉小红点
+                            if (RedPointBean.getData() != null) {
+                                val data = RedPointBean.getData()!!
+                                data.limit_time = 0
+                                RedPointBean.setData(data)
+                                EventBus.getDefault().postSticky(data)
+                            }
+                            EventBus.getDefault().postSticky(
+                                GiftShowPoint(
+                                    GiftShowState.USELESS,
+                                    GiftShowState.UN_SHOW,
+                                    GiftShowState.USELESS
+                                )
+                            )
+
+                            (activity as GiftActivity).isFirstCreate = false
+                            SPUtils.putValue(
+                                SPArgument.INTEGRAL,
+                                it.getData()?.user_integral
+                            )
+                            DialogActivity.showGetIntegral(
+                                requireActivity(),
+                                itemData.integral!!,
+                                true,
+                                object : DialogActivity.OnCallback {
+                                    override fun cancel() {
+                                        EventBus.getDefault().postSticky(
+                                            IntegralChange(it.getData()?.user_integral!!)
+                                        )
+
+                                        when (position) {
+                                            0 -> {
+                                                got(
+                                                    resources.getString(R.string.time_5_9),
+                                                    itemView
+                                                )
+                                            }
+
+                                            1 -> {
+                                                got(
+                                                    resources.getString(R.string.time_10_14),
+                                                    itemView
+                                                )
+                                            }
+
+                                            2 -> {
+                                                got(
+                                                    resources.getString(R.string.time_15_19),
+                                                    itemView
+                                                )
+                                            }
+
+                                            3 -> {
+                                                got(
+                                                    resources.getString(R.string.time_20_24),
+                                                    itemView
+                                                )
+                                            }
+                                        }
+                                    }
+                                })
+                        }
+
+                        -1 -> {
+                            it.getMsg()?.let { it1 -> ToastUtils.show(it1) }
+                            ActivityManager.toSplashActivity(requireActivity())
+                        }
+
+                        3 -> {
+                            it.getMsg()?.let { it1 ->
+                                DialogUtils.showDefaultDialog(
+                                    requireContext(), "提醒", it1, null, "好的", null
+                                )
+                            }
+                        }
+
+                        4 -> {
+                            //首次白嫖
+                            tempId = id
+                            tempPosition = position
+                            tempItemData = itemData
+                            tempItemView = itemView
+                            val intent = Intent(
+                                requireContext(),
+                                VerificationCodeActivity::class.java
+                            )
+                            val bundle = Bundle()
+                            bundle.putSerializable(
+                                VerificationCodeActivity.TYPE,
+                                VerificationCodeActivity.TITLE.FIRST_WHITE_PIAO
+                            )
+                            intent.putExtras(bundle)
+                            requireActivity().startActivityForResult(intent, 10102)
+                        }
+
+                        else -> {
+                            it.getMsg()?.let { it1 -> ToastUtils.show(it1) }
+                        }
+                    }
+                } else {
+                    ToastUtils.show(resources.getString(R.string.network_fail_to_responseDate))
+                }
+            }, {
+                DialogUtils.dismissLoading()
+                LogUtils.d("${javaClass.simpleName}=fail=>${it.message.toString()}")
+                ToastUtils.show(
+                    HttpExceptionUtils.getExceptionMsg(
+                        requireContext(),
+                        it
+                    )
+                )
+            })
+    }
+
+    /**
+     * 已领取
+     */
+    @SuppressLint("SetTextI18n")
+    private fun got(time: String, itemView: View) {
+        itemView.rl_white_piao_bg.setBackgroundResource(R.drawable.bg_white_piao_got)
+        itemView.iv_white_piao_integral.setImageResource(R.mipmap.money_ed)
+        itemView.tv_white_piao_btn.text =
+            "$time  已领取"
+    }
+
+    /**
+     * 点击领取
+     */
+    @SuppressLint("SetTextI18n")
+    private fun get(time: String, itemView: View) {
+        itemView.rl_white_piao_bg.setBackgroundResource(R.drawable.bg_white_piao_get)
+        itemView.iv_white_piao_integral.setImageResource(R.mipmap.money)
+        itemView.tv_white_piao_btn.text =
+            "$time  点击领取"
+    }
+
+    /**
+     * 可以领取
+     */
+    @SuppressLint("SetTextI18n")
+    private fun canGet(time: String, itemView: View) {
+        itemView.rl_white_piao_bg.setBackgroundResource(R.drawable.bg_white_piao_can_get)
+        itemView.iv_white_piao_integral.setImageResource(R.mipmap.money_ed)
+        itemView.tv_white_piao_btn.text =
+            "$time  ${resources.getString(R.string.can_get)}"
+    }
+
+    /**
+     * 已过期
+     */
+    @SuppressLint("SetTextI18n")
+    private fun overdue(time: String, itemView: View) {
+        itemView.rl_white_piao_bg.setBackgroundResource(R.drawable.bg_white_piao_overdue)
+        itemView.iv_white_piao_integral.setImageResource(R.mipmap.money_ed)
+        itemView.tv_white_piao_btn.text =
+            "$time  ${resources.getString(R.string.overdue)}"
+    }
+
+
+    private var tempId: Int? = null
+    private var tempPosition: Int? = null
+    private var tempItemData: WhitePiaoListBean.DataBean? = null
+    private var tempItemView: View? = null
+
+    /**
+     * Activity返回的结果
+     */
+    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+//        super.onActivityResult(requestCode, resultCode, data)
+        if (requestCode == 10102 && resultCode == Activity.RESULT_OK) {
+            //首次白嫖的短信验证码验证成功
+            val code = data?.getIntExtra("code", -1)
+            LogUtils.d("${javaClass.simpleName}=code=>$code")
+            if (code == 2) {
+                if (tempId != null && tempPosition != null && tempItemData != null && tempItemView != null) {
+                    toWhitePiao(tempId!!, tempPosition!!, tempItemData!!, tempItemView!!)
+                    tempId = null
+                    tempPosition = null
+                    tempItemData = null
+                    tempItemView = null
+                }
+            }
+        }
     }
 
     @Subscribe

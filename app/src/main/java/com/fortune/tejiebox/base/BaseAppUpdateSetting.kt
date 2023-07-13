@@ -27,6 +27,10 @@ object BaseAppUpdateSetting {
      * @param 3 代表小米
      * @param 4 代表vivo
      * @param 5 代表oppo
+     * @param 6 代表360手机助手
+     * @param 7 代表百度手机助手
+     * @param 8 代表应用汇=91手机助手
+     * @param 9 代表三星应用商店
      */
     const val marketChannel = 0
 

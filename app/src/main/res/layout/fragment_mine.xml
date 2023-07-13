@@ -47,7 +47,7 @@
             android:gravity="end"
             android:text="未登录"
             android:textColor="#67656F"
-            android:textSize="@dimen/sp_12" />
+            android:textSize="@dimen/sp_14" />
 
         <ImageView
             android:layout_width="@dimen/dp_10"
@@ -85,13 +85,44 @@
             android:gravity="end"
             android:text="未认证"
             android:textColor="#FF982E"
-            android:textSize="@dimen/sp_12" />
+            android:textSize="@dimen/sp_14" />
 
         <ImageView
             android:layout_width="@dimen/dp_10"
             android:layout_height="@dimen/dp_10"
             android:layout_marginStart="@dimen/dp_5"
             android:src="@mipmap/icon_next" />
+
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/dp_54"
+        android:gravity="center_vertical"
+        android:padding="@dimen/dp_10">
+
+        <ImageView
+            android:layout_width="@dimen/dp_24"
+            android:layout_height="@dimen/dp_24"
+            android:src="@mipmap/user_id" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="@dimen/dp_10"
+            android:text="用户ID"
+            android:textColor="#0A0422"
+            android:textSize="@dimen/sp_16" />
+
+        <TextView
+            android:id="@+id/tv_mineFragment_userId"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:gravity="end"
+            android:text="未登录"
+            android:textColor="@color/black_000000"
+            android:textSize="@dimen/sp_14" />
 
     </LinearLayout>
 
@@ -214,7 +245,8 @@
         android:layout_width="match_parent"
         android:layout_height="@dimen/dp_54"
         android:gravity="center_vertical"
-        android:padding="@dimen/dp_10">
+        android:padding="@dimen/dp_10"
+        android:visibility="gone">
 
         <ImageView
             android:layout_width="@dimen/dp_24"
@@ -266,6 +298,34 @@
             android:text="0K"
             android:textColor="#67656F"
             android:textSize="@dimen/sp_12" />
+
+        <ImageView
+            android:layout_width="@dimen/dp_10"
+            android:layout_height="@dimen/dp_10"
+            android:layout_marginStart="@dimen/dp_5"
+            android:src="@mipmap/icon_next" />
+    </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/ll_mineFragment_logOff"
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/dp_54"
+        android:gravity="center_vertical"
+        android:padding="@dimen/dp_10">
+
+        <ImageView
+            android:layout_width="@dimen/dp_24"
+            android:layout_height="@dimen/dp_24"
+            android:src="@mipmap/log_off" />
+
+        <TextView
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="@dimen/dp_10"
+            android:layout_weight="1"
+            android:text="账号注销"
+            android:textColor="#0A0422"
+            android:textSize="@dimen/sp_16" />
 
         <ImageView
             android:layout_width="@dimen/dp_10"
