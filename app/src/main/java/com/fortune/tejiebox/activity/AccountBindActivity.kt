@@ -330,7 +330,7 @@ class AccountBindActivity : BaseActivity() {
      */
     private fun checkAccountIsOk(account: String): Boolean {
         val digits4Number = "0123456789"
-        val digits4Letter = "abcdefghigklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ"
+        val digits4Letter = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ"
         //纯数字,纯字母都不行
         var isHaveNumber = false
         var isHaveLetter = false

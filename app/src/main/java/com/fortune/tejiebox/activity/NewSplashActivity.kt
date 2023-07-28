@@ -79,6 +79,13 @@ class NewSplashActivity : BaseActivity() {
             Thread.sleep(1000)
             runOnUiThread {
                 toAgreeAgreement()
+//                DialogUtils.showInstallTipsDialog(
+//                    this@NewSplashActivity,
+//                    object : DialogUtils.OnDialogListener {
+//                        override fun next() {
+//                        }
+//                    }
+//                )
             }
         }.start()
 
@@ -252,7 +259,8 @@ class NewSplashActivity : BaseActivity() {
      */
     private fun toGetShelfData() {
         val shelfDataRequest = Request.Builder()
-            .url("http://tejie-box.oss-cn-hangzhou.aliyuncs.com/apk/setting/shelf_setting.json")
+//            .url("http://tejie-box.oss-cn-hangzhou.aliyuncs.com/apk/setting/shelf_setting.json")
+            .url("https://cdn.tjbox.lelehuyu.com/apk/setting/shelf_setting.json")
             .build()
         val okHttpClient = OkHttpClient.Builder()
             .connectTimeout(3, TimeUnit.SECONDS)
@@ -452,6 +460,8 @@ class NewSplashActivity : BaseActivity() {
     private fun toCheckVersion(data: VersionBean.DataBean) {
         val newVersion = data.version_name!!.replace(".", "").toInt()
         val currentVersion = MyApp.getInstance().getVersion().replace(".", "").toInt()
+//        val newVersion = data.version_number ?: MyApp.getInstance().getVersionCode()
+//        val currentVersion = MyApp.getInstance().getVersionCode()
         LogUtils.d("toDownLoadApk==>newVersion = $newVersion, currentVersion = $currentVersion")
         //获取实际的下载地址
         val updateUrl = if (BaseAppUpdateSetting.isToPromoteVersion) {
@@ -577,20 +587,26 @@ class NewSplashActivity : BaseActivity() {
      *下载到本地后执行安装
      */
     private fun installAPK(file: File) {
-        //版本更新的时候,删除所有的启动图
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            val canRequestPackageInstalls = packageManager.canRequestPackageInstalls()
-            if (canRequestPackageInstalls) {
-                toInstallApp(file)
-            } else {
-                val uri = Uri.parse("package:$packageName")
-                val intent = Intent(Settings.ACTION_MANAGE_UNKNOWN_APP_SOURCES, uri)
-                startActivityForResult(intent, 100)
-                return
+        DialogUtils.showInstallTipsDialog(
+            this@NewSplashActivity,
+            object : DialogUtils.OnDialogListener {
+                override fun next() {
+                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+                        val canRequestPackageInstalls = packageManager.canRequestPackageInstalls()
+                        if (canRequestPackageInstalls) {
+                            toInstallApp(file)
+                        } else {
+                            val uri = Uri.parse("package:$packageName")
+                            val intent = Intent(Settings.ACTION_MANAGE_UNKNOWN_APP_SOURCES, uri)
+                            startActivityForResult(intent, 100)
+                            return
+                        }
+                    } else {
+                        toInstallApp(file)
+                    }
+                }
             }
-        } else {
-            toInstallApp(file)
-        }
+        )
     }
 
     @RequiresApi(Build.VERSION_CODES.O)

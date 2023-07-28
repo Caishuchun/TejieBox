@@ -5,7 +5,6 @@ import android.content.Intent
 import android.view.View
 import com.fortune.tejiebox.R
 import com.fortune.tejiebox.base.BaseActivity
-import com.fortune.tejiebox.base.BaseAppUpdateSetting
 import com.fortune.tejiebox.bean.GameInfo4ClipboardBean
 import com.fortune.tejiebox.constants.SPArgument
 import com.fortune.tejiebox.event.LoginStatusChange
@@ -231,9 +230,9 @@ class VerificationCodeActivity : BaseActivity() {
                             var isHaveRewardInteger = false
                             if (it.data?.first_login == 1) {
                                 // 首次注册的推广统计
-                                if (BaseAppUpdateSetting.isToPromoteVersion) {
-                                    PromoteUtils.promote(this)
-                                }
+//                                if (BaseAppUpdateSetting.isToPromoteVersion) {
+                                PromoteUtils.promote(this)
+//                                }
                                 // 首次注册且有奖励积分的
                                 if (it.data?.integral != null && it.data?.integral!! > 0) {
                                     isHaveRewardInteger = true

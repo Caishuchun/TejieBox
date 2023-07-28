@@ -73,43 +73,46 @@ class ChangePhone1Activity : BaseActivity() {
         if (phone.isEmpty() || !OtherUtils.isPhone(phone)) {
             ToastUtils.show(getString(R.string.please_enter_right_phone))
         } else {
-            val oldPhone = SPUtils.getString(SPArgument.PHONE_NUMBER)
-            if(oldPhone == phone){
-                ToastUtils.show("新手机号不能与旧手机号相同")
-                return
+            if (isBind) {
+                if (savePhone != phone) {
+                    //如果不是之前输入的,直接重新发送
+                    SPUtils.putValue(SPArgument.CODE_TIME_4_CHANGE_PHONE, 0L)
+                    sendCode2(phone, null, null)
+                } else {
+                    val oldTimeMillis = SPUtils.getLong(SPArgument.CODE_TIME_4_CHANGE_PHONE, 0L)
+                    val currentTimeMillis = SystemClock.uptimeMillis()
+                    if (oldTimeMillis == 0L) {
+                        //历史时间没有的话,就要重新发验证码
+                        sendCode2(phone, null, null)
+                    } else {
+                        when {
+                            currentTimeMillis - oldTimeMillis > 60 * 1000 -> {
+                                //当前时间超过历史时间1分钟,重新发送
+                                sendCode2(phone, null, null)
+                            }
+
+                            currentTimeMillis < oldTimeMillis -> {
+                                //当前时间小于历史时间,说明重新开机过,重新发送短信
+                                sendCode2(phone, null, null)
+                            }
+
+                            else -> {
+                                //直接跳转
+                                if (tempOldPhone == null && tempOldCaptcha == null) {
+                                    toNext(phone, tempOldPhone!!, tempOldCaptcha!!)
+                                }
+                            }
+                        }
+                    }
+                }
+            } else {
+                val oldPhone = SPUtils.getString(SPArgument.PHONE_NUMBER)
+                if (oldPhone == phone) {
+                    ToastUtils.show("新手机号不能与旧手机号相同")
+                    return
+                }
+                sendCode(phone)
             }
-            sendCode(phone)
-//            if (savePhone != phone) {
-//                //如果不是之前输入的,直接重新发送
-//                SPUtils.putValue(SPArgument.CODE_TIME_4_CHANGE_PHONE, 0L)
-//                sendCode(phone)
-//            } else {
-//                val oldTimeMillis = SPUtils.getLong(SPArgument.CODE_TIME_4_CHANGE_PHONE, 0L)
-//                val currentTimeMillis = SystemClock.uptimeMillis()
-//                if (oldTimeMillis == 0L) {
-//                    //历史时间没有的话,就要重新发验证码
-//                    sendCode(phone)
-//                } else {
-//                    when {
-//                        currentTimeMillis - oldTimeMillis > 60 * 1000 -> {
-//                            //当前时间超过历史时间1分钟,重新发送
-//                            sendCode(phone)
-//                        }
-//
-//                        currentTimeMillis < oldTimeMillis -> {
-//                            //当前时间小于历史时间,说明重新开机过,重新发送短信
-//                            sendCode(phone)
-//                        }
-//
-//                        else -> {
-//                            //直接跳转
-//                            if (tempOldPhone == null && tempOldCaptcha == null) {
-//                                toNext(phone, tempOldPhone!!, tempOldCaptcha!!)
-//                            }
-//                        }
-//                    }
-//                }
-//            }
         }
     }
 
@@ -152,7 +155,7 @@ class ChangePhone1Activity : BaseActivity() {
     /**
      * 发送短信验证码
      */
-    private fun sendCode2(phone: String, old_phone: String, old_captcha: String) {
+    private fun sendCode2(phone: String, old_phone: String?, old_captcha: String?) {
         DialogUtils.showBeautifulDialog(this)
         val sendCode4changePhone =
             if (isBind) RetrofitUtils.builder().sendCode(phone, 1)
@@ -198,7 +201,7 @@ class ChangePhone1Activity : BaseActivity() {
     /**
      * 跳转到下一个界面
      */
-    private fun toNext(phone: String, old_phone: String, old_captcha: String) {
+    private fun toNext(phone: String, old_phone: String?, old_captcha: String?) {
         val intent = Intent(this, ChangePhone2Activity::class.java)
         if (isBind) {
             intent.putExtra(ChangePhone2Activity.IS_BIND, true)

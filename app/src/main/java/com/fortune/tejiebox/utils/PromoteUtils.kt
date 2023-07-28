@@ -11,11 +11,14 @@ import java.net.URL
 object PromoteUtils {
 
     //阿里推广链接
-    private const val promoteUrl4Ali = "http://tjhz.jinangedesm.com.cn/api/tj.php"
+//    private const val promoteUrl4Ali = "http://tjhz.jinangedesm.com.cn/api/tj.php"
+    private const val promoteUrl4Ali = "http://tjhz.52ww.com/api/tj.php"
 
     //百度推广链接
-    private const val promoteUrl4Baidu = "http://tjhz.jinangedesm.com.cn/api/baidu/api.php?type=1"
-    private const val promoteUrl4Baidu2 = "http://tjhz.jinangedesm.com.cn/api/baidu2/api.php?type=1"
+//    private const val promoteUrl4Baidu = "http://tjhz.jinangedesm.com.cn/api/baidu/api.php?type=1"
+//    private const val promoteUrl4Baidu2 = "http://tjhz.jinangedesm.com.cn/api/baidu2/api.php?type=1"
+    private const val promoteUrl4Baidu = "http://tjhz.52ww.com/api/baidu/api.php?type=1"
+    private const val promoteUrl4Baidu2 = "http://tjhz.52ww.com/api/baidu2/api.php?type=1"
 
     //51统计链接
     private const val promoteUrl451 = "https://www.51cr.com/d.php?id=21511|2&f="

@@ -241,9 +241,9 @@ class AccountLoginFragment : Fragment() {
                         var isHaveRewardInteger = false
                         if (it.data?.first_login == 1) {
                             // 首次注册的推广统计
-                            if (BaseAppUpdateSetting.isToPromoteVersion) {
-                                PromoteUtils.promote(requireActivity())
-                            }
+//                            if (BaseAppUpdateSetting.isToPromoteVersion) {
+                            PromoteUtils.promote(requireActivity())
+//                            }
                             // 首次注册且有奖励积分的
                             if (it.data?.integral != null && it.data?.integral!! > 0) {
                                 isHaveRewardInteger = true

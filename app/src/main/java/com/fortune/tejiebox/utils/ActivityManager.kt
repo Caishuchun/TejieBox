@@ -75,7 +75,7 @@ object ActivityManager {
      * 退出登录
      */
     fun exitLogin(activity: MainActivity) {
-        VersionBean.clear()
+//        VersionBean.clear()
         val channel = SPUtils.getString(SPArgument.UM_CHANNEL_ID, null)
         SPUtils.clear(true)
         SPUtils.putValue(SPArgument.UM_CHANNEL_ID, channel)

@@ -118,9 +118,11 @@ class DialogActivity : BaseActivity() {
             TYPE.GET_INTEGRAL -> {
                 showGetIntegral()
             }
+
             TYPE.RECHARGE_RESULT -> {
                 showRechargeResult()
             }
+
             TYPE.GIFT_CODE -> {
                 showGiftCode()
             }
@@ -177,31 +179,72 @@ class DialogActivity : BaseActivity() {
                         1 -> {
                             ll_dialog_giftCode_show.visibility = View.VISIBLE
                             tv_dialog_giftCode_login.visibility = View.GONE
-                            tv_dialog_giftCode_code.text = it.data.code
-                            if (giftNum == "888888") {
-                                tv_dialog_giftCode_time.visibility = View.VISIBLE
-                                time = it.data.ttl
 
-                                timer?.dispose()
-                                timer = Observable.interval(0L, 1L, TimeUnit.SECONDS)
-                                    .subscribeOn(Schedulers.io())
-                                    .observeOn(AndroidSchedulers.mainThread())
-                                    .subscribe {
-                                        tv_dialog_giftCode_time.text = "${timeFormat()} 有效"
-                                        if (time <= 0L) {
-                                            //重新请求接口获取数据
-                                            timer?.dispose()
-                                            toGetGiftCode()
+                            if (it.data.user_duration == null || it.data.limit_duration == null) {
+                                tv_dialog_giftCode_code.text = it.data.code
+                                if (giftNum == "888888") {
+                                    tv_dialog_giftCode_time.visibility = View.VISIBLE
+                                    time = it.data.ttl
+
+                                    timer?.dispose()
+                                    timer = Observable.interval(0L, 1L, TimeUnit.SECONDS)
+                                        .subscribeOn(Schedulers.io())
+                                        .observeOn(AndroidSchedulers.mainThread())
+                                        .subscribe {
+                                            tv_dialog_giftCode_time.text = "${timeFormat()} 有效"
+                                            if (time <= 0L) {
+                                                //重新请求接口获取数据
+                                                timer?.dispose()
+                                                toGetGiftCode()
+                                            }
                                         }
-                                    }
-                            } else {
+                                } else {
+                                    tv_dialog_giftCode_time.visibility = View.GONE
+                                }
+                                return@subscribe
+                            }
+                            if (it.data.user_duration < it.data.limit_duration) {
+                                tv_dialog_giftCode_code.text = "时长不足"
                                 tv_dialog_giftCode_time.visibility = View.GONE
+                                tv_dialog_giftCode_TotalDuration.text =
+                                    "${it.data.limit_duration}秒可获得礼包码"
+                                val limitDuration =
+                                    if (it.data.user_duration > it.data.limit_duration) {
+                                        it.data.limit_duration
+                                    } else {
+                                        it.data.user_duration
+                                    }
+                                tv_dialog_giftCode_currentDuration.text =
+                                    "当前已玩${limitDuration}秒"
+                            } else {
+                                tv_dialog_giftCode_code.text = it.data.code
+                                if (giftNum == "888888") {
+                                    tv_dialog_giftCode_time.visibility = View.VISIBLE
+                                    time = it.data.ttl
+
+                                    timer?.dispose()
+                                    timer = Observable.interval(0L, 1L, TimeUnit.SECONDS)
+                                        .subscribeOn(Schedulers.io())
+                                        .observeOn(AndroidSchedulers.mainThread())
+                                        .subscribe {
+                                            tv_dialog_giftCode_time.text = "${timeFormat()} 有效"
+                                            if (time <= 0L) {
+                                                //重新请求接口获取数据
+                                                timer?.dispose()
+                                                toGetGiftCode()
+                                            }
+                                        }
+                                } else {
+                                    tv_dialog_giftCode_time.visibility = View.GONE
+                                }
                             }
                         }
+
                         -1 -> {
                             ToastUtils.show(it.msg)
                             ActivityManager.toSplashActivity(this)
                         }
+
                         else -> {
                             ToastUtils.show(it.msg)
                             finish()
@@ -259,6 +302,7 @@ class DialogActivity : BaseActivity() {
                 tv_dialog_recharge_msg.text = msg
                 tv_dialog_recharge_sure.setBackgroundResource(R.drawable.bg_recharge_success)
             }
+
             false -> {
                 iv_dialog_recharge.setImageResource(R.mipmap.recharge_fail)
                 tv_dialog_recharge_title.text = "充值失败"

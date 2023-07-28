@@ -16,14 +16,29 @@ import com.fortune.tejiebox.base.BaseAppUpdateSetting
 import com.fortune.tejiebox.constants.SPArgument
 import com.fortune.tejiebox.event.LoginStatusChange
 import com.fortune.tejiebox.http.RetrofitUtils
-import com.fortune.tejiebox.utils.*
+import com.fortune.tejiebox.utils.DialogUtils
+import com.fortune.tejiebox.utils.HttpExceptionUtils
+import com.fortune.tejiebox.utils.LogUtils
+import com.fortune.tejiebox.utils.PromoteUtils
+import com.fortune.tejiebox.utils.SPUtils
+import com.fortune.tejiebox.utils.ToastUtils
 import com.google.gson.Gson
 import com.jakewharton.rxbinding2.view.RxView
 import com.jakewharton.rxbinding2.widget.RxTextView
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.Disposable
 import io.reactivex.schedulers.Schedulers
-import kotlinx.android.synthetic.main.fragment_account_sign.view.*
+import kotlinx.android.synthetic.main.fragment_account_sign.view.et_account_sign_account
+import kotlinx.android.synthetic.main.fragment_account_sign.view.et_account_sign_pass
+import kotlinx.android.synthetic.main.fragment_account_sign.view.et_account_sign_rePass
+import kotlinx.android.synthetic.main.fragment_account_sign.view.iv_account_sign_back
+import kotlinx.android.synthetic.main.fragment_account_sign.view.iv_account_sign_pass
+import kotlinx.android.synthetic.main.fragment_account_sign.view.iv_account_sign_rePass
+import kotlinx.android.synthetic.main.fragment_account_sign.view.iv_account_sign_title
+import kotlinx.android.synthetic.main.fragment_account_sign.view.tv_account_sign_account_tips
+import kotlinx.android.synthetic.main.fragment_account_sign.view.tv_account_sign_login
+import kotlinx.android.synthetic.main.fragment_account_sign.view.tv_account_sign_pass_tips
+import kotlinx.android.synthetic.main.fragment_account_sign.view.tv_account_sign_rePass_tips
 import org.greenrobot.eventbus.EventBus
 import java.util.concurrent.TimeUnit
 
@@ -85,6 +100,7 @@ class AccountSignFragment : Fragment() {
                                     tv.setTextColor(resources.getColor(R.color.red_F03D3D))
                                 }
                             }
+
                             !checkAccountIsOk(et.text.toString()) -> {
                                 mView?.tv_account_sign_account_tips?.let { tv ->
                                     tv.visibility = View.VISIBLE
@@ -92,9 +108,11 @@ class AccountSignFragment : Fragment() {
                                     tv.setTextColor(resources.getColor(R.color.red_F03D3D))
                                 }
                             }
+
                             checkAccountIsOk(et.text.toString()) -> {
                                 toCheckAccountCanSign(et.text.toString())
                             }
+
                             et.text.length > 16 -> {
                                 mView?.tv_account_sign_account_tips?.let { tv ->
                                     tv.visibility = View.VISIBLE
@@ -120,6 +138,7 @@ class AccountSignFragment : Fragment() {
                                 tv.setTextColor(resources.getColor(R.color.green_2EC8AC))
                             }
                         }
+
                         it.length > 16 -> {
                             mView?.tv_account_sign_pass_tips?.let { tv ->
                                 tv.visibility = View.VISIBLE
@@ -127,6 +146,7 @@ class AccountSignFragment : Fragment() {
                                 tv.setTextColor(resources.getColor(R.color.red_F03D3D))
                             }
                         }
+
                         else -> {
                             mView?.tv_account_sign_pass_tips?.visibility = View.INVISIBLE
                         }
@@ -143,6 +163,7 @@ class AccountSignFragment : Fragment() {
                                     tv.setTextColor(resources.getColor(R.color.red_F03D3D))
                                 }
                             }
+
                             et.text.length > 16 -> {
                                 mView?.tv_account_sign_pass_tips?.let { tv ->
                                     tv.visibility = View.VISIBLE
@@ -150,6 +171,7 @@ class AccountSignFragment : Fragment() {
                                     tv.setTextColor(resources.getColor(R.color.red_F03D3D))
                                 }
                             }
+
                             else -> {
                                 mView?.tv_account_sign_pass_tips?.let { tv ->
                                     tv.visibility = View.VISIBLE
@@ -171,6 +193,7 @@ class AccountSignFragment : Fragment() {
                         it.length < 8 -> {
                             mView?.tv_account_sign_rePass_tips?.visibility = View.INVISIBLE
                         }
+
                         it.toString() == mView?.et_account_sign_pass?.text.toString() -> {
                             mView?.tv_account_sign_rePass_tips?.let { tv ->
                                 tv.visibility = View.VISIBLE
@@ -178,6 +201,7 @@ class AccountSignFragment : Fragment() {
                                 tv.setTextColor(resources.getColor(R.color.green_2EC8AC))
                             }
                         }
+
                         it.toString() != mView?.et_account_sign_pass?.text.toString() -> {
                             mView?.tv_account_sign_rePass_tips?.let { tv ->
                                 tv.visibility = View.VISIBLE
@@ -185,6 +209,7 @@ class AccountSignFragment : Fragment() {
                                 tv.setTextColor(resources.getColor(R.color.red_F03D3D))
                             }
                         }
+
                         it.length > 16 -> {
                             mView?.tv_account_sign_rePass_tips?.let { tv ->
                                 tv.visibility = View.VISIBLE
@@ -278,6 +303,7 @@ class AccountSignFragment : Fragment() {
                             tv.setTextColor(resources.getColor(R.color.green_2EC8AC))
                         }
                     }
+
                     2 -> {
                         mView?.tv_account_sign_account_tips?.let { tv ->
                             tv.visibility = View.VISIBLE
@@ -285,6 +311,7 @@ class AccountSignFragment : Fragment() {
                             tv.setTextColor(resources.getColor(R.color.red_F03D3D))
                         }
                     }
+
                     else -> {
 
                     }
@@ -297,7 +324,7 @@ class AccountSignFragment : Fragment() {
      */
     private fun checkAccountIsOk(account: String): Boolean {
         val digits4Number = "0123456789"
-        val digits4Letter = "abcdefghigklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ"
+        val digits4Letter = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ"
         //纯数字,纯字母都不行
         var isHaveNumber = false
         var isHaveLetter = false
@@ -416,9 +443,9 @@ class AccountSignFragment : Fragment() {
                         var isHaveRewardInteger = false
                         if (it.data?.first_login == 1) {
                             // 首次注册的推广统计
-                            if (BaseAppUpdateSetting.isToPromoteVersion) {
-                                PromoteUtils.promote(requireActivity())
-                            }
+//                            if (BaseAppUpdateSetting.isToPromoteVersion) {
+                            PromoteUtils.promote(requireActivity())
+//                            }
                             // 首次注册且有奖励积分的
                             if (it.data?.integral != null && it.data?.integral!! > 0) {
                                 isHaveRewardInteger = true
@@ -441,6 +468,7 @@ class AccountSignFragment : Fragment() {
                         )
                         toFinishAllLogin()
                     }
+
                     else -> {
                         ToastUtils.show(it.msg)
                     }

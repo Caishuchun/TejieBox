@@ -183,6 +183,43 @@
                 android:layout_marginTop="@dimen/dp_10"
                 android:text="请稍等..."
                 android:textSize="@dimen/sp_14" />
+
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/dp_200"
+            android:gravity="center_horizontal"
+            android:orientation="vertical">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="玩盒子内任意手游"
+                android:textColor="@color/white_FFFFFF"
+                android:textSize="@dimen/sp_12"
+                android:textStyle="bold" />
+
+            <TextView
+                android:id="@+id/tv_dialog_giftCode_TotalDuration"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:padding="@dimen/dp_5"
+                android:text="180秒可获得礼包码"
+                android:textColor="#fae112"
+                android:textSize="@dimen/sp_16"
+                android:textStyle="bold" />
+
+            <TextView
+                android:id="@+id/tv_dialog_giftCode_currentDuration"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="当前已玩180秒"
+                android:textColor="@color/white_FFFFFF"
+                android:textSize="@dimen/sp_12"
+                android:textStyle="bold" />
+
         </LinearLayout>
 
         <TextView
@@ -195,6 +232,5 @@
             android:text="未登录,请先点击登录"
             android:textSize="@dimen/sp_14"
             android:visibility="gone" />
-
     </RelativeLayout>
 </RelativeLayout>

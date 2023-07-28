@@ -37,6 +37,7 @@ import com.fortune.tejiebox.utils.ToastUtils
 import com.fortune.tejiebox.widget.SafeStaggeredGridLayoutManager
 import com.google.gson.Gson
 import com.jakewharton.rxbinding2.view.RxView
+import com.snail.antifake.jni.EmulatorDetectUtil
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.Disposable
 import io.reactivex.schedulers.Schedulers
@@ -242,7 +243,11 @@ class DailyCheckFragment : Fragment() {
                                     }
                                 })
                         } else {
-                            if (IsMultipleOpenAppUtils.isMultipleOpenApp(requireContext())) {
+                            if (EmulatorDetectUtil.isEmulator(requireContext())) {
+                                //如果检测到是模拟器
+                                ToastUtils.show("模拟器不支持签到")
+                                return@subscribe
+                            } else if (IsMultipleOpenAppUtils.isMultipleOpenApp(requireContext())) {
                                 //如果检测到有多开软件存在
                                 ToastUtils.show("检测到设备存在恶意多开软件, 无法进行签到")
                                 return@subscribe

@@ -514,6 +514,7 @@ class GameDetailActivity : BaseActivity() {
             }
 
         //今日开服
+        tv_detail_gameChannelId.text = "今日开服(${info.game_channelId})"
         val currentTimeMillis = System.currentTimeMillis()
         val dataFormat = SimpleDateFormat("HHmm")
         if (info.game_open_times.size <= 1) {

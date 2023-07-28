@@ -169,6 +169,7 @@
                         android:src="@mipmap/detail_open" />
 
                     <TextView
+                        android:id="@+id/tv_detail_gameChannelId"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:text="今日开服"

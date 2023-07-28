@@ -15,11 +15,14 @@ import com.fortune.tejiebox.constants.SPArgument
 import com.fortune.tejiebox.event.IsHaveIdChange
 import com.fortune.tejiebox.event.LoginStatusChange
 import com.fortune.tejiebox.event.ShowNumChange
+import com.fortune.tejiebox.http.RetrofitUtils
 import com.fortune.tejiebox.myapp.MyApp
 import com.fortune.tejiebox.utils.*
+import com.google.gson.Gson
 import com.jakewharton.rxbinding2.view.RxView
 import io.reactivex.Observable
 import io.reactivex.android.schedulers.AndroidSchedulers
+import io.reactivex.disposables.Disposable
 import io.reactivex.schedulers.Schedulers
 import kotlinx.android.synthetic.main.fragment_mine.view.*
 import org.greenrobot.eventbus.EventBus
@@ -30,6 +33,7 @@ import java.util.concurrent.TimeUnit
 class MineFragment : Fragment() {
 
     private var mView: View? = null
+    private var getShareUrlObservable: Disposable? = null
 
     companion object {
         @JvmStatic
@@ -238,10 +242,7 @@ class MineFragment : Fragment() {
             RxView.clicks(it)
                 .throttleFirst(200, TimeUnit.MILLISECONDS)
                 .subscribe {
-                    ShareJumpUtils.showDefaultDialog(
-                        requireActivity(),
-                        message = "免费充值天天送，好玩的服处处有 点击下载${resources.getString(R.string.app_name)}: https://www.69t.top",
-                    )
+                    toGetShareUrl()
                 }
         }
 
@@ -258,6 +259,54 @@ class MineFragment : Fragment() {
                     )
                 }
         }
+    }
+
+    /**
+     * 先获取分享链接
+     */
+    private fun toGetShareUrl() {
+        DialogUtils.showBeautifulDialog(requireContext())
+        val getShareUrl = RetrofitUtils.builder().getShareUrl(
+            if (BaseAppUpdateSetting.isToPromoteVersion) 1
+            else null
+        )
+        getShareUrlObservable = getShareUrl.subscribeOn(Schedulers.io())
+            .observeOn(AndroidSchedulers.mainThread())
+            .subscribe({
+                DialogUtils.dismissLoading()
+                LogUtils.d("${javaClass.simpleName}=success=>${Gson().toJson(it)}")
+                if (it != null) {
+                    when (it.getCode()) {
+                        1 -> {
+                            if (it.getData() != null && it.getData()?.url != null) {
+                                ShareJumpUtils.showDefaultDialog(
+                                    requireActivity(),
+                                    message = "免费充值天天送，好玩的服处处有 点击下载${
+                                        resources.getString(
+                                            R.string.app_name
+                                        )
+                                    }: ${it.getData()?.url!!}",
+                                )
+                            }
+                        }
+
+                        -1 -> {
+                            it.getMsg()?.let { it1 -> ToastUtils.show(it1) }
+                            ActivityManager.toSplashActivity(requireActivity())
+                        }
+
+                        else -> {
+                            it.getMsg()?.let { it1 -> ToastUtils.show(it1) }
+                        }
+                    }
+                } else {
+                    ToastUtils.show(getString(R.string.network_fail_to_responseDate))
+                }
+            }, {
+                DialogUtils.dismissLoading()
+                LogUtils.d("${javaClass.simpleName}=fail=>${it.message.toString()}")
+                ToastUtils.show(HttpExceptionUtils.getExceptionMsg(requireContext(), it))
+            })
     }
 
     @SuppressLint("SetTextI18n")
@@ -430,5 +479,8 @@ class MineFragment : Fragment() {
     override fun onDestroy() {
         super.onDestroy()
         EventBus.getDefault().unregister(this)
+
+        getShareUrlObservable?.dispose()
+        getShareUrlObservable = null
     }
 }

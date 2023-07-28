@@ -295,7 +295,8 @@ object ShareJumpUtils {
             params.putString(QQShare.SHARE_TO_QQ_TARGET_URL, message!!.split(": ")[1])
             params.putString(
                 QQShare.SHARE_TO_QQ_IMAGE_URL,
-                "http://tejie-box.oss-cn-hangzhou.aliyuncs.com/apk/setting/icon_512.png"
+//                "http://tejie-box.oss-cn-hangzhou.aliyuncs.com/apk/setting/icon_512.png"
+                "https://cdn.tjbox.lelehuyu.com/apk/setting/icon_512.png"
             )
         } else {
             params.putInt(QQShare.SHARE_TO_QQ_KEY_TYPE, QQShare.SHARE_TO_QQ_TYPE_IMAGE)

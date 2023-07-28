@@ -5,6 +5,8 @@ import android.app.Activity
 import android.content.Context
 import android.content.Intent
 import android.graphics.Color
+import android.os.Build
+import android.text.Html
 import android.text.SpannableStringBuilder
 import android.text.TextPaint
 import android.text.method.LinkMovementMethod
@@ -38,6 +40,11 @@ import kotlinx.android.synthetic.main.layout_dialog_default.tv_dialog_default_me
 import kotlinx.android.synthetic.main.layout_dialog_default.tv_dialog_default_sure
 import kotlinx.android.synthetic.main.layout_dialog_default.tv_dialog_default_title
 import kotlinx.android.synthetic.main.layout_dialog_default.view_dialog_default_line
+import kotlinx.android.synthetic.main.layout_dialog_install_tips.tv_dialog_install_tips_difficulty
+import kotlinx.android.synthetic.main.layout_dialog_install_tips.tv_dialog_install_tips_difficulty_title
+import kotlinx.android.synthetic.main.layout_dialog_install_tips.tv_dialog_install_tips_easy
+import kotlinx.android.synthetic.main.layout_dialog_install_tips.tv_dialog_install_tips_easy_title
+import kotlinx.android.synthetic.main.layout_dialog_install_tips.tv_dialog_install_tips_know
 import kotlinx.android.synthetic.main.layout_dialog_sms_code.et_dialog_smsCode_code
 import kotlinx.android.synthetic.main.layout_dialog_sms_code.tv_dialog_smsCode_cancel
 import kotlinx.android.synthetic.main.layout_dialog_sms_code.tv_dialog_smsCode_phone
@@ -54,6 +61,7 @@ import kotlinx.android.synthetic.main.layout_dialog_start_game.tv_dialog_startGa
 import kotlinx.android.synthetic.main.layout_dialog_start_game.tv_dialog_startGame_phone
 import kotlinx.android.synthetic.main.layout_dialog_start_game.tv_dialog_startGame_tips
 import kotlinx.android.synthetic.main.popupwindow_account.view.rv_popupWindow_account
+import java.util.Locale
 import java.util.concurrent.TimeUnit
 import kotlin.system.exitProcess
 
@@ -161,6 +169,87 @@ object DialogUtils {
         }
         mDialog?.show()
     }
+
+    /**
+     * 显示更新安裝提示框
+     */
+    @SuppressLint("SetTextI18n")
+    fun showInstallTipsDialog(context: Context, listener: OnDialogListener?) {
+        if (mDialog != null) {
+            mDialog?.dismiss()
+            mDialog = null
+        }
+        mDialog = BaseDialog(context, R.style.new_circle_progress)
+        mDialog?.setContentView(R.layout.layout_dialog_install_tips)
+        mDialog?.setCancelable(false)
+        mDialog?.setCanceledOnTouchOutside(false)
+
+        val brand = try {
+            Build.BRAND?.toUpperCase(Locale.ROOT) ?: ""
+        } catch (e: Exception) {
+            e.printStackTrace()
+            ""
+        }
+        LogUtils.d("+++++++++++++++brand:$brand")
+        val difficultyText = when {
+            brand.contains("HUAWEI") || brand.contains("HONOR") -> {
+                """
+            打开手机<b>"设置"</b>, 下滑找到<b>"安全"</b>(EMUI9.0及以下为<b>"安全和隐私"</b>), 点击进入找到<b>"更多安全设置"</b>, 点击进入找到<b>"安装外部来源应用"</b>, 点击进入找到<b>"特戒盒子"</b>, <b>打开开关</b>, 最后返回继续更新安装即可!
+            """.trimIndent()
+            }
+
+            brand.contains("XIAOMI") || brand.contains("REDMI") -> {
+                """
+            打开手机<b>"设置"</b>, 下滑找到<b>"隐私保护"</b>, 点击进入找到<b>"保护隐私"</b>, 点击进入找到<b>"特殊应用权限"</b>, 点击进入找到<b>"安装未知应用"</b>, 点击进入找到<b>"特戒盒子"</b>, <b>打开开关</b>, 最后返回继续更新安装即可!
+            """.trimIndent()
+            }
+
+            brand.contains("MEIZU") -> {
+                """
+            打开手机<b>"设置"</b>, 下滑找到<b>"指纹和安全"</b>, 点击进入找到<b>"未知应用"</b>, 点击进入找到<b>"特戒盒子"</b>, <b>打开开关</b>, 最后返回继续更新安装即可!
+            """.trimIndent()
+            }
+
+            brand.contains("OPPO") -> {
+                """
+            打开手机<b>"设置"</b>, 下滑找到<b>"安全"</b>, 点击进入找到<b>"安装外部来源应用"</b>, 点击进入找到<b>"特戒盒子"</b>, <b>打开开关</b>, 最后返回继续更新安装即可!
+            """.trimIndent()
+            }
+
+            brand.contains("VIVO") -> {
+                """
+            打开手机<b>"设置"</b>, 下滑找到<b>"应用与权限"</b>, 点击进入找到<b>"权限管理"</b>, 点击进入找到<b>"权限"</b>, 点击进入找到<b>"安装未知应用"</b>, 点击进入找到<b>"特戒盒子"</b>, <b>打开开关</b>, 最后返回继续更新安装即可!
+            """.trimIndent()
+            }
+
+            brand.contains("SAMSUNG") || brand.contains("SAMSUNG")-> {
+                """
+            打开手机<b>"设置"</b>, 下滑找到<b>"生物识别和安全性"</b>, 点击进入找到<b>"安装未知应用程序"</b>, 点击进入找到<b>"特戒盒子"</b>, <b>打开开关</b>, 最后返回继续更新安装即可!
+            """.trimIndent()
+            }
+
+            else -> {
+                mDialog?.tv_dialog_install_tips_easy_title?.visibility = View.GONE
+                mDialog?.tv_dialog_install_tips_difficulty_title?.visibility = View.GONE
+                mDialog?.tv_dialog_install_tips_difficulty?.visibility = View.GONE
+                ""
+            }
+        }
+
+        val easyText = """
+            打开手机<b>"设置"</b>, 在搜索栏内输入<b>"未知应用"</b>或者<b>"外部来源应用"</b>, 点击进入找到<b>"特戒盒子"</b>, <b>打开开关</b>, 最后返回继续更新安装即可!
+        """.trimIndent()
+
+        mDialog?.tv_dialog_install_tips_easy?.text = Html.fromHtml(easyText)
+        mDialog?.tv_dialog_install_tips_difficulty?.text = Html.fromHtml(difficultyText)
+
+        mDialog?.tv_dialog_install_tips_know?.setOnClickListener {
+            listener?.next()
+            mDialog?.dismiss()
+        }
+        mDialog?.show()
+    }
+
 
     /**
      * 显示仅有确认按钮的弹框
@@ -429,8 +518,7 @@ object DialogUtils {
                 } else {
                     //账号密码登录
                     val account = mDialog?.et_dialog_startGame_account?.text?.toString()?.trim()
-                    val password =
-                        mDialog?.et_dialog_startGame_password?.text?.toString()?.trim()
+                    val password = mDialog?.et_dialog_startGame_password?.text?.toString()?.trim()
                     if (account != null && account != "" && password != null && password != "") {
                         listener?.accountStart(account, password)
                     } else {

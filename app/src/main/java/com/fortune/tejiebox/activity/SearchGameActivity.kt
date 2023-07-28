@@ -716,45 +716,6 @@ class SearchGameActivity : BaseActivity() {
     }
 
     /**
-     * 获取游戏礼包
-     */
-    private fun toGetGiftCode(giftNum: String = "888888") {
-        if (!MyApp.getInstance().isHaveToken()) {
-            DialogActivity.showGiftCode(this, giftNum)
-        } else {
-            val getGiftCode = RetrofitUtils.builder().getGiftCode(giftNum)
-            getGiftCodeObservable = getGiftCode.subscribeOn(Schedulers.io())
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribe({
-                    DialogUtils.dismissLoading()
-                    LogUtils.d("success=>${Gson().toJson(it)}")
-                    if (it != null) {
-                        when (it.code) {
-                            1 -> {
-                                DialogActivity.showGiftCode(this, giftNum)
-                            }
-
-                            -1 -> {
-                                ToastUtils.show(it.msg)
-                                ActivityManager.toSplashActivity(this)
-                            }
-
-                            else -> {
-                                ToastUtils.show(it.msg)
-                            }
-                        }
-                    } else {
-                        ToastUtils.show(getString(R.string.network_fail_to_responseDate))
-                    }
-                }, {
-                    DialogUtils.dismissLoading()
-                    LogUtils.d("fail=>${it.message.toString()}")
-                    ToastUtils.show(HttpExceptionUtils.getExceptionMsg(this, it))
-                })
-        }
-    }
-
-    /**
      * 获取全部账号
      */
     private fun toGetAllAccount(gameId: Int, gameName: String, gameChannelId: String) {
@@ -1014,13 +975,13 @@ class SearchGameActivity : BaseActivity() {
         rv_search_input.visibility = View.GONE
         if (str == "888888" || str == "免费礼包") {
             //通用礼包
-            toGetGiftCode()
+            DialogActivity.showGiftCode(this, "888888")
         } else if (str.startsWith("9") && str.length == 6 && isDigit(str)) {
             //99固定礼包
-            toGetGiftCode(str)
+            DialogActivity.showGiftCode(this, str)
         } else if (str.startsWith("8") && str.length == 6 && isDigit(str)) {
             //特定礼包 88+游戏id
-            toGetGiftCode(str)
+            DialogActivity.showGiftCode(this, str)
         } else {
             rv_search_result.visibility = View.VISIBLE
             DialogUtils.showBeautifulDialog(this)

@@ -619,10 +619,6 @@ class InviteGiftFragment : Fragment() {
                                     requireActivity(),
                                     message = "免费充值天天送，好玩的服处处有 点击下载${resources.getString(R.string.app_name)}: ${it.getData()?.url!!}",
                                 )
-//                                val intent =
-//                                    Intent(requireContext(), InvitePageActivity::class.java)
-//                                intent.putExtra(InvitePageActivity.INVITE_URL, it.getData()?.url)
-//                                startActivity(intent)
                             }
                         }
                         -1 -> {

@@ -1,0 +1,93 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="@dimen/dp_300"
+    android:layout_height="wrap_content"
+    android:background="@drawable/bg_white_card"
+    android:orientation="vertical">
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center_horizontal"
+        android:layout_margin="@dimen/dp_10"
+        android:text="更新安装提示"
+        android:textColor="@color/black_1A241F"
+        android:textSize="@dimen/sp_16"
+        android:textStyle="bold" />
+
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/dp_0_1"
+        android:background="@drawable/line_open_service" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/dp_10"
+        android:paddingStart="@dimen/dp_10"
+        android:paddingEnd="@dimen/dp_10"
+        android:text="当遇到更新安装困难时, 以下操作可以帮助到您:"
+        android:textColor="@color/black_1A241F"
+        android:textSize="@dimen/sp_12" />
+
+    <TextView
+        android:id="@+id/tv_dialog_install_tips_difficulty_title"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/dp_10"
+        android:paddingStart="@dimen/dp_10"
+        android:paddingEnd="@dimen/dp_10"
+        android:text="方法一: "
+        android:textColor="@color/black_1A241F"
+        android:textSize="@dimen/sp_12" />
+
+    <TextView
+        android:id="@+id/tv_dialog_install_tips_difficulty"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/dp_10"
+        android:paddingStart="@dimen/dp_10"
+        android:paddingEnd="@dimen/dp_10"
+        android:textColor="@color/black_1A241F"
+        android:textSize="@dimen/sp_12" />
+
+    <TextView
+        android:id="@+id/tv_dialog_install_tips_easy_title"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/dp_10"
+        android:paddingStart="@dimen/dp_10"
+        android:paddingEnd="@dimen/dp_10"
+        android:text="方法二: "
+        android:textColor="@color/black_1A241F"
+        android:textSize="@dimen/sp_12" />
+
+    <TextView
+        android:id="@+id/tv_dialog_install_tips_easy"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/dp_10"
+        android:paddingStart="@dimen/dp_10"
+        android:paddingEnd="@dimen/dp_10"
+        android:textColor="@color/black_1A241F"
+        android:textSize="@dimen/sp_12" />
+
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/dp_0_1"
+        android:layout_marginTop="@dimen/dp_10"
+        android:background="@drawable/line_open_service" />
+
+    <TextView
+        android:id="@+id/tv_dialog_install_tips_know"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center_horizontal"
+        android:gravity="center"
+        android:padding="@dimen/dp_10"
+        android:text="我已知晓"
+        android:textColor="#5F60FF"
+        android:textSize="@dimen/sp_16"
+        android:textStyle="bold" />
+
+</LinearLayout>

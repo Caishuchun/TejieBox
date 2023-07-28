@@ -7,6 +7,8 @@ data class GetGiftCodeBean(
 ) {
     data class Data(
         val code: String,
-        val ttl: Long
+        val ttl: Long,
+        val user_duration: Int?,
+        val limit_duration: Int?
     )
 }
