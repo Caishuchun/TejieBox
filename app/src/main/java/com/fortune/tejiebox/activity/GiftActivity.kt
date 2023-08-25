@@ -3,8 +3,12 @@ package com.fortune.tejiebox.activity
 import android.animation.ValueAnimator
 import android.annotation.SuppressLint
 import android.content.Intent
+import android.graphics.Color
 import android.os.Bundle
+import android.view.Gravity
+import android.view.KeyEvent
 import android.view.animation.LinearInterpolator
+import android.widget.TextView
 import androidx.fragment.app.Fragment
 import com.fortune.tejiebox.R
 import com.fortune.tejiebox.base.BaseActivity
@@ -20,6 +24,7 @@ import com.fortune.tejiebox.fragment.WhitePiaoFragment
 import com.fortune.tejiebox.http.RetrofitUtils
 import com.fortune.tejiebox.listener.OnBottomBarItemSelectListener
 import com.fortune.tejiebox.utils.*
+import com.fortune.tejiebox.widget.GuideItem
 import com.jakewharton.rxbinding2.view.RxView
 import com.umeng.analytics.MobclickAgent
 import io.reactivex.android.schedulers.AndroidSchedulers
@@ -46,7 +51,11 @@ class GiftActivity : BaseActivity() {
         private lateinit var instance: GiftActivity
         private fun isInstance() = this::instance.isInitialized
         fun getInstance() = if (isInstance()) instance else null
+
+        const val NEED_SHOW_GUIDE = "need_show_guide"
     }
+
+    private var needShowGuide = false
 
     override fun getLayoutId() = R.layout.activity_gift
 
@@ -57,6 +66,7 @@ class GiftActivity : BaseActivity() {
         EventBus.getDefault().register(this)
         dailyCheckFragment = DailyCheckFragment.newInstance()
 
+        needShowGuide = intent.getBooleanExtra(NEED_SHOW_GUIDE, false)
         initView()
         getIntegral()
         toCheckCanGetIntegral()
@@ -290,6 +300,7 @@ class GiftActivity : BaseActivity() {
                                     EventBus.getDefault().postSticky(RedPointChange(false))
                                 }
                             }
+                            toShowTitleGuide(0)
                         }
 
                         -1 -> {
@@ -299,6 +310,7 @@ class GiftActivity : BaseActivity() {
 
                         else -> {
                             ToastUtils.show(it.msg)
+                            finish()
                         }
                     }
                 } else {
@@ -307,8 +319,167 @@ class GiftActivity : BaseActivity() {
             }, {
                 LogUtils.d("fail=>${it.message.toString()}")
                 ToastUtils.show(HttpExceptionUtils.getExceptionMsg(this, it))
+                toShowTitleGuide(0)
             })
     }
+
+    override fun onKeyDown(keyCode: Int, event: KeyEvent?): Boolean {
+        if (!canBack) {
+            return true
+        }
+        return super.onKeyDown(keyCode, event)
+    }
+
+    private var canBack = true
+
+    /**
+     * 显示遮罩引导层
+     */
+    private fun toShowTitleGuide(index: Int) {
+        if (!needShowGuide) {
+            return
+        }
+        if (index >= 3) {
+            canBack = true
+            return
+        }
+        canBack = false
+
+        val layout = when (index) {
+            0 -> R.layout.layout_guide_left_top
+            1 -> R.layout.layout_guide_center_top
+            else -> R.layout.layout_guide_right_top
+        }
+
+        val content = when (index) {
+            0 -> "点击此处进入签到活动"
+            1 -> "点击此处进入白嫖活动"
+            else -> "点击此处进入邀请活动"
+        }
+
+        GuideUtils.showGuide(
+            activity = this,
+            backgroundColor = Color.parseColor("#88000000"),
+            highLightView = tt_gift.getCurrentItem(index),
+            highLightShape = GuideItem.SHAPE_RECT,
+            guideLayout = layout,
+            guideLayoutGravity = Gravity.BOTTOM,
+            guideViewOffsetProvider = { point, rectF, view ->
+                when (index) {
+                    0 -> {
+                        point.offset(-rectF.width().toInt() / 2, 0)
+                    }
+
+                    1 -> {
+                        point.offset(((rectF.width() - view.width) / 2).toInt(), 0)
+                    }
+
+                    else -> {
+                        point.offset(-(rectF.width() * 1.8).toInt(), 0)
+                    }
+                }
+            },
+            guideViewAttachedListener = { view, controller ->
+                view.findViewById<TextView>(R.id.tv_guide_msg).text = content
+                view.setOnClickListener {
+                    controller.dismiss()
+                    toShowItemGuide(index)
+                }
+            },
+            highLightClickListener = { controller ->
+                controller.dismiss()
+                toShowItemGuide(index)
+            },
+            guideShowListener = { isShowing -> },
+            drawHighLightCallback = { canvas, rect, paint ->
+                canvas.drawRoundRect(rect, 30f, 30f, paint)
+            }
+        )
+    }
+
+    /**
+     * 显示遮罩引导层
+     */
+    private fun toShowItemGuide(index: Int) {
+        if (index >= 3) {
+            canBack = true
+            return
+        }
+
+        val layout = when (index) {
+            0 -> R.layout.layout_guide_left_top
+            1 -> R.layout.layout_guide_center_bottom
+            else -> R.layout.layout_guide_center_bottom
+        }
+
+        val content = when (index) {
+            0 -> "点击此处签到"
+            1 -> "点击此处白嫖"
+            else -> "点击此处邀请好友得奖励"
+        }
+
+        val highLightView = when (index) {
+            0 -> dailyCheckFragment?.getCanGetItem()
+            1 -> whitePiaoFragment?.getCanGetItem()
+            else -> inviteGiftFragment?.getShareBtn()
+        } ?: return
+
+        val gravity = when (index) {
+            0 -> Gravity.BOTTOM
+            1 -> Gravity.TOP
+            else -> Gravity.TOP
+        }
+
+        GuideUtils.showGuide(
+            activity = this,
+            backgroundColor = Color.parseColor("#88000000"),
+            highLightView = highLightView,
+            highLightShape = GuideItem.SHAPE_RECT,
+            guideLayout = layout,
+            guideLayoutGravity = gravity,
+            guideViewOffsetProvider = { point, rectF, view ->
+                when (index) {
+                    0 -> {
+                        point.offset(-(rectF.width().toInt()) / 2, 0)
+                    }
+
+                    1 -> {
+                        point.offset(((rectF.width() - view.width) / 2).toInt(), 0)
+                    }
+
+                    else -> {
+                        point.offset(((rectF.width() - view.width) / 2).toInt(), 0)
+                    }
+                }
+            },
+            guideViewAttachedListener = { view, controller ->
+                view.findViewById<TextView>(R.id.tv_guide_msg).text = content
+                view.setOnClickListener {
+                    controller.dismiss()
+                    if (index < 2) {
+                        tt_gift.setCurrentItem(index + 1)
+                        toShowTitleGuide(index + 1)
+                    } else {
+                        canBack = true
+                    }
+                }
+            },
+            highLightClickListener = { controller ->
+                controller.dismiss()
+                if (index < 2) {
+                    tt_gift.setCurrentItem(index + 1)
+                    toShowTitleGuide(index + 1)
+                }else {
+                    canBack = true
+                }
+            },
+            guideShowListener = { isShowing -> },
+            drawHighLightCallback = { canvas, rect, paint ->
+                canvas.drawRoundRect(rect, 30f, 30f, paint)
+            }
+        )
+    }
+
 
     override fun destroy() {
         EventBus.getDefault().unregister(this)

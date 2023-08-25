@@ -20,6 +20,11 @@ object BaseAppUpdateSetting {
     const val appType = true
 
     /**
+     * 是否是抖音渠道包
+     */
+    const val isDouYinChannel = false
+
+    /**
      * 上架市场渠道
      * @param 0 代表默认
      * @param 1 代表应用宝

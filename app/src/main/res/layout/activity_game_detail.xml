@@ -153,7 +153,7 @@
                     android:background="@drawable/line_open_service" />
 
                 <LinearLayout
-                    android:layout_width="wrap_content"
+                    android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginStart="@dimen/dp_20"
                     android:layout_marginTop="@dimen/dp_10"
@@ -169,13 +169,23 @@
                         android:src="@mipmap/detail_open" />
 
                     <TextView
-                        android:id="@+id/tv_detail_gameChannelId"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:text="今日开服"
                         android:textColor="#0A0422"
                         android:textSize="@dimen/sp_16"
                         android:textStyle="bold" />
+
+                    <TextView
+                        android:id="@+id/tv_detail_gameChannelId"
+                        android:layout_width="0dp"
+                        android:layout_height="@dimen/dp_20"
+                        android:layout_weight="1"
+                        android:gravity="bottom|end"
+                        android:text="渠道号"
+                        android:layout_marginEnd="@dimen/dp_5"
+                        android:textColor="#0A0422"
+                        android:textSize="@dimen/sp_12" />
 
                 </LinearLayout>
 

@@ -6,20 +6,19 @@ import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
 import android.content.IntentFilter
+import android.graphics.Color
 import android.net.Uri
 import android.os.*
+import android.view.Gravity
 import android.view.View
 import android.view.animation.*
+import android.widget.TextView
 import androidx.fragment.app.Fragment
 import com.arialyy.aria.core.Aria
-import com.fm.openinstall.OpenInstall
-import com.fm.openinstall.listener.AppInstallAdapter
-import com.fm.openinstall.model.AppData
 import com.fortune.tejiebox.R
 import com.fortune.tejiebox.base.BaseActivity
 import com.fortune.tejiebox.base.BaseAppUpdateSetting
 import com.fortune.tejiebox.bean.GameInfo4ClipboardBean
-import com.fortune.tejiebox.bean.OpenInstallBean
 import com.fortune.tejiebox.bean.VersionBean
 import com.fortune.tejiebox.constants.SPArgument
 import com.fortune.tejiebox.event.*
@@ -31,7 +30,7 @@ import com.fortune.tejiebox.room.CustomerServiceInfo
 import com.fortune.tejiebox.room.CustomerServiceInfoDataBase
 import com.fortune.tejiebox.utils.*
 import com.fortune.tejiebox.utils.ActivityManager
-import com.google.gson.Gson
+import com.fortune.tejiebox.widget.GuideItem
 import com.jakewharton.rxbinding2.view.RxView
 import com.umeng.analytics.MobclickAgent
 import com.umeng.umlink.MobclickLink
@@ -71,6 +70,7 @@ class MainActivity : BaseActivity() {
     private var getReCustomerInfoObservable: Disposable? = null
     private var textFontChangeObservable: Disposable? = null
     private var getGameIdObservable: Disposable? = null
+    private var checkIsNewUserObservable: Disposable? = null
 
     private var openInstallType = -1
 
@@ -166,7 +166,6 @@ class MainActivity : BaseActivity() {
         mainFragment = GameFragment.newInstance()
 
         initView()
-//        isHaveNewPlayingGame(IsHaveNewPlayingGame(true))
 
         intentFilter = IntentFilter()
         intentFilter?.addAction(Intent.ACTION_TIME_TICK)
@@ -175,21 +174,17 @@ class MainActivity : BaseActivity() {
         }
         registerReceiver(timeChangeReceiver, intentFilter)
 
-        ll_shade_root.postDelayed({
+        rl_main_shade.postDelayed({
             if (MyApp.getInstance().isHaveToken()) {
                 //检查是否能够领取奖励
                 toCheckCanGetIntegral()
                 //如果登录了获取一下客服回复消息
                 toGetCustomerServiceInfo()
+
+//                isHaveNewPlayingGame(IsHaveNewPlayingGame(true))
             }
         }, 1000)
 
-//        val gameId = SPUtils.getInt(SPArgument.NEED_JUMP_GAME_ID_JUMP, -1)
-//        if (gameId != -1) {
-//            //需要跳转到游戏详情页
-//            GameFragment.setGameId(gameId)
-//            SPUtils.putValue(SPArgument.NEED_JUMP_GAME_ID_JUMP, -1)
-//        }
     }
 
     /**
@@ -283,15 +278,13 @@ class MainActivity : BaseActivity() {
             }
         }
 
-        //TODO 这里是需要修改的
         tab_main.isShowGiftIcon(BaseAppUpdateSetting.marketChannel == 0)
 
-        RxView.clicks(tv_know).throttleFirst(200, TimeUnit.MILLISECONDS).subscribe {
-            SPUtils.putValue(SPArgument.IS_NEED_SHADE_NEW, false)
-            ll_shade_root.visibility = View.GONE
+        RxView.clicks(iv_white_piao).throttleFirst(200, TimeUnit.MILLISECONDS).subscribe {
+            rl_main_shade.visibility = View.GONE
         }
 
-        RxView.clicks(ll_shade_root).throttleFirst(200, TimeUnit.MILLISECONDS).subscribe {
+        RxView.clicks(rl_main_shade).throttleFirst(200, TimeUnit.MILLISECONDS).subscribe {
             //作用就是,禁止点击遮罩层下面的东西
         }
 
@@ -489,6 +482,9 @@ class MainActivity : BaseActivity() {
             if (loginStatusChange.isHaveRewardInteger == null || !loginStatusChange.isHaveRewardInteger) {
                 toCheckCanGetIntegral()
             }
+            if (loginStatusChange.isFirstLogin == true) {
+                SPUtils.putValue(SPArgument.IS_NEED_SHOW_GUIDE, true)
+            }
             when (mainPage) {
                 MainPage.MAIN -> {
                     tab_main.setCurrentItem(0)
@@ -511,6 +507,7 @@ class MainActivity : BaseActivity() {
                 }
             }
             toGetCustomerServiceInfo()
+            InstallGiftDialog.dismissLoading()
             toCheckIsNeedOpenGame(true)
         } else {
             tab_main.showMsgNum(0)
@@ -526,25 +523,29 @@ class MainActivity : BaseActivity() {
      * @param isLogined 是否一登录
      */
     private fun toCheckIsNeedOpenGame(isLogined: Boolean = false) {
-//        val data = GameInfo4ClipboardBean.getData() ?: return
-//        LogUtils.d("剪切板拿到的数据:$data")
-//        if (isLogined) {
-//            //登录先判断是否能获取到游戏id
-//            toGetGameInfo(data.version)
-//        } else {
-//            //没登录就跳转登录
-//            LoginUtils.toQuickLogin(this)
-//        }
+        if (openInstallType == 5) {
+            val openInstallInfo = SPUtils.getString(SPArgument.OPEN_INSTALL_INFO)
+            if (openInstallInfo != null) {
+                dealOpenInstallInfo(openInstallInfo, isLogined)
+                SPUtils.putValue(SPArgument.OPEN_INSTALL_INFO, null)
+            }
+            return
+        }
         //本地取数据
         val openInstallUsed = SPUtils.getBoolean(SPArgument.OPEN_INSTALL_USED, false)
         if (openInstallUsed && openInstallType != 2) {
             // 使用了
             SPUtils.putValue(SPArgument.OPEN_INSTALL_INFO, null)
+            val isNeedShowGuide = SPUtils.getBoolean(SPArgument.IS_NEED_SHOW_GUIDE)
+            if (isNeedShowGuide) {
+                toShowGuide()
+            }
         } else {
             // 未使用
             val openInstallInfo = SPUtils.getString(SPArgument.OPEN_INSTALL_INFO)
             if (openInstallInfo == null) {
-                getInstallParams(isLogined)
+                //获取安装参数
+                MobclickLink.getInstallParams(this, true, umLinkListener)
             } else {
                 dealOpenInstallInfo(openInstallInfo, isLogined)
             }
@@ -552,29 +553,40 @@ class MainActivity : BaseActivity() {
     }
 
     /**
-     * 获取安装参数
+     * 显示遮罩引导层
      */
-    private fun getInstallParams(isLogined: Boolean) {
-        LogUtils.d("==========================TJ_getInstallParams")
-        val type = 1 //0 openInstall  1 友盟
-        if (type == 0) {
-            //openInstall
-            OpenInstall.getInstall(object : AppInstallAdapter() {
-                override fun onInstall(appData: AppData) {
-                    LogUtils.d("==========================OpenInstall_data: ${Gson().toJson(appData)}")
-                    if (appData.data != "") {
-                        //data不为空
-                        val dataInfo = Gson().fromJson(appData.data, OpenInstallBean::class.java)
-                        dealOpenInstallInfo(dataInfo.i, isLogined)
-                    } else {
-                        LogUtils.d("==========================OpenInstall_data is null")
-                    }
+    @SuppressLint("CheckResult")
+    private fun toShowGuide() {
+        SPUtils.putValue(SPArgument.IS_NEED_SHOW_GUIDE, false)
+        GuideUtils.showGuide(
+            activity = this,
+            backgroundColor = Color.parseColor("#88000000"),
+            highLightView = tab_main.getButtonView(),
+            highLightShape = GuideItem.SHAPE_OVAL,
+            guideLayout = R.layout.layout_guide_center_bottom,
+            guideLayoutGravity = Gravity.TOP,
+            guideViewOffsetProvider = { point, rectF, view ->
+                point.offset(((rectF.width() - view.width) / 2).toInt(), 0)
+            },
+            guideViewAttachedListener = { view, controller ->
+                view.findViewById<TextView>(R.id.tv_guide_msg).text = "点击此处进入白嫖页面"
+                view.setOnClickListener {
+                    controller.dismiss()
+                    ActivityManager.toMainActivity()
+                    val intent = Intent(this, GiftActivity::class.java)
+                    intent.putExtra(GiftActivity.NEED_SHOW_GUIDE, true)
+                    startActivity(intent)
                 }
-            })
-        } else {
-            //友盟
-            MobclickLink.getInstallParams(this, true, umLinkListener)
-        }
+            },
+            highLightClickListener = { controller ->
+                controller.dismiss()
+                ActivityManager.toMainActivity()
+                val intent = Intent(this, GiftActivity::class.java)
+                intent.putExtra(GiftActivity.NEED_SHOW_GUIDE, true)
+                startActivity(intent)
+            },
+            guideShowListener = { isShowing -> },
+        )
     }
 
     /**
@@ -589,6 +601,10 @@ class MainActivity : BaseActivity() {
         override fun onLink(path: String?, query_params: HashMap<String, String>?) {
             if (query_params == null) {
                 LogUtils.d("==========================UM_query_params is null")
+                val isNeedShowGuide = SPUtils.getBoolean(SPArgument.IS_NEED_SHOW_GUIDE)
+                if (isNeedShowGuide) {
+                    toShowGuide()
+                }
             } else {
                 val i = query_params["i"]
                 LogUtils.d("==========================UM_i: $i")
@@ -597,6 +613,10 @@ class MainActivity : BaseActivity() {
                     dealOpenInstallInfo(i, MyApp.getInstance().isHaveToken())
                 } else {
                     LogUtils.d("==========================UM_i is null")
+                    val isNeedShowGuide = SPUtils.getBoolean(SPArgument.IS_NEED_SHOW_GUIDE)
+                    if (isNeedShowGuide) {
+                        toShowGuide()
+                    }
                 }
             }
         }
@@ -609,6 +629,10 @@ class MainActivity : BaseActivity() {
         override fun onInstall(install_params: HashMap<String, String>?, uri: Uri?) {
             if (uri == null) {
                 LogUtils.d("==========================UM_install_uri is null")
+                val isNeedShowGuide = SPUtils.getBoolean(SPArgument.IS_NEED_SHOW_GUIDE)
+                if (isNeedShowGuide) {
+                    toShowGuide()
+                }
             } else {
                 LogUtils.d("==========================UM_install_uri: $uri")
                 toGetInstallParams(uri)
@@ -621,6 +645,10 @@ class MainActivity : BaseActivity() {
          */
         override fun onError(error: String?) {
             LogUtils.d("==========================UM_error: $error")
+            val isNeedShowGuide = SPUtils.getBoolean(SPArgument.IS_NEED_SHOW_GUIDE)
+            if (isNeedShowGuide) {
+                toShowGuide()
+            }
         }
     }
 
@@ -662,6 +690,12 @@ class MainActivity : BaseActivity() {
                         openInstallType = 1
                         if (!isLogined) {
                             LoginUtils.toQuickLogin(this)
+                        } else {
+                            val isNeedShowGuide =
+                                SPUtils.getBoolean(SPArgument.IS_NEED_SHOW_GUIDE, false)
+                            if (isNeedShowGuide) {
+                                toShowGuide()
+                            }
                         }
                     }
 
@@ -708,16 +742,112 @@ class MainActivity : BaseActivity() {
                         }
                     }
 
+                    map["type"] == 5 -> {
+                        //5.新推广渠道, 可能是7天200块那种
+                        LogUtils.d("==========================TJ_map[\"type\"] == 5")
+                        openInstallType = 5
+                        toCheckIsNewUser(isLogined, map)
+                    }
+
                     else -> {
                         LogUtils.d("==========================TJ_type is not available")
+                        val isNeedShowGuide = SPUtils.getBoolean(SPArgument.IS_NEED_SHOW_GUIDE)
+                        if (isNeedShowGuide) {
+                            toShowGuide()
+                        }
                     }
                 }
             } else {
                 LogUtils.d("==========================TJ_needInfo is null")
+                val isNeedShowGuide = SPUtils.getBoolean(SPArgument.IS_NEED_SHOW_GUIDE)
+                if (isNeedShowGuide) {
+                    toShowGuide()
+                }
             }
         } catch (e: Exception) {
             LogUtils.d("==========================TJ_decode_error: ${e.message}")
+            val isNeedShowGuide = SPUtils.getBoolean(SPArgument.IS_NEED_SHOW_GUIDE)
+            if (isNeedShowGuide) {
+                toShowGuide()
+            }
         }
+    }
+
+    /**
+     * 判断是否是新用户
+     */
+    private fun toCheckIsNewUser(isLogined: Boolean, map: HashMap<String, Any>) {
+        val checkIsNewUser = RetrofitUtils.builder().checkIsNewUser()
+        checkIsNewUserObservable = checkIsNewUser
+            .subscribeOn(Schedulers.io())
+            .observeOn(AndroidSchedulers.mainThread())
+            .subscribe({
+                when (it.code) {
+                    1 -> {
+                        if (it.data.is_new) {
+                            val integral = map["integral"] as Int
+                            val days = map["expiration"] as Int
+                            if (integral != 0) {
+                                SPUtils.putValue(SPArgument.IS_NEED_SHOW_INSTALL_GIFT, true)
+                                //有积分, 说明需要弹框
+                                Thread.sleep(100)
+                                InstallGiftDialog.showInstallGiftDialog(
+                                    this,
+                                    object : InstallGiftDialog.OnDialogListener {
+                                        override fun next() {
+                                            LoginUtils.toQuickLogin(this@MainActivity)
+                                        }
+                                    },
+                                    "立即登录",
+                                    integral / 10,
+                                    days
+                                )
+                            }
+                        } else {
+                            if (isLogined) {
+                                val isNeedShowInstallGift =
+                                    SPUtils.getBoolean(SPArgument.IS_NEED_SHOW_INSTALL_GIFT, false)
+                                if (isNeedShowInstallGift) {
+                                    val integral = map["integral"] as Int
+                                    val days = map["expiration"] as Int
+                                    if (integral != 0) {
+                                        //有积分, 说明需要弹框
+                                        Thread.sleep(100)
+                                        InstallGiftDialog.showInstallGiftDialog(
+                                            this,
+                                            object : InstallGiftDialog.OnDialogListener {
+                                                override fun next() {
+                                                    SPUtils.putValue(
+                                                        SPArgument.IS_NEED_SHOW_INSTALL_GIFT,
+                                                        false
+                                                    )
+                                                    toShowGuide()
+                                                }
+                                            },
+                                            "立即领取",
+                                            integral / 10,
+                                            days
+                                        )
+                                    }
+                                }
+                            }else{
+                                val isNeedShowGuide = SPUtils.getBoolean(SPArgument.IS_NEED_SHOW_GUIDE)
+                                if (isNeedShowGuide) {
+                                    toShowGuide()
+                                }
+                            }
+                        }
+                    }
+
+                    -1 -> {
+                        ToastUtils.show(it.msg)
+                        ActivityManager.toSplashActivity(this)
+                    }
+
+                    else -> {
+                    }
+                }
+            }, { })
     }
 
     /**
@@ -837,7 +967,8 @@ class MainActivity : BaseActivity() {
                 if (null == playingFragment) {
                     playingFragment = PlayingAndCollectionFatherFragment.newInstance()
                     currentFragment = playingFragment
-                    supportFragmentManager.beginTransaction().add(R.id.fl_main, currentFragment!!)
+                    supportFragmentManager.beginTransaction()
+                        .add(R.id.fl_main, currentFragment!!)
                         .commitAllowingStateLoss()
                 } else {
                     currentFragment = playingFragment
@@ -852,7 +983,8 @@ class MainActivity : BaseActivity() {
                 if (null == moreGameFragment) {
                     moreGameFragment = MoreGameFragment.newInstance()
                     currentFragment = moreGameFragment
-                    supportFragmentManager.beginTransaction().add(R.id.fl_main, currentFragment!!)
+                    supportFragmentManager.beginTransaction()
+                        .add(R.id.fl_main, currentFragment!!)
                         .commitAllowingStateLoss()
                 } else {
                     currentFragment = moreGameFragment
@@ -867,7 +999,8 @@ class MainActivity : BaseActivity() {
                 if (null == mineFragment) {
                     mineFragment = MineFragment.newInstance()
                     currentFragment = mineFragment
-                    supportFragmentManager.beginTransaction().add(R.id.fl_main, currentFragment!!)
+                    supportFragmentManager.beginTransaction()
+                        .add(R.id.fl_main, currentFragment!!)
                         .commitAllowingStateLoss()
                 } else {
                     currentFragment = mineFragment
@@ -918,12 +1051,20 @@ class MainActivity : BaseActivity() {
     @Subscribe(sticky = true, threadMode = ThreadMode.MAIN)
     fun isHaveNewPlayingGame(isHaveNewPlayingGame: IsHaveNewPlayingGame) =
         if (isHaveNewPlayingGame.isHaveNewPlayingGame) {
+            var count = 0
             tv_main_tip.visibility = View.VISIBLE
             //组合动画
             val animationSet = AnimationSet(true)
             val alphaAnimation = AlphaAnimation(0f, 1f)
             val scaleAnimation = ScaleAnimation(
-                0f, 1f, 0.1f, 1f, Animation.RELATIVE_TO_SELF, 0.5f, Animation.RELATIVE_TO_SELF, 1f
+                0f,
+                1f,
+                0.1f,
+                1f,
+                Animation.RELATIVE_TO_SELF,
+                0.5f,
+                Animation.RELATIVE_TO_SELF,
+                1f
             )
             animationSet.addAnimation(alphaAnimation)
             animationSet.addAnimation(scaleAnimation)
@@ -936,6 +1077,12 @@ class MainActivity : BaseActivity() {
 
                 @SuppressLint("CheckResult")
                 override fun onAnimationEnd(animation: Animation?) {
+                    count++
+                    if (count >= 5) {
+                        animationSet.cancel()
+                        tv_main_tip.visibility = View.GONE
+                        return
+                    }
                     toSetText(animationSet)
                 }
 
@@ -974,6 +1121,11 @@ class MainActivity : BaseActivity() {
     override fun onResume() {
         super.onResume()
         MobclickAgent.onResume(this)
+        val isNeedShowGuide = SPUtils.getBoolean(SPArgument.IS_NEED_SHOW_GUIDE)
+        val isNeedShowInstallGift = SPUtils.getBoolean(SPArgument.IS_NEED_SHOW_INSTALL_GIFT, true)
+        if (isNeedShowGuide && !isNeedShowInstallGift) {
+            toShowGuide()
+        }
     }
 
     override fun onPause() {

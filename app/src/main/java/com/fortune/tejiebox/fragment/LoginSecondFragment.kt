@@ -204,16 +204,16 @@ class LoginSecondFragment() : Fragment() {
 //                                if (BaseAppUpdateSetting.isToPromoteVersion) {
                                 PromoteUtils.promote(requireActivity())
 //                                }
-                                // 首次注册且有奖励积分的
-                                if (it.data?.integral != null && it.data?.integral!! > 0) {
-                                    isHaveRewardInteger = true
-                                    DialogActivity.showGetIntegral(
-                                        requireActivity(),
-                                        it.data?.integral!!,
-                                        true,
-                                        null
-                                    )
-                                }
+                                // 打电话推广, 首次注册且有奖励积分的
+//                                if (it.data?.integral != null && it.data?.integral!! > 0) {
+//                                    isHaveRewardInteger = true
+//                                    DialogActivity.showGetIntegral(
+//                                        requireActivity(),
+//                                        it.data?.integral!!,
+//                                        true,
+//                                        null
+//                                    )
+//                                }
                                 //openInstall 注册统计
 //                                OpenInstall.reportRegister()
                             }
@@ -222,7 +222,8 @@ class LoginSecondFragment() : Fragment() {
                                     true,
                                     it.data?.phone,
                                     it.data?.account,
-                                    isHaveRewardInteger
+                                    isHaveRewardInteger,
+                                    it.data?.first_login == 1
                                 )
                             )
                             requireActivity().finish()

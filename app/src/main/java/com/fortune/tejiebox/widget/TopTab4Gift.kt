@@ -60,6 +60,15 @@ class TopTab4Gift(context: Context, attrs: AttributeSet) : LinearLayout(context,
         changeItemStyle(index)
     }
 
+    /**
+     * 获取当前选中的item
+     */
+    fun getCurrentItem(index: Int) = when (index) {
+        0 -> mView.rl_top_dailyCheck
+        1 -> mView.rl_top_whitePiao
+        else -> mView.rl_top_inviteGift
+    }
+
     init {
         //获取布局文件
         mView = LayoutInflater.from(context).inflate(R.layout.layout_top_tab_gift, this, true)
@@ -113,6 +122,7 @@ class TopTab4Gift(context: Context, attrs: AttributeSet) : LinearLayout(context,
                 mView.tv_top_dailyCheck.typeface = Typeface.defaultFromStyle(Typeface.BOLD)
                 mView.tv_top_dailyCheck.setTextColor(Color.parseColor("#6560ff"))
             }
+
             1 -> {
 //                hasWhitePiao = false
 //                mView.view_top_whitePiao.visibility = View.GONE
@@ -120,6 +130,7 @@ class TopTab4Gift(context: Context, attrs: AttributeSet) : LinearLayout(context,
                 mView.tv_top_whitePiao.typeface = Typeface.defaultFromStyle(Typeface.BOLD)
                 mView.tv_top_whitePiao.setTextColor(Color.parseColor("#6560ff"))
             }
+
             2 -> {
 //                hasInviteGift = false
 //                mView.view_top_inviteGift.visibility = View.GONE

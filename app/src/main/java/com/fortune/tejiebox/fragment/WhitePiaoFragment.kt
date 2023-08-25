@@ -70,6 +70,9 @@ class WhitePiaoFragment : Fragment() {
         return mView
     }
 
+    private var canGetItem: View? = null
+    fun getCanGetItem() = canGetItem ?: tempFirstItem
+
     /**
      * 获取数据
      */
@@ -122,6 +125,8 @@ class WhitePiaoFragment : Fragment() {
             })
     }
 
+    private var tempFirstItem: View? = null
+
     @SuppressLint("SimpleDateFormat", "SetTextI18n", "CheckResult")
     private fun initView() {
         val currentTimeMillis = System.currentTimeMillis()
@@ -129,14 +134,50 @@ class WhitePiaoFragment : Fragment() {
         val currentHour = format.split(" ")[1].split(":")[0].toInt()
         LogUtils.d("currentHour = $currentHour")
 
+        val id = when (currentHour) {
+            in 5 until 9 -> {
+                1
+            }
+
+            in 10 until 14 -> {
+                2
+            }
+
+            in 15 until 19 -> {
+                3
+            }
+
+            in 20 until 24 -> {
+                mView?.rv_whitePiao?.postDelayed({
+                    mView?.rv_whitePiao?.scrollToPosition(3)
+                }, 100)
+                4
+            }
+
+            else -> {
+                0
+            }
+        }
+
         adapter = BaseAdapterWithPosition.Builder<WhitePiaoListBean.DataBean>()
             .setLayoutId(R.layout.item_white_piao)
             .setData(mDate)
             .addBindView { itemView, itemData, position ->
 
+                if (position == 0) {
+                    tempFirstItem = itemView
+                }
+
                 itemView.tv_white_piao_integral.text =
                     if (BaseAppUpdateSetting.isToAuditVersion) "+${itemData.integral}"
                     else "+${itemData.integral?.div(10)}元"
+
+
+
+                if (itemData.id == id && itemData.status == 1) {
+                    canGetItem = itemView
+                }
+
                 when (itemData.id) {
                     1 -> {
                         when (itemData.status) {

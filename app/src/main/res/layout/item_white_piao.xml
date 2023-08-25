@@ -1,48 +1,42 @@
 <?xml version="1.0" encoding="utf-8"?>
-<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/rl_white_piao_bg"
     android:layout_width="match_parent"
-    android:layout_height="wrap_content">
+    android:layout_height="@dimen/dp_120"
+    android:layout_margin="@dimen/dp_8"
+    android:background="@drawable/bg_white_piao_got">
 
-    <RelativeLayout
-        android:id="@+id/rl_white_piao_bg"
-        android:layout_width="match_parent"
-        android:layout_height="@dimen/dp_120"
-        android:layout_marginBottom="@dimen/dp_14"
-        android:background="@drawable/bg_white_piao_got">
+    <LinearLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="@dimen/dp_24"
+        android:gravity="center"
+        android:orientation="horizontal">
 
-
-        <LinearLayout
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_centerHorizontal="true"
-            android:layout_marginTop="@dimen/dp_24"
-            android:gravity="center"
-            android:orientation="horizontal">
-
-            <ImageView
-                android:id="@+id/iv_white_piao_integral"
-                android:layout_width="@dimen/dp_40"
-                android:layout_height="@dimen/dp_40"
-                android:src="@mipmap/icon" />
-
-            <TextView
-                android:id="@+id/tv_white_piao_integral"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginStart="@dimen/dp_10"
-                android:text="+100"
-                android:textColor="@color/gray_C4C4C4"
-                android:textSize="@dimen/sp_16" />
-        </LinearLayout>
+        <ImageView
+            android:id="@+id/iv_white_piao_integral"
+            android:layout_width="@dimen/dp_40"
+            android:layout_height="@dimen/dp_40"
+            android:src="@mipmap/icon" />
 
         <TextView
-            android:id="@+id/tv_white_piao_btn"
-            android:layout_width="match_parent"
-            android:layout_height="@dimen/dp_30"
-            android:layout_alignParentBottom="true"
-            android:layout_centerHorizontal="true"
-            android:gravity="center"
-            android:textColor="@color/white_FFFFFF"
-            android:textSize="@dimen/sp_12" />
-    </RelativeLayout>
-</FrameLayout>
+            android:id="@+id/tv_white_piao_integral"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="@dimen/dp_10"
+            android:text="+100"
+            android:textColor="@color/gray_C4C4C4"
+            android:textSize="@dimen/sp_16" />
+    </LinearLayout>
+
+    <TextView
+        android:id="@+id/tv_white_piao_btn"
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/dp_30"
+        android:layout_alignParentBottom="true"
+        android:layout_centerHorizontal="true"
+        android:gravity="center"
+        android:textColor="@color/white_FFFFFF"
+        android:textSize="@dimen/sp_12" />
+</RelativeLayout>

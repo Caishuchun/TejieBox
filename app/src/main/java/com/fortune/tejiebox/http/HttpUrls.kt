@@ -191,4 +191,7 @@ object HttpUrls {
 
     //账号和手机号关联性检查
     const val CHECK_ACCOUNT_PHONE = "/android/v2.accountLogin/checkAccount"
+
+    //检查是否是新用户
+    const val CHECK_IS_NEW_USER = "/android/device/info"
 }

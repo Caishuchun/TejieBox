@@ -46,4 +46,7 @@ object SPArgument {
 
     const val VERIFICATION_CODE_TIME = "verification_code_time" //获取验证码的时间
     const val USER_ID_NEW = "user_id_new" //明文userid
+
+    const val IS_NEED_SHOW_GUIDE = "isNeedShowGuide" //是否需要显示引导页
+    const val IS_NEED_SHOW_INSTALL_GIFT = "isNeedShowInstallGift" //是否需要显示安装礼包
 }

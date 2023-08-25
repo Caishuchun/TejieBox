@@ -128,6 +128,7 @@ class CustomerServiceActivity : BaseActivity() {
                     4 -> requestResponseNormalQuest(quest, 4, "4")
                     5 -> requestResponseNormalQuest(quest, 4, "5")
                     6 -> requestResponseNormalQuest(quest, 4, "6")
+                    7 -> requestResponseNormalQuest(quest, 4, "7")
                     else -> toSendMsg(quest)
                 }
             }
@@ -198,6 +199,8 @@ class CustomerServiceActivity : BaseActivity() {
                                             游戏内白嫖的余额使用介绍
                                             
                                             为什么被封号了
+                                            
+                                            每周二早上维护
                                             """.trimIndent()
                                     )
                                     //常见问题
@@ -311,6 +314,22 @@ class CustomerServiceActivity : BaseActivity() {
                                         }
 
                                     }, 81, 88, 0)
+                                    //每周二早上维护
+                                    ssb.setSpan(object : ClickableSpan() {
+                                        override fun onClick(widget: View) {
+                                            requestResponseNormalQuest(
+                                                "每周二早上维护",
+                                                0,
+                                                "每周二早上6点开始停服维护, 维护时间1-3个小时不等"
+                                            )
+                                        }
+
+                                        override fun updateDrawState(ds: TextPaint) {
+                                            super.updateDrawState(ds)
+                                            ds.isUnderlineText = false
+                                        }
+
+                                    }, 90, 97, 0)
 
                                     itemView.tv_item_customerService_left_msg.let {
                                         it.movementMethod = LinkMovementMethod.getInstance()
@@ -449,6 +468,25 @@ class CustomerServiceActivity : BaseActivity() {
                                                         "为什么被封号了",
                                                         0,
                                                         "游戏内的问题, 可以在游戏里找到当前游戏里的客服处理"
+                                                    )
+                                                }
+
+                                                override fun updateDrawState(ds: TextPaint) {
+                                                    super.updateDrawState(ds)
+                                                    ds.isUnderlineText = false
+                                                }
+
+                                            }, 20, 27, 0)
+                                        }
+                                        7 -> {
+                                            ssb.append(SpannableStringBuilder("每周二早上维护"))
+                                            //每周二早上维护
+                                            ssb.setSpan(object : ClickableSpan() {
+                                                override fun onClick(widget: View) {
+                                                    requestResponseNormalQuest(
+                                                        "每周二早上维护",
+                                                        0,
+                                                        "每周二早上6点开始停服维护, 维护时间1-3个小时不等"
                                                     )
                                                 }
 
@@ -682,6 +720,7 @@ class CustomerServiceActivity : BaseActivity() {
         val list4Quest4 = mutableListOf("怎么更新", "下载不了")
         val list4Quest5 = mutableListOf("白嫖", "签到", "余额")
         val list4Quest6 = mutableListOf("封号", "被封")
+        val list4Quest7 = mutableListOf("维护", "游戏进不去")
         val isContainList1Info = isContainListInfo(quest, list4Quest1)
         if (isContainList1Info) {
             return 1
@@ -702,6 +741,11 @@ class CustomerServiceActivity : BaseActivity() {
         if (isContainList6Info) {
             return 6
         }
+        val isContainList7Info = isContainListInfo(quest, list4Quest7)
+        if (isContainList7Info){
+            return 7
+        }
+
         return 0
     }
 

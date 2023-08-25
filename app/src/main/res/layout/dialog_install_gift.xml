@@ -1,0 +1,77 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="@dimen/dp_240"
+    android:layout_height="@dimen/dp_350"
+    android:background="@mipmap/bg_install_gift"
+    android:orientation="vertical">
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center_horizontal"
+        android:layout_marginTop="@dimen/dp_72"
+        android:text="福利来袭"
+        android:textColor="@color/white_FFFFFF"
+        android:textSize="@dimen/sp_24"
+        android:textStyle="bold" />
+
+
+    <LinearLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center_horizontal"
+        android:layout_marginTop="@dimen/dp_40"
+        android:orientation="horizontal">
+
+        <TextView
+            android:id="@+id/tv_install_gift_money"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="200"
+            android:textColor="#b02020"
+            android:textSize="@dimen/sp_32"
+            android:textStyle="bold" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="元"
+            android:textColor="#b02020"
+            android:textSize="@dimen/sp_20"
+            android:textStyle="bold" />
+    </LinearLayout>
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center_horizontal"
+        android:layout_marginTop="@dimen/dp_12"
+        android:text="恭喜你获得真实充值"
+        android:textColor="#eb462e"
+        android:textSize="@dimen/sp_12" />
+
+    <TextView
+        android:id="@+id/tv_install_gift_sure"
+        android:layout_width="@dimen/dp_200"
+        android:layout_height="@dimen/dp_40"
+        android:layout_gravity="center_horizontal"
+        android:layout_marginTop="@dimen/dp_40"
+        android:background="@mipmap/btn_install_gift"
+        android:gravity="center"
+        android:text="我知道了"
+        android:textColor="#eb462e"
+        android:textSize="@dimen/sp_18" />
+
+
+    <TextView
+        android:id="@+id/tv_install_gift_tips"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center_horizontal"
+        android:layout_marginTop="@dimen/dp_10"
+        android:gravity="center"
+        android:text="请尽快登录新账号并寻找喜欢的游戏充值\n*日后未用完会自动清零"
+        android:textColor="@color/white_FFFFFF"
+        android:textSize="@dimen/sp_10" />
+
+</LinearLayout>

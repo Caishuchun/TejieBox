@@ -446,16 +446,16 @@ class AccountSignFragment : Fragment() {
 //                            if (BaseAppUpdateSetting.isToPromoteVersion) {
                             PromoteUtils.promote(requireActivity())
 //                            }
-                            // 首次注册且有奖励积分的
-                            if (it.data?.integral != null && it.data?.integral!! > 0) {
-                                isHaveRewardInteger = true
-                                DialogActivity.showGetIntegral(
-                                    requireActivity(),
-                                    it.data?.integral!!,
-                                    true,
-                                    null
-                                )
-                            }
+                            // 打电话推广, 首次注册且有奖励积分的
+//                            if (it.data?.integral != null && it.data?.integral!! > 0) {
+//                                isHaveRewardInteger = true
+//                                DialogActivity.showGetIntegral(
+//                                    requireActivity(),
+//                                    it.data?.integral!!,
+//                                    true,
+//                                    null
+//                                )
+//                            }
                         }
 
                         EventBus.getDefault().postSticky(

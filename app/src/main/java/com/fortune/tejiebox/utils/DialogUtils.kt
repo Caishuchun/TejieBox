@@ -29,6 +29,9 @@ import com.jakewharton.rxbinding2.widget.RxTextView
 import com.snail.antifake.jni.EmulatorDetectUtil
 import io.reactivex.disposables.Disposable
 import kotlinx.android.synthetic.main.dialog_beautiful.av_dialog
+import kotlinx.android.synthetic.main.dialog_install_gift.tv_install_gift_money
+import kotlinx.android.synthetic.main.dialog_install_gift.tv_install_gift_sure
+import kotlinx.android.synthetic.main.dialog_install_gift.tv_install_gift_tips
 import kotlinx.android.synthetic.main.dialog_loading.tv_dialog_message
 import kotlinx.android.synthetic.main.item_popup_account.view.tv_item_popup_account
 import kotlinx.android.synthetic.main.layout_dialog_agreement.iv_dialog_agreement_cancel
@@ -222,7 +225,7 @@ object DialogUtils {
             """.trimIndent()
             }
 
-            brand.contains("SAMSUNG") || brand.contains("SAMSUNG")-> {
+            brand.contains("SAMSUNG") || brand.contains("SAMSUNG") -> {
                 """
             打开手机<b>"设置"</b>, 下滑找到<b>"生物识别和安全性"</b>, 点击进入找到<b>"安装未知应用程序"</b>, 点击进入找到<b>"特戒盒子"</b>, <b>打开开关</b>, 最后返回继续更新安装即可!
             """.trimIndent()
@@ -257,7 +260,7 @@ object DialogUtils {
     fun showOnlySureDialog(
         context: Context,
         title: String,
-        msg: String,
+        msg: CharSequence,
         sure: String,
         isBackLastPage: Boolean,
         listener: OnDialogListener?
@@ -275,6 +278,7 @@ object DialogUtils {
         mDialog?.view_dialog_default_line?.visibility = View.GONE
         mDialog?.tv_dialog_default_sure?.text = sure
         mDialog?.tv_dialog_default_message?.text = msg
+        mDialog?.tv_dialog_default_message?.gravity = Gravity.START
         mDialog?.tv_dialog_default_sure?.setOnClickListener {
             listener?.next()
             mDialog?.dismiss()

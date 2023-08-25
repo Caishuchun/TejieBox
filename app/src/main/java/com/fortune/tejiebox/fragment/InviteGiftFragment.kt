@@ -33,6 +33,7 @@ import com.jakewharton.rxbinding2.view.RxView
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.Disposable
 import io.reactivex.schedulers.Schedulers
+import kotlinx.android.synthetic.main.fragment_invite_gift.tv_inviteGift_share
 import kotlinx.android.synthetic.main.fragment_invite_gift.view.*
 import kotlinx.android.synthetic.main.item_invite_gift.view.*
 import kotlinx.android.synthetic.main.item_invite_time.view.*
@@ -87,6 +88,11 @@ class InviteGiftFragment : Fragment() {
             getShareList()
         }
     }
+
+    /**
+     * 获取分享btn
+     */
+    fun getShareBtn() = tv_inviteGift_share
 
     /**
      * 获取分享列表

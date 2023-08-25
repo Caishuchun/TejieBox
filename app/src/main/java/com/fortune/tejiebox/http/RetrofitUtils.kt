@@ -36,9 +36,9 @@ object RetrofitUtils {
         }
         client = OkHttpClient.Builder()
             .retryOnConnectionFailure(true)
-            .connectTimeout(60 * 5, TimeUnit.SECONDS)
-            .readTimeout(60 * 5, TimeUnit.SECONDS)
-            .writeTimeout(60 * 5, TimeUnit.SECONDS)
+            .connectTimeout(20, TimeUnit.SECONDS)
+            .readTimeout(20, TimeUnit.SECONDS)
+            .writeTimeout(20, TimeUnit.SECONDS)
             .addInterceptor(httpLoggingInterceptor)
             .addInterceptor {
                 val request = it.request()
@@ -608,7 +608,7 @@ object RetrofitUtils {
         ): Flowable<BaseBean>
 
         /**
-         * 校验短信验证码
+         * 检查账号和手机号是否匹配
          */
         @FormUrlEncoded
         @POST(HttpUrls.CHECK_ACCOUNT_PHONE)
@@ -616,6 +616,12 @@ object RetrofitUtils {
             @Field("phone", encoded = true) phone: String,
             @Field("account", encoded = true) account: String
         ): Flowable<BaseBean>
+
+        /**
+         * 新邀请列表
+         */
+        @GET(HttpUrls.CHECK_IS_NEW_USER)
+        fun checkIsNewUser(): Flowable<CheckIsNewUserBean>
 
     }
 }

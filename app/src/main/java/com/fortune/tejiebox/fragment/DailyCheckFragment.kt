@@ -82,6 +82,14 @@ class DailyCheckFragment : Fragment() {
         )
     }
 
+
+    private var canGetItem: View? = null
+
+    /**
+     * 获取可领取的item
+     */
+    fun getCanGetItem() = canGetItem
+
     private fun getData() {
         DialogUtils.showBeautifulDialog(requireContext())
         val dailyCheckList = RetrofitUtils.builder().dailyCheckList()
@@ -221,6 +229,8 @@ class DailyCheckFragment : Fragment() {
                         if (BaseAppUpdateSetting.isToAuditVersion) "今日可领取" else "今日可白嫖"
                     itemView.iv_item_dailyCheck_type.startAnimation(scaleAnimation)
                     itemView.rl_item_dailyCheck_bg.setBackgroundResource(R.drawable.bg_daily_checking)
+
+                    canGetItem =itemView
                 }
 
                 RxView.clicks(itemView).throttleFirst(200, TimeUnit.MILLISECONDS).subscribe {

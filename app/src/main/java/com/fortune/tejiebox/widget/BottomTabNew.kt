@@ -73,6 +73,11 @@ class BottomTabNew(context: Context, attrs: AttributeSet) : LinearLayout(context
     }
 
     /**
+     * 获取白嫖图标的view
+     */
+    fun getButtonView() = mView.iv_bottomTab_whitePiao
+
+    /**
      * 白嫖图标是否抖动
      */
     private fun isIconFlip(isShow: Boolean) {

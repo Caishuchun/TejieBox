@@ -18,7 +18,6 @@ import com.bumptech.glide.Glide
 import com.fortune.tejiebox.R
 import com.fortune.tejiebox.base.BaseActivity
 import com.fortune.tejiebox.base.BaseAppUpdateSetting
-import com.fortune.tejiebox.bean.GameInfo4ClipboardBean
 import com.fortune.tejiebox.bean.ShelfDataBean
 import com.fortune.tejiebox.bean.VersionBean
 import com.fortune.tejiebox.constants.SPArgument
@@ -79,63 +78,9 @@ class NewSplashActivity : BaseActivity() {
             Thread.sleep(1000)
             runOnUiThread {
                 toAgreeAgreement()
-//                DialogUtils.showInstallTipsDialog(
-//                    this@NewSplashActivity,
-//                    object : DialogUtils.OnDialogListener {
-//                        override fun next() {
-//                        }
-//                    }
-//                )
             }
         }.start()
 
-    }
-
-    /**
-     * 获取剪切板数据
-     */
-    private fun toGetClipboardContent() {
-        val clipboardContent = ClipboardUtils.getClipboardContent(this) ?: return
-        if (clipboardContent.startsWith("TJBOX|")) {
-            //需要跳转到详情页
-            val replace = clipboardContent.replace("TJBOX|", "")
-            var gameId = -1
-            if (replace != "") {
-                gameId = try {
-                    replace.toInt()
-                } catch (e: NumberFormatException) {
-                    -1
-                }
-            }
-            SPUtils.putValue(SPArgument.NEED_JUMP_GAME_ID_JUMP, gameId)
-            SPUtils.putValue(SPArgument.NEED_JUMP_GAME_ID_UPDATE, gameId)
-//            ClipboardUtils.clearClipboardContent(this)
-        } else {
-            //判断是不是要去全部游戏
-            val decrypt = try {
-                AESUtils.decrypt(clipboardContent) ?: return
-            } catch (e: Exception) {
-                return
-            }
-            LogUtils.d("=======$decrypt")
-            val gameInfo = decrypt.split("|")
-            if (gameInfo.size < 6) return
-            val gameInfo4ClipboardBean = GameInfo4ClipboardBean(
-                gameInfo[0],
-                gameInfo[1],
-                gameInfo[2],
-                gameInfo[3],
-                gameInfo[4],
-                gameInfo[5],
-            )
-            if (gameInfo4ClipboardBean.channelId.length > 6) {
-                val channelIdHead = gameInfo4ClipboardBean.channelId.substring(0, 6)
-                if (channelIdHead.toLowerCase().contains("box")) {
-                    return
-                }
-            }
-            GameInfo4ClipboardBean.setData(gameInfo4ClipboardBean)
-        }
     }
 
     /**
@@ -259,7 +204,6 @@ class NewSplashActivity : BaseActivity() {
      */
     private fun toGetShelfData() {
         val shelfDataRequest = Request.Builder()
-//            .url("http://tejie-box.oss-cn-hangzhou.aliyuncs.com/apk/setting/shelf_setting.json")
             .url("https://cdn.tjbox.lelehuyu.com/apk/setting/shelf_setting.json")
             .build()
         val okHttpClient = OkHttpClient.Builder()

@@ -4,6 +4,7 @@ import android.annotation.SuppressLint
 import android.content.Intent
 import android.graphics.Color
 import android.os.Bundle
+import android.text.Html
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -247,13 +248,19 @@ class MineFragment : Fragment() {
         }
 
         mView?.ll_mineFragment_logOff?.let {
+            val message = """
+                 <b>账号注销, 将清空删除所有盒子内数据(包括用户信息和游戏数据), 且之后注册时也不视作新用户, 无法获得新用户注册奖励, 请谨慎操作!<br><br>
+                 自主注销:</b> 该功能已处开发阶段, 待更新上线后, 可自行通过发送短信验证码进行验证, 验证通过后注销账号<br><br>
+                 <b>客服注销:</b> 如需立即注销, 请联系QQ客服<b>3111423308</b>, 并提供必要的相关账号信息, 待审核通过后注销账号
+            """.trimIndent()
+
             RxView.clicks(it)
                 .throttleFirst(200, TimeUnit.MILLISECONDS)
                 .subscribe {
                     DialogUtils.showOnlySureDialog(
                         requireContext(),
                         "账号注销",
-                        "确定要注销账号吗?\n若您需要注销账号, 请联系我们的QQ客服 3111423308 , 预计在3-5个工作日内完成",
+                        Html.fromHtml(message),
                         "确定",
                         false, null
                     )
