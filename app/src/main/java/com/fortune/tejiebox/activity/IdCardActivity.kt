@@ -90,6 +90,7 @@ class IdCardActivity : BaseActivity() {
 
                 btn_idCard_issue.visibility = View.GONE
             }
+
             else -> {
                 //需要填写
                 et_idCard_name.requestFocus()
@@ -165,15 +166,28 @@ class IdCardActivity : BaseActivity() {
                                 0 -> {
                                     ToastUtils.show("实名认证成功!")
                                 }
+
                                 2 -> {
                                     ToastUtils.show("实名认证成功,即将启动游戏!")
                                     toStartGame()
                                 }
                             }
                         }
-                        else -> {
+
+                        -1 -> {
                             it.msg.let { it1 -> ToastUtils.show(it1) }
+                            ActivityManager.toSplashActivity(this)
                         }
+
+                        else -> {
+                            DialogUtils.showOnlySureDialog(
+                                this, "实名认证", it.msg, "好的", false, null
+                            )
+                        }
+
+//                        else -> {
+//                            it.msg.let { it1 -> ToastUtils.show(it1) }
+//                        }
                     }
                 } else {
                     ToastUtils.show(getString(R.string.network_fail_to_responseDate))
@@ -226,10 +240,12 @@ class IdCardActivity : BaseActivity() {
                             }
 //                            finish()
                         }
+
                         -1 -> {
                             ToastUtils.show(it.msg)
                             ActivityManager.toSplashActivity(this)
                         }
+
                         else -> {
                             ToastUtils.show(it.msg)
                         }

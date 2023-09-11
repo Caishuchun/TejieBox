@@ -48,6 +48,7 @@ import kotlinx.android.synthetic.main.item_daily_check.view.tv_item_dailyCheck_n
 import kotlinx.android.synthetic.main.item_daily_check.view.tv_item_dailyCheck_title
 import org.greenrobot.eventbus.EventBus
 import org.greenrobot.eventbus.Subscribe
+import java.text.SimpleDateFormat
 import java.util.concurrent.TimeUnit
 
 class DailyCheckFragment : Fragment() {
@@ -230,7 +231,7 @@ class DailyCheckFragment : Fragment() {
                     itemView.iv_item_dailyCheck_type.startAnimation(scaleAnimation)
                     itemView.rl_item_dailyCheck_bg.setBackgroundResource(R.drawable.bg_daily_checking)
 
-                    canGetItem =itemView
+                    canGetItem = itemView
                 }
 
                 RxView.clicks(itemView).throttleFirst(200, TimeUnit.MILLISECONDS).subscribe {
@@ -295,7 +296,7 @@ class DailyCheckFragment : Fragment() {
         }
     }
 
-    //临时的记录的变量
+    //临时记录的变量
     private var tempNum: Int? = null
     private var tempItmeView: View? = null
 
@@ -303,6 +304,27 @@ class DailyCheckFragment : Fragment() {
      * 签到获取经验或者积分
      */
     private fun toAddExperienceAndIntegral(num: Int, itemView: View) {
+        val idNum = SPUtils.getString(SPArgument.ID_NUM)
+        if (idNum.isNullOrEmpty()) {
+            val todayDate = SPUtils.getString(SPArgument.TODAY_DATE)
+            val currentTimeMillis = System.currentTimeMillis()
+            val simpleDateFormat = SimpleDateFormat("yyyyMMdd")
+            val currentDate = simpleDateFormat.format(currentTimeMillis)
+            if (todayDate.isNullOrEmpty()) {
+                // 没有存时间, 说明是第一次来
+                SPUtils.putValue(SPArgument.TODAY_DATE, currentDate)
+                DialogUtils.show48HDialog(requireActivity(), false)
+                return
+            } else {
+                if (currentDate == todayDate) {
+                    //今天弹过了
+                } else {
+                    SPUtils.putValue(SPArgument.TODAY_DATE, currentDate)
+                    DialogUtils.show48HDialog(requireActivity(), false)
+                    return
+                }
+            }
+        }
         DialogUtils.showBeautifulDialog(requireContext())
         val dailyCheck = RetrofitUtils.builder().dailyCheck()
         dailyCheckObservable =
@@ -379,6 +401,11 @@ class DailyCheckFragment : Fragment() {
                                 )
                                 intent.putExtras(bundle)
                                 requireActivity().startActivityForResult(intent, 10101)
+                            }
+
+                            5 -> {
+                                // 超过48小时未实名认证
+                                DialogUtils.show48HDialog(requireActivity(), true, it.getMsg())
                             }
 
                             else -> {

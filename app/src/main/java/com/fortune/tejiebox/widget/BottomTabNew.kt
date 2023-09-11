@@ -54,7 +54,7 @@ class BottomTabNew(context: Context, attrs: AttributeSet) : LinearLayout(context
      * 是否显示白嫖图标
      */
     fun isShowGiftIcon(isShow: Boolean) {
-        mView.iv_bottomTab_whitePiao.visibility = if (isShow) View.VISIBLE else View.GONE
+        mView.rl_bottomTab_whitePiao.visibility = if (isShow) View.VISIBLE else View.GONE
     }
 
     /**

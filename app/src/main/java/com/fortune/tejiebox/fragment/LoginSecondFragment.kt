@@ -161,7 +161,7 @@ class LoginSecondFragment() : Fragment() {
         val login = RetrofitUtils.builder().login(
             phone = phone!!,
             captcha = code.toInt(),
-            device_id = GetDeviceId.getDeviceId(requireContext()),
+            device_id = GetDeviceId.getDeviceId(requireActivity()),
             game_channel = gameChannel,
             game_id = gameId,
             game_version = gameVersion,

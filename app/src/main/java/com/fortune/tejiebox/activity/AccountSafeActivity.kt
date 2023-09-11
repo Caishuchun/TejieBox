@@ -6,12 +6,16 @@ import android.graphics.Color
 import com.fortune.tejiebox.R
 import com.fortune.tejiebox.base.BaseActivity
 import com.fortune.tejiebox.constants.SPArgument
+import com.fortune.tejiebox.event.LoginPhoneChange
 import com.fortune.tejiebox.utils.SPUtils
 import com.fortune.tejiebox.utils.StatusBarUtils
 import com.fortune.tejiebox.utils.ToastUtils
 import com.jakewharton.rxbinding2.view.RxView
 import com.umeng.analytics.MobclickAgent
 import kotlinx.android.synthetic.main.activity_account_safe.*
+import org.greenrobot.eventbus.EventBus
+import org.greenrobot.eventbus.Subscribe
+import org.greenrobot.eventbus.ThreadMode
 import java.util.concurrent.TimeUnit
 
 class AccountSafeActivity : BaseActivity() {
@@ -26,6 +30,7 @@ class AccountSafeActivity : BaseActivity() {
 
     override fun doSomething() {
         instance = this
+        EventBus.getDefault().register(this)
         StatusBarUtils.setTextDark(this, true)
         initView()
     }
@@ -95,7 +100,7 @@ class AccountSafeActivity : BaseActivity() {
             tv_accountSafe_phone.text = "未绑定"
             tv_accountSafe_phone.setTextColor(Color.parseColor("#FF982E"))
         } else {
-            tv_accountSafe_phone.text = "${phone.substring(0, 3)}****${phone.substring(7)}"
+            tv_accountSafe_phone.text = phone.replaceRange(3, 7, "****")
             tv_accountSafe_phone.setTextColor(Color.parseColor("#5F60FF"))
         }
         val account = SPUtils.getString(SPArgument.LOGIN_ACCOUNT, null)
@@ -115,5 +120,19 @@ class AccountSafeActivity : BaseActivity() {
     }
 
     override fun destroy() {
+        EventBus.getDefault().unregister(this)
+    }
+
+    @SuppressLint("SetTextI18n")
+    @Subscribe(sticky = true, threadMode = ThreadMode.MAIN)
+    fun loginPhoneChange(loginPhoneChange: LoginPhoneChange) {
+        val phone = SPUtils.getString(SPArgument.PHONE_NUMBER, null)
+        if (phone.isNullOrBlank()) {
+            tv_accountSafe_phone.text = "未绑定"
+            tv_accountSafe_phone.setTextColor(Color.parseColor("#FF982E"))
+        } else {
+            tv_accountSafe_phone.text = phone.replaceRange(3, 7, "****")
+            tv_accountSafe_phone.setTextColor(Color.parseColor("#5F60FF"))
+        }
     }
 }

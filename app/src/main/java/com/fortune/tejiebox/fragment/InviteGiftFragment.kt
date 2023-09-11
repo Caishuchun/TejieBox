@@ -39,6 +39,7 @@ import kotlinx.android.synthetic.main.item_invite_gift.view.*
 import kotlinx.android.synthetic.main.item_invite_time.view.*
 import org.greenrobot.eventbus.EventBus
 import org.greenrobot.eventbus.Subscribe
+import java.text.SimpleDateFormat
 import java.util.concurrent.TimeUnit
 
 class InviteGiftFragment : Fragment() {
@@ -154,10 +155,12 @@ class InviteGiftFragment : Fragment() {
                                 }
                             }
                         }
+
                         -1 -> {
                             it.getMsg()?.let { it1 -> ToastUtils.show(it1) }
                             ActivityManager.toSplashActivity(requireActivity())
                         }
+
                         else -> {
                             it.getMsg()?.let { it1 -> ToastUtils.show(it1) }
                         }
@@ -227,10 +230,12 @@ class InviteGiftFragment : Fragment() {
                                 }
                             }
                         }
+
                         -1 -> {
                             ToastUtils.show(it.msg)
                             ActivityManager.toSplashActivity(requireActivity())
                         }
+
                         else -> {
                             ToastUtils.show(it.msg)
                         }
@@ -288,7 +293,8 @@ class InviteGiftFragment : Fragment() {
                         else -> R.mipmap.icon
                     }
                 )
-                itemView.tv_item_gift_name.text = "成功邀请${itemData.user?.user_phone ?: "特戒用户"}获得"
+                itemView.tv_item_gift_name.text =
+                    "成功邀请${itemData.user?.user_phone ?: "特戒用户"}获得"
                 itemView.tv_item_gift_integral.text =
                     if (BaseAppUpdateSetting.isToAuditVersion) "+$inviteReward"
                     else "+${inviteReward / 10}元"
@@ -299,6 +305,7 @@ class InviteGiftFragment : Fragment() {
                         itemView.tv_item_gift_get.setTextColor(resources.getColor(R.color.white_FFFFFF))
                         itemView.tv_item_gift_get.setBackgroundResource(R.drawable.bg_invite_gift_can_get)
                     }
+
                     1 -> {
                         //领取了
                         itemView.tv_item_gift_get.text = "已领取"
@@ -349,7 +356,12 @@ class InviteGiftFragment : Fragment() {
             .setLayoutId(R.layout.item_invite_time)
             .addBindView { itemView, itemData, position ->
                 itemView.tv_invite_user_phoneEnding.text =
-                    Html.fromHtml("成功邀请尾号<b>XXXX</b>的用户".replace("XXXX", itemData.phone_ending))
+                    Html.fromHtml(
+                        "成功邀请尾号<b>XXXX</b>的用户".replace(
+                            "XXXX",
+                            itemData.phone_ending
+                        )
+                    )
                 itemView.pb_invite_user_progress.setProgress(itemData.total_duration)
 
                 setInviteHourImg(itemView.iv_invite_user_h1, itemData.h1)
@@ -423,10 +435,12 @@ class InviteGiftFragment : Fragment() {
                 view.setTextColor(resources.getColor(R.color.white_FFFFFF))
                 view.setBackgroundResource(R.mipmap.bg_invite_btn_cannot)
             }
+
             1 -> {
                 view.setTextColor(resources.getColor(R.color.white_FFFFFF))
                 view.setBackgroundResource(R.mipmap.bg_invite_btn_can)
             }
+
             2 -> {
                 view.setTextColor(resources.getColor(R.color.green_2EC8AC))
                 view.setBackgroundResource(R.drawable.transparent)
@@ -446,6 +460,27 @@ class InviteGiftFragment : Fragment() {
      * 邀请人后的领取积分
      */
     private fun toGetInviteRecharge(position: Int, shareId: Int, h_id: Int) {
+        val idNum = SPUtils.getString(SPArgument.ID_NUM)
+        if (idNum.isNullOrEmpty()) {
+            val todayDate = SPUtils.getString(SPArgument.TODAY_DATE)
+            val currentTimeMillis = System.currentTimeMillis()
+            val simpleDateFormat = SimpleDateFormat("yyyyMMdd")
+            val currentDate = simpleDateFormat.format(currentTimeMillis)
+            if (todayDate.isNullOrEmpty()) {
+                // 没有存时间, 说明是第一次来
+                SPUtils.putValue(SPArgument.TODAY_DATE, currentDate)
+                DialogUtils.show48HDialog(requireActivity(), false)
+                return
+            } else {
+                if (currentDate == todayDate) {
+                    //今天弹过了
+                } else {
+                    SPUtils.putValue(SPArgument.TODAY_DATE, currentDate)
+                    DialogUtils.show48HDialog(requireActivity(), false)
+                    return
+                }
+            }
+        }
         DialogUtils.showBeautifulDialog(requireContext())
         val inviteListGetRecharge = RetrofitUtils.builder().inviteListGetRecharge(shareId, h_id)
         getInviteRechargeObservable = inviteListGetRecharge.subscribeOn(Schedulers.io())
@@ -508,10 +543,17 @@ class InviteGiftFragment : Fragment() {
                                 }
                             )
                         }
+
                         -1 -> {
                             ToastUtils.show(it.getMsg())
                             ActivityManager.toSplashActivity(requireActivity())
                         }
+
+                        5 -> {
+                            // 超过48小时未实名认证
+                            DialogUtils.show48HDialog(requireActivity(), true, it.getMsg())
+                        }
+
                         else -> {
                             ToastUtils.show(it.getMsg())
                         }
@@ -552,6 +594,27 @@ class InviteGiftFragment : Fragment() {
      * 领取邀请奖励
      */
     private fun toGetInviteGift(id: Int?, itemView: View) {
+        val idNum = SPUtils.getString(SPArgument.ID_NUM)
+        if (idNum.isNullOrEmpty()) {
+            val todayDate = SPUtils.getString(SPArgument.TODAY_DATE)
+            val currentTimeMillis = System.currentTimeMillis()
+            val simpleDateFormat = SimpleDateFormat("yyyyMMdd")
+            val currentDate = simpleDateFormat.format(currentTimeMillis)
+            if (todayDate.isNullOrEmpty()) {
+                // 没有存时间, 说明是第一次来
+                SPUtils.putValue(SPArgument.TODAY_DATE, currentDate)
+                DialogUtils.show48HDialog(requireActivity(), false)
+                return
+            } else {
+                if (currentDate == todayDate) {
+                    //今天弹过了
+                } else {
+                    SPUtils.putValue(SPArgument.TODAY_DATE, currentDate)
+                    DialogUtils.show48HDialog(requireActivity(), false)
+                    return
+                }
+            }
+        }
         DialogUtils.showBeautifulDialog(requireContext())
         val getInviteGift = RetrofitUtils.builder().getInviteGift(id!!)
         getInviteGiftObservable = getInviteGift.subscribeOn(Schedulers.io())
@@ -585,10 +648,17 @@ class InviteGiftFragment : Fragment() {
 
                             }
                         }
+
                         -1 -> {
                             it.getMsg()?.let { it1 -> ToastUtils.show(it1) }
                             ActivityManager.toSplashActivity(requireActivity())
                         }
+
+                        5 -> {
+                            // 超过48小时未实名认证
+                            DialogUtils.show48HDialog(requireActivity(), true, it.getMsg())
+                        }
+
                         else -> {
                             it.getMsg()?.let { it1 -> ToastUtils.show(it1) }
                         }
@@ -623,14 +693,20 @@ class InviteGiftFragment : Fragment() {
                             if (it.getData() != null && it.getData()?.url != null) {
                                 ShareJumpUtils.showDefaultDialog(
                                     requireActivity(),
-                                    message = "免费充值天天送，好玩的服处处有 点击下载${resources.getString(R.string.app_name)}: ${it.getData()?.url!!}",
+                                    message = "免费充值天天送，好玩的服处处有 点击下载${
+                                        resources.getString(
+                                            R.string.app_name
+                                        )
+                                    }: ${it.getData()?.url!!}",
                                 )
                             }
                         }
+
                         -1 -> {
                             it.getMsg()?.let { it1 -> ToastUtils.show(it1) }
                             ActivityManager.toSplashActivity(requireActivity())
                         }
+
                         else -> {
                             it.getMsg()?.let { it1 -> ToastUtils.show(it1) }
                         }

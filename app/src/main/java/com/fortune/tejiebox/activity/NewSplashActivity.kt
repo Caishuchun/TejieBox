@@ -181,11 +181,14 @@ class NewSplashActivity : BaseActivity() {
 //                    } else {
 //                        finish()
 //                    }
+
+                    IsMultipleOpenAppUtils.initMultipleOpenApps()
                     toGetShelfData()
                 }
 
                 override fun onFinish() {
                     LogUtils.d("HiPermission=>onFinish()")
+                    IsMultipleOpenAppUtils.initMultipleOpenApps()
                     toGetShelfData()
                 }
 

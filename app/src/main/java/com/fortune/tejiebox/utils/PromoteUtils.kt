@@ -20,18 +20,52 @@ object PromoteUtils {
     private const val promoteUrl4Baidu = "http://tjhz.52ww.com/api/baidu/api.php?type=1"
     private const val promoteUrl4Baidu2 = "http://tjhz.52ww.com/api/baidu2/api.php?type=1"
 
+    //    百度新推广_激活
+    private const val promoteUrl4BaiduActivate = "http://ocpc.tjbox.lelehuyu.com/api.php?a=activate"
+
+    //    百度新推广_注册
+    private const val promoteUrl4BaiduRegister = "http://ocpc.tjbox.lelehuyu.com/api.php?a=register"
+
     //51统计链接
     private const val promoteUrl451 = "https://www.51cr.com/d.php?id=21511|2&f="
 
     /**
-     * 推广
+     * 推广_注册
      */
     fun promote(context: Activity) {
         promote4Ali()
         promote4Baidu()
         promote4Baidu2()
+        promote4BaiduRegister()
         promote451()
     }
+
+    /**
+     * 激活
+     */
+    fun activate(context: Activity) {
+        promote4BaiduActivate()
+    }
+
+    /**
+     * 百度推广激活
+     */
+    private fun promote4BaiduActivate() {
+        Thread {
+            val url = URL(promoteUrl4BaiduActivate)
+            try {
+                val httpURLConnection = url.openConnection() as HttpURLConnection
+                httpURLConnection.connectTimeout = 10000
+                httpURLConnection.readTimeout = 10000
+                httpURLConnection.requestMethod = "GET"
+                val responseCode = httpURLConnection.responseCode
+                LogUtils.d("推广请求_百度激活---$responseCode,${httpURLConnection.responseMessage}")
+            } catch (e: IOException) {
+                e.printStackTrace()
+            }
+        }.start()
+    }
+
 
     /**
      * 51数据统计
@@ -103,6 +137,25 @@ object PromoteUtils {
                 httpURLConnection.requestMethod = "GET"
                 val responseCode = httpURLConnection.responseCode
                 LogUtils.d("推广请求_百度---$responseCode,${httpURLConnection.responseMessage}")
+            } catch (e: IOException) {
+                e.printStackTrace()
+            }
+        }.start()
+    }
+
+    /**
+     * 百度推广3
+     */
+    private fun promote4BaiduRegister() {
+        Thread {
+            val url = URL(promoteUrl4BaiduRegister)
+            try {
+                val httpURLConnection = url.openConnection() as HttpURLConnection
+                httpURLConnection.connectTimeout = 10000
+                httpURLConnection.readTimeout = 10000
+                httpURLConnection.requestMethod = "GET"
+                val responseCode = httpURLConnection.responseCode
+                LogUtils.d("推广请求_百度注册---$responseCode,${httpURLConnection.responseMessage}")
             } catch (e: IOException) {
                 e.printStackTrace()
             }

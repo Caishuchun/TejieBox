@@ -49,4 +49,6 @@ object SPArgument {
 
     const val IS_NEED_SHOW_GUIDE = "isNeedShowGuide" //是否需要显示引导页
     const val IS_NEED_SHOW_INSTALL_GIFT = "isNeedShowInstallGift" //是否需要显示安装礼包
+
+    const val TODAY_DATE = "today_date" //今日日期
 }

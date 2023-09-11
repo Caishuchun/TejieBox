@@ -18,6 +18,7 @@ import android.view.WindowManager
 import android.widget.PopupWindow
 import android.widget.TextView
 import com.fortune.tejiebox.R
+import com.fortune.tejiebox.activity.IdCardActivity
 import com.fortune.tejiebox.activity.WebActivity
 import com.fortune.tejiebox.adapter.BaseAdapterWithPosition
 import com.fortune.tejiebox.base.BaseDialog
@@ -29,9 +30,6 @@ import com.jakewharton.rxbinding2.widget.RxTextView
 import com.snail.antifake.jni.EmulatorDetectUtil
 import io.reactivex.disposables.Disposable
 import kotlinx.android.synthetic.main.dialog_beautiful.av_dialog
-import kotlinx.android.synthetic.main.dialog_install_gift.tv_install_gift_money
-import kotlinx.android.synthetic.main.dialog_install_gift.tv_install_gift_sure
-import kotlinx.android.synthetic.main.dialog_install_gift.tv_install_gift_tips
 import kotlinx.android.synthetic.main.dialog_loading.tv_dialog_message
 import kotlinx.android.synthetic.main.item_popup_account.view.tv_item_popup_account
 import kotlinx.android.synthetic.main.layout_dialog_agreement.iv_dialog_agreement_cancel
@@ -90,6 +88,43 @@ object DialogUtils {
             mPopupWindow?.dismiss()
             mPopupWindow = null
             isShowPopupWindow = false
+        }
+    }
+
+    /**
+     * 48小时认证弹框
+     * @param isTimeOut48H 是否超过48h认证时间
+     * @param msg 提示信息
+     */
+    fun show48HDialog(context: Activity, isTimeOut48H: Boolean, msg: String? = null) {
+        if (isTimeOut48H) {
+            showOnlySureDialog(
+                context,
+                "实名认证",
+                msg.toString(),
+                "立即认证",
+                false,
+                object : DialogUtils.OnDialogListener {
+                    override fun next() {
+                        val intent =
+                            Intent(context, IdCardActivity::class.java)
+                        context.startActivity(intent)
+                    }
+                }
+            )
+        } else {
+            showDefaultDialog(
+                context,
+                "实名认证",
+                "请在48小时内完成实名认证，否则影响后续签到/白嫖等功能",
+                "暂不认证", "立即认证",
+                object : DialogUtils.OnDialogListener {
+                    override fun next() {
+                        val intent = Intent(context, IdCardActivity::class.java)
+                        context.startActivity(intent)
+                    }
+                }
+            )
         }
     }
 
@@ -305,7 +340,8 @@ object DialogUtils {
         msg: String,
         cancel: String?,
         sure: String,
-        listener: OnDialogListener?
+        listener: OnDialogListener?,
+        gravity: Int = Gravity.CENTER
     ) {
         if (mDialog != null) {
             mDialog?.dismiss()
@@ -324,9 +360,8 @@ object DialogUtils {
         }
         mDialog?.tv_dialog_default_sure?.text = sure
         mDialog?.tv_dialog_default_message?.text = msg
-        if (msg.length > 24) {
-            mDialog?.tv_dialog_default_message?.gravity = Gravity.START
-        }
+        mDialog?.tv_dialog_default_message?.gravity = gravity
+
         mDialog?.tv_dialog_default_sure?.setOnClickListener {
             dismissLoading()
             listener?.next()

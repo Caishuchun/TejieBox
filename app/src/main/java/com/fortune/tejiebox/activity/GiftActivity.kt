@@ -155,7 +155,7 @@ class GiftActivity : BaseActivity() {
                         3. 邀请好友时，多个账号同个手机只算邀请成功一次。
                         4. 被邀请的好友，每玩1个小时的游戏，可以获得2元，最多10元。
                     """.trimIndent(),
-                    null, "确定", null
+                    null, "确定", null, Gravity.START
                 )
             }
     }
@@ -460,7 +460,14 @@ class GiftActivity : BaseActivity() {
                         tt_gift.setCurrentItem(index + 1)
                         toShowTitleGuide(index + 1)
                     } else {
-                        canBack = true
+                        GuideUtils.showGuideOverDialog(
+                            this,
+                            object : GuideUtils.OnGuideOverCallback {
+                                override fun over() {
+                                    canBack = true
+                                    tt_gift.setCurrentItem(0)
+                                }
+                            })
                     }
                 }
             },
@@ -469,8 +476,13 @@ class GiftActivity : BaseActivity() {
                 if (index < 2) {
                     tt_gift.setCurrentItem(index + 1)
                     toShowTitleGuide(index + 1)
-                }else {
-                    canBack = true
+                } else {
+                    GuideUtils.showGuideOverDialog(this, object : GuideUtils.OnGuideOverCallback {
+                        override fun over() {
+                            canBack = true
+                            tt_gift.setCurrentItem(0)
+                        }
+                    })
                 }
             },
             guideShowListener = { isShowing -> },

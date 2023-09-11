@@ -5,6 +5,7 @@ import android.os.SystemClock
 import com.fortune.tejiebox.R
 import com.fortune.tejiebox.base.BaseActivity
 import com.fortune.tejiebox.constants.SPArgument
+import com.fortune.tejiebox.event.LoginPhoneChange
 import com.fortune.tejiebox.http.RetrofitUtils
 import com.fortune.tejiebox.myapp.MyApp
 import com.fortune.tejiebox.utils.*
@@ -17,6 +18,7 @@ import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.Disposable
 import io.reactivex.schedulers.Schedulers
 import kotlinx.android.synthetic.main.activity_change_phone2.*
+import org.greenrobot.eventbus.EventBus
 import java.util.concurrent.TimeUnit
 
 class ChangePhone2Activity : BaseActivity() {
@@ -163,7 +165,11 @@ class ChangePhone2Activity : BaseActivity() {
                         1 -> {
                             ToastUtils.show(getString(R.string.change_phone_success))
                             SPUtils.putValue(SPArgument.CODE_TIME_4_CHANGE_PHONE, 0L)
-                            toSplash()
+                            SPUtils.putValue(SPArgument.PHONE_NUMBER, currentPhone)
+                            EventBus.getDefault().postSticky(LoginPhoneChange(currentPhone))
+                            ChangePhone1Activity.getInstance()?.finish()
+                            finish()
+//                            toSplash()
                         }
 
                         -1 -> {
@@ -172,8 +178,13 @@ class ChangePhone2Activity : BaseActivity() {
                         }
 
                         else -> {
-                            ToastUtils.show(it.msg)
+                            DialogUtils.showOnlySureDialog(
+                                this, "绑定手机号", it.msg, "好的", false, null
+                            )
                         }
+//                        else -> {
+//                            ToastUtils.show(it.msg)
+//                        }
                     }
                 } else {
                     ToastUtils.show(getString(R.string.network_fail_to_responseDate))

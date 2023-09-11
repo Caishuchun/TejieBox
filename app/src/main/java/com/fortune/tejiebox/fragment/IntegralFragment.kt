@@ -1,7 +1,6 @@
 package com.fortune.tejiebox.fragment
 
 import android.annotation.SuppressLint
-import android.app.Activity
 import android.content.Intent
 import android.graphics.Color
 import android.os.Bundle
@@ -35,6 +34,7 @@ import kotlinx.android.synthetic.main.item_integral.view.*
 import net.center.blurview.ShapeBlurView
 import net.center.blurview.enu.BlurMode
 import org.greenrobot.eventbus.EventBus
+import java.text.SimpleDateFormat
 import java.util.concurrent.TimeUnit
 
 private const val GAME_ICON: String = "game_icon"
@@ -241,6 +241,27 @@ class IntegralFragment : Fragment() {
      */
     @SuppressLint("SetTextI18n")
     private fun toRecharge(playerId: Int, rechargeId: Int, channel: String, rechargeMoney: Int) {
+        val idNum = SPUtils.getString(SPArgument.ID_NUM)
+        if (idNum.isNullOrEmpty()) {
+            val todayDate = SPUtils.getString(SPArgument.TODAY_DATE)
+            val currentTimeMillis = System.currentTimeMillis()
+            val simpleDateFormat = SimpleDateFormat("yyyyMMdd")
+            val currentDate = simpleDateFormat.format(currentTimeMillis)
+            if (todayDate.isNullOrEmpty()) {
+                // 没有存时间, 说明是第一次来
+                SPUtils.putValue(SPArgument.TODAY_DATE, currentDate)
+                DialogUtils.show48HDialog(requireActivity(), false)
+                return
+            } else {
+                if (currentDate == todayDate) {
+                    //今天弹过了
+                } else {
+                    SPUtils.putValue(SPArgument.TODAY_DATE, currentDate)
+                    DialogUtils.show48HDialog(requireActivity(), false)
+                    return
+                }
+            }
+        }
         DialogUtils.showBeautifulDialog(requireContext())
         val gameRecharge = RetrofitUtils.builder().gameRecharge(playerId, rechargeId, channel)
         gameRechargeObservable = gameRecharge.subscribeOn(Schedulers.io())
@@ -298,6 +319,11 @@ class IntegralFragment : Fragment() {
                             )
                             intent.putExtras(bundle)
                             requireActivity().startActivity(intent)
+                        }
+
+                        5 -> {
+                            // 超过48小时未实名认证
+                            DialogUtils.show48HDialog(requireActivity(), true, it.msg)
                         }
 
                         else -> {

@@ -5,6 +5,9 @@
 2. git config --global http.proxy 127.0.0.1:7890
 3. git config --global https.proxy 127.0.0.1:7890
 
+### 3.3.2
+最主要的三证合一
+
 ### 3.3.1
 1. 7天200元新用户注册奖励弹框
 2. 引导页

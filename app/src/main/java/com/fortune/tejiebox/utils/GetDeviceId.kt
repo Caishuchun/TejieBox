@@ -1,6 +1,7 @@
 package com.fortune.tejiebox.utils
 
 import android.annotation.SuppressLint
+import android.app.Activity
 import android.content.Context
 import android.os.Environment
 import android.telephony.TelephonyManager
@@ -18,7 +19,7 @@ object GetDeviceId {
      * @param context
      * @return
      */
-    fun getDeviceId(context: Context): String {
+    fun getDeviceId(context: Activity): String {
         //先读Sp
         var deviceId = SPUtils.getString(SPArgument.ONLY_DEVICE_ID_NEW, null)
         if (deviceId != null) {
@@ -59,6 +60,7 @@ object GetDeviceId {
         val onlyDeviceId = "android-$md5"
         if (s.isNotEmpty()) {
             //持久化操作, 进行保存到SD卡中
+            PromoteUtils.activate(context)
             writeDeviceID2File(onlyDeviceId)
             SPUtils.putValue(SPArgument.ONLY_DEVICE_ID_NEW, onlyDeviceId)
         }

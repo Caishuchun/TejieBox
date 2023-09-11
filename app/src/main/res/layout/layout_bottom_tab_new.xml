@@ -58,11 +58,20 @@
                 android:textStyle="bold" />
         </LinearLayout>
 
-        <View
-            android:id="@+id/view_bottomTab_whitePiao"
+        <RelativeLayout
+            android:id="@+id/rl_bottomTab_whitePiao"
             android:layout_width="0dp"
-            android:layout_height="0dp"
-            android:layout_weight="1" />
+            android:layout_height="match_parent"
+            android:layout_weight="1">
+
+            <ImageView
+                android:id="@+id/iv_bottomTab_whitePiao"
+                android:layout_width="@dimen/dp_44"
+                android:layout_height="@dimen/dp_44"
+                android:layout_centerInParent="true"
+                android:src="@mipmap/white_piao" />
+
+        </RelativeLayout>
 
         <LinearLayout
             android:id="@+id/rl_bottomTab_like"
@@ -137,11 +146,4 @@
         android:layout_height="@dimen/dp_0_5"
         android:background="@drawable/line_tab_bottom" />
 
-    <ImageView
-        android:id="@+id/iv_bottomTab_whitePiao"
-        android:layout_width="@dimen/dp_44"
-        android:layout_height="@dimen/dp_44"
-        android:layout_centerHorizontal="true"
-        android:layout_marginBottom="@dimen/dp_1"
-        android:src="@mipmap/white_piao" />
 </RelativeLayout>

@@ -1,7 +1,10 @@
 package com.fortune.tejiebox.utils
 
 import android.app.Activity
+import android.content.Context
 import android.view.View
+import com.fortune.tejiebox.R
+import com.fortune.tejiebox.base.BaseDialog
 import com.fortune.tejiebox.widget.EasyGuideLayer
 import com.fortune.tejiebox.widget.GuideItem
 import com.fortune.tejiebox.widget.OnDrawHighLightCallback
@@ -9,6 +12,7 @@ import com.fortune.tejiebox.widget.OnGuideShowListener
 import com.fortune.tejiebox.widget.OnGuideViewAttachedListener
 import com.fortune.tejiebox.widget.OnGuideViewOffsetProvider
 import com.fortune.tejiebox.widget.OnHighLightClickListener
+import kotlinx.android.synthetic.main.dialog_guide_over.ll_guide_over
 
 /**
  * 引导工具类
@@ -41,6 +45,11 @@ object GuideUtils {
         guideShowListener: OnGuideShowListener,
         drawHighLightCallback: OnDrawHighLightCallback? = null
     ) {
+        // 先行干掉一波再展示, 方式出现不可控意外
+        EasyGuideLayer.with(activity)
+            .clearItems()
+            .setDismissIfNoItems(true)
+
         // 创建引导层示例，并为引导层添加指定配置
         val item = GuideItem.newInstance(highLightView, 10)
             .setLayout(guideLayout)// 设置引导View
@@ -59,5 +68,53 @@ object GuideUtils {
             .setDismissOnClickOutside(false)// 设置点击到蒙层上的非点击区域时，是否自动让蒙层消失
             .setDismissIfNoItems(true)// 设置当蒙层中一个引导层实例都没绑定时，自动让蒙层消失
             .show()// 展示蒙层
+    }
+
+
+    private var mDialog: BaseDialog? = null
+
+    /**
+     * 显示结束引导页结束弹框, 点击之后跳转到白嫖界面
+     */
+    fun showGuideOverDialog(context: Context, callback: OnGuideOverCallback) {
+        if (mDialog != null) {
+            mDialog?.dismiss()
+            mDialog = null
+        }
+        mDialog = BaseDialog(context, R.style.new_circle_progress)
+        mDialog?.setContentView(R.layout.dialog_guide_over)
+        mDialog?.setCancelable(false)
+        mDialog?.setCanceledOnTouchOutside(false)
+
+        mDialog?.ll_guide_over?.let {
+            it.setOnClickListener {
+                callback.over()
+                dismissLoading()
+            }
+        }
+
+        mDialog?.setOnCancelListener {
+            dismissLoading()
+        }
+        mDialog?.show()
+    }
+
+    interface OnGuideOverCallback {
+        fun over()
+    }
+
+    /**
+     * 取消弹框
+     */
+    fun dismissLoading() {
+        try {
+            if (mDialog != null && mDialog?.isShowing == true) {
+                mDialog?.dismiss()
+            }
+        } catch (e: Exception) {
+            e.printStackTrace()
+        } finally {
+            mDialog = null
+        }
     }
 }

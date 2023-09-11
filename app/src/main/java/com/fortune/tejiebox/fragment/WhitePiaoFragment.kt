@@ -309,6 +309,27 @@ class WhitePiaoFragment : Fragment() {
      * 进行白嫖
      */
     fun toWhitePiao(id: Int, position: Int, itemData: WhitePiaoListBean.DataBean, itemView: View) {
+        val idNum = SPUtils.getString(SPArgument.ID_NUM)
+        if (idNum.isNullOrEmpty()) {
+            val todayDate = SPUtils.getString(SPArgument.TODAY_DATE)
+            val currentTimeMillis = System.currentTimeMillis()
+            val simpleDateFormat = SimpleDateFormat("yyyyMMdd")
+            val currentDate = simpleDateFormat.format(currentTimeMillis)
+            if (todayDate.isNullOrEmpty()) {
+                // 没有存时间, 说明是第一次来
+                SPUtils.putValue(SPArgument.TODAY_DATE, currentDate)
+                DialogUtils.show48HDialog(requireActivity(), false)
+                return
+            } else {
+                if (currentDate == todayDate) {
+                    //今天弹过了
+                } else {
+                    SPUtils.putValue(SPArgument.TODAY_DATE, currentDate)
+                    DialogUtils.show48HDialog(requireActivity(), false)
+                    return
+                }
+            }
+        }
         DialogUtils.showBeautifulDialog(requireContext())
         val whitePiao = RetrofitUtils.builder().whitePiao(id)
         whitePiaoObservable = whitePiao.subscribeOn(Schedulers.io())
@@ -413,6 +434,11 @@ class WhitePiaoFragment : Fragment() {
                             )
                             intent.putExtras(bundle)
                             requireActivity().startActivityForResult(intent, 10102)
+                        }
+
+                        5 -> {
+                            // 超过48小时未实名认证
+                            DialogUtils.show48HDialog(requireActivity(), true, it.getMsg())
                         }
 
                         else -> {
