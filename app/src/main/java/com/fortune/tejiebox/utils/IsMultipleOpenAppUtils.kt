@@ -33,7 +33,7 @@ object IsMultipleOpenAppUtils {
      * 是否算是多开
      */
     fun isMultipleOpenApp(context: Context): Boolean {
-        ShelfDataBean.getData()?.let {
+        ShelfDataUtils.getShelfData4Local()?.let {
             if (it.multipleOpenAppType == 1) {
                 return isDualApp4System() || isDualApp4App(context) || isDualApp4Ex(context)
             }

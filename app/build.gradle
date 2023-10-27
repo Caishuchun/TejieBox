@@ -10,8 +10,8 @@ android {
         applicationId "com.fortune.tejiebox"
         minSdkVersion 21
         targetSdkVersion 29
-        versionCode 20230911
-        versionName "3.3.2"
+        versionCode 20231027
+        versionName "3.3.3"
         multiDexEnabled true
         aaptOptions {
             cruncherEnabled = false
@@ -34,35 +34,70 @@ android {
                 arguments = ["room.schemaLocation": "$projectDir/schemas".toString()]
             }
         }
+        flavorDimensions "default"//默认渠道
+    }
+
+    // 签名信息
+    signingConfigs {
+        config {
+            storeFile file('hfdd.jks')
+            storePassword 'hfdd123'
+            keyAlias 'key0'
+            keyPassword 'hfdd123'
+        }
+    }
+
+    //多渠道打包
+    productFlavors {
+        normal {
+            buildConfigField "String", "CHANNEL", '"0"'
+        }
+        tencet_market {
+            buildConfigField "String", "CHANNEL", '"1"'
+        }
+        huawei_market {
+            buildConfigField "String", "CHANNEL", '"2"'
+        }
+        xiaomi_market {
+            buildConfigField "String", "CHANNEL", '"3"'
+        }
+        vivo_market {
+            buildConfigField "String", "CHANNEL", '"4"'
+        }
+        oppo_market {
+            buildConfigField "String", "CHANNEL", '"5"'
+        }
+        s360_market {
+            buildConfigField "String", "CHANNEL", '"6"'
+        }
+        baidu_market {
+            buildConfigField "String", "CHANNEL", '"7"'
+        }
+        s91_market {
+            buildConfigField "String", "CHANNEL", '"8"'
+        }
+        samsung_market {
+            buildConfigField "String", "CHANNEL", '"9"'
+        }
     }
 
     buildTypes {
         release {
             minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
-            android.applicationVariants.all { variant ->
-                variant.outputs.all {
-                    outputFileName = "tejie_${releaseTime()}_${versionName.replace(".", "")}.apk"
-                }
-            }
+            signingConfig signingConfigs.config
         }
     }
 
-    // 签名信息
-    signingConfigs {
-        debug {
-            storeFile file('hfdd.jks')
-            storePassword 'hfdd123'
-            keyAlias 'key0'
-            keyPassword 'hfdd123'
-        }
-        release {
-            storeFile file('hfdd.jks')
-            storePassword 'hfdd123'
-            keyAlias 'key0'
-            keyPassword 'hfdd123'
+    // 批量打包
+    applicationVariants.configureEach { variant ->
+        variant.outputs.each { output ->
+            //输出apk名称为
+            def nameSuffix = output.baseName.replace("-release", "")
+            output.outputFileName = "tejie_${releaseTime()}_${versionName.replace(".", "")}_${nameSuffix}.apk"
         }
     }
+
     android {
         lintOptions {
             abortOnError false
@@ -93,13 +128,9 @@ dependencies {
     implementation fileTree(include: ['*.jar'], dir: 'libs')
     implementation project(':unityLibrary')
     //阿里云一键登录
-    implementation files('libs/crashshield-2.1.4-release.aar')
     implementation files('libs/logger-2.1.4-release.aar')
     implementation files('libs/main-2.1.4-release.aar')
     implementation files('libs/auth_number_product-2.12.9-log-online-standard-release.aar')
-    implementation files('libs/isoparser-1.0.6.jar')
-    implementation files('libs/aspectjrt-1.7.3.jar')
-    implementation files('libs/OpenInstall_v2.8.0.jar')
 
     implementation 'androidx.multidex:multidex:2.0.0'
     implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:$kotlin_version"

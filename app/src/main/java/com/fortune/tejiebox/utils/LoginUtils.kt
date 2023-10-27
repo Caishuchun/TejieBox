@@ -443,7 +443,9 @@ object LoginUtils {
             game_channel = gameChannel,
             game_id = gameId,
             game_version = gameVersion,
-            i = inviteInfo
+            i = inviteInfo,
+            latitude = IPMacAndLocationUtils.getLatitude(activity),
+            longitude = IPMacAndLocationUtils.getLongitude(activity)
         )
         quickLogin4AliObservable = quickLogin4Ali.subscribeOn(Schedulers.io())
             .observeOn(AndroidSchedulers.mainThread())

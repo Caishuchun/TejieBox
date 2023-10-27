@@ -117,18 +117,6 @@ class PlayingAndCollectionFragment : Fragment() {
      */
     @SuppressLint("CheckResult", "NotifyDataSetChanged")
     private fun initView() {
-//        when (type) {
-//            1 -> {
-//                mView?.ll_gameFragment_search?.visibility = View.GONE
-//                mView?.rl_gameFragment_title?.visibility = View.VISIBLE
-//                mView?.tv_gameFragment_title?.text = "在玩列表"
-//            }
-//            2 -> {
-//                mView?.ll_gameFragment_search?.visibility = View.GONE
-//                mView?.rl_gameFragment_title?.visibility = View.VISIBLE
-//                mView?.tv_gameFragment_title?.text = "收藏列表"
-//            }
-//        }
         mView?.ll_gameFragment_search?.visibility = View.GONE
         mView?.rl_gameFragment_title?.visibility = View.GONE
 

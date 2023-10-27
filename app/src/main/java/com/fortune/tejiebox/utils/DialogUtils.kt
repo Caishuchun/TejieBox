@@ -315,15 +315,15 @@ object DialogUtils {
         mDialog?.tv_dialog_default_message?.text = msg
         mDialog?.tv_dialog_default_message?.gravity = Gravity.START
         mDialog?.tv_dialog_default_sure?.setOnClickListener {
-            listener?.next()
             mDialog?.dismiss()
+            listener?.next()
             if (isBackLastPage) {
                 (context as Activity).finish()
             }
         }
         mDialog?.setOnCancelListener {
-            listener?.next()
             mDialog?.dismiss()
+            listener?.next()
             if (isBackLastPage) {
                 (context as Activity).finish()
             }
@@ -337,7 +337,7 @@ object DialogUtils {
     fun showDefaultDialog(
         context: Context,
         title: String,
-        msg: String,
+        msg: CharSequence,
         cancel: String?,
         sure: String,
         listener: OnDialogListener?,
@@ -363,8 +363,8 @@ object DialogUtils {
         mDialog?.tv_dialog_default_message?.gravity = gravity
 
         mDialog?.tv_dialog_default_sure?.setOnClickListener {
-            dismissLoading()
             listener?.next()
+            dismissLoading()
         }
         mDialog?.tv_dialog_default_cancel?.setOnClickListener {
             dismissLoading()
@@ -440,8 +440,8 @@ object DialogUtils {
         }
 
         mDialog?.tv_dialog_agreement_next?.setOnClickListener {
-            dismissLoading()
             listener.next()
+            dismissLoading()
         }
         mDialog?.iv_dialog_agreement_cancel?.setOnClickListener {
             dismissLoading()

@@ -27,6 +27,7 @@ import com.fortune.tejiebox.myapp.MyApp
 import com.fortune.tejiebox.utils.ActivityManager
 import com.fortune.tejiebox.utils.DialogUtils
 import com.fortune.tejiebox.utils.HttpExceptionUtils
+import com.fortune.tejiebox.utils.IPMacAndLocationUtils
 import com.fortune.tejiebox.utils.IsMultipleOpenAppUtils
 import com.fortune.tejiebox.utils.LogUtils
 import com.fortune.tejiebox.utils.SPUtils
@@ -70,12 +71,20 @@ class WhitePiaoFragment : Fragment() {
         return mView
     }
 
+    override fun onHiddenChanged(hidden: Boolean) {
+        super.onHiddenChanged(hidden)
+        if(!hidden){
+            getInfo()
+        }
+    }
+
     private var canGetItem: View? = null
     fun getCanGetItem() = canGetItem ?: tempFirstItem
 
     /**
      * 获取数据
      */
+    @SuppressLint("NotifyDataSetChanged")
     private fun getInfo() {
         DialogUtils.showBeautifulDialog(requireContext())
         val whitePiaoList = RetrofitUtils.builder().whitePiaoList()
@@ -171,8 +180,6 @@ class WhitePiaoFragment : Fragment() {
                 itemView.tv_white_piao_integral.text =
                     if (BaseAppUpdateSetting.isToAuditVersion) "+${itemData.integral}"
                     else "+${itemData.integral?.div(10)}元"
-
-
 
                 if (itemData.id == id && itemData.status == 1) {
                     canGetItem = itemView
@@ -301,14 +308,13 @@ class WhitePiaoFragment : Fragment() {
             }
             .create()
         mView?.rv_whitePiao?.adapter = adapter
-        mView?.rv_whitePiao?.layoutManager =
-            SafeLinearLayoutManager(requireContext())
+        mView?.rv_whitePiao?.layoutManager = SafeLinearLayoutManager(requireContext())
     }
 
     /**
      * 进行白嫖
      */
-    fun toWhitePiao(id: Int, position: Int, itemData: WhitePiaoListBean.DataBean, itemView: View) {
+    private fun toWhitePiao(id: Int, position: Int, itemData: WhitePiaoListBean.DataBean, itemView: View) {
         val idNum = SPUtils.getString(SPArgument.ID_NUM)
         if (idNum.isNullOrEmpty()) {
             val todayDate = SPUtils.getString(SPArgument.TODAY_DATE)
@@ -331,132 +337,147 @@ class WhitePiaoFragment : Fragment() {
             }
         }
         DialogUtils.showBeautifulDialog(requireContext())
-        val whitePiao = RetrofitUtils.builder().whitePiao(id)
-        whitePiaoObservable = whitePiao.subscribeOn(Schedulers.io())
-            .observeOn(AndroidSchedulers.mainThread())
-            .subscribe({
-                DialogUtils.dismissLoading()
-                LogUtils.d("${javaClass.simpleName}=success=>${Gson().toJson(it)}")
-                if (it != null) {
-                    when (it.getCode()) {
-                        1 -> {
-                            canClick = false
-                            //白嫖成功后,去掉小红点
-                            if (RedPointBean.getData() != null) {
-                                val data = RedPointBean.getData()!!
-                                data.limit_time = 0
-                                RedPointBean.setData(data)
-                                EventBus.getDefault().postSticky(data)
-                            }
-                            EventBus.getDefault().postSticky(
-                                GiftShowPoint(
-                                    GiftShowState.USELESS,
-                                    GiftShowState.UN_SHOW,
-                                    GiftShowState.USELESS
-                                )
-                            )
-
-                            (activity as GiftActivity).isFirstCreate = false
-                            SPUtils.putValue(
-                                SPArgument.INTEGRAL,
-                                it.getData()?.user_integral
-                            )
-                            DialogActivity.showGetIntegral(
-                                requireActivity(),
-                                itemData.integral!!,
-                                true,
-                                object : DialogActivity.OnCallback {
-                                    override fun cancel() {
+        IPMacAndLocationUtils.getResult(requireActivity(),
+            object : IPMacAndLocationUtils.OnIpMacAndLocationListener {
+                override fun success() {
+                    val whitePiao = RetrofitUtils.builder().whitePiao(id)
+                    whitePiaoObservable = whitePiao.subscribeOn(Schedulers.io())
+                        .observeOn(AndroidSchedulers.mainThread())
+                        .subscribe({
+                            DialogUtils.dismissLoading()
+                            LogUtils.d("${javaClass.simpleName}=success=>${Gson().toJson(it)}")
+                            if (it != null) {
+                                when (it.getCode()) {
+                                    1 -> {
+                                        canClick = false
+                                        //白嫖成功后,去掉小红点
+                                        if (RedPointBean.getData() != null) {
+                                            val data = RedPointBean.getData()!!
+                                            data.limit_time = 0
+                                            RedPointBean.setData(data)
+                                            EventBus.getDefault().postSticky(data)
+                                        }
                                         EventBus.getDefault().postSticky(
-                                            IntegralChange(it.getData()?.user_integral!!)
+                                            GiftShowPoint(
+                                                GiftShowState.USELESS,
+                                                GiftShowState.UN_SHOW,
+                                                GiftShowState.USELESS
+                                            )
                                         )
 
-                                        when (position) {
-                                            0 -> {
-                                                got(
-                                                    resources.getString(R.string.time_5_9),
-                                                    itemView
-                                                )
-                                            }
+                                        (activity as GiftActivity).isFirstCreate = false
+                                        SPUtils.putValue(
+                                            SPArgument.INTEGRAL,
+                                            it.getData()?.user_integral
+                                        )
+                                        DialogActivity.showGetIntegral(
+                                            requireActivity(),
+                                            itemData.integral!!,
+                                            true,
+                                            object : DialogActivity.OnCallback {
+                                                override fun cancel() {
+                                                    EventBus.getDefault().postSticky(
+                                                        IntegralChange(it.getData()?.user_integral!!)
+                                                    )
 
-                                            1 -> {
-                                                got(
-                                                    resources.getString(R.string.time_10_14),
-                                                    itemView
-                                                )
-                                            }
+                                                    when (position) {
+                                                        0 -> {
+                                                            got(
+                                                                resources.getString(R.string.time_5_9),
+                                                                itemView
+                                                            )
+                                                        }
 
-                                            2 -> {
-                                                got(
-                                                    resources.getString(R.string.time_15_19),
-                                                    itemView
-                                                )
-                                            }
+                                                        1 -> {
+                                                            got(
+                                                                resources.getString(R.string.time_10_14),
+                                                                itemView
+                                                            )
+                                                        }
 
-                                            3 -> {
-                                                got(
-                                                    resources.getString(R.string.time_20_24),
-                                                    itemView
-                                                )
-                                            }
+                                                        2 -> {
+                                                            got(
+                                                                resources.getString(R.string.time_15_19),
+                                                                itemView
+                                                            )
+                                                        }
+
+                                                        3 -> {
+                                                            got(
+                                                                resources.getString(R.string.time_20_24),
+                                                                itemView
+                                                            )
+                                                        }
+                                                    }
+                                                }
+                                            })
+                                    }
+
+                                    -1 -> {
+                                        it.getMsg()?.let { it1 -> ToastUtils.show(it1) }
+                                        ActivityManager.toSplashActivity(requireActivity())
+                                    }
+
+                                    3 -> {
+                                        it.getMsg()?.let { it1 ->
+                                            DialogUtils.showDefaultDialog(
+                                                requireContext(), "提醒", it1, null, "好的", null
+                                            )
                                         }
                                     }
-                                })
-                        }
 
-                        -1 -> {
-                            it.getMsg()?.let { it1 -> ToastUtils.show(it1) }
-                            ActivityManager.toSplashActivity(requireActivity())
-                        }
+                                    4 -> {
+                                        //首次白嫖
+                                        tempId = id
+                                        tempPosition = position
+                                        tempItemData = itemData
+                                        tempItemView = itemView
+                                        val intent = Intent(
+                                            requireContext(),
+                                            VerificationCodeActivity::class.java
+                                        )
+                                        val bundle = Bundle()
+                                        bundle.putSerializable(
+                                            VerificationCodeActivity.TYPE,
+                                            VerificationCodeActivity.TITLE.FIRST_WHITE_PIAO
+                                        )
+                                        intent.putExtras(bundle)
+                                        requireActivity().startActivityForResult(intent, 10102)
+                                    }
 
-                        3 -> {
-                            it.getMsg()?.let { it1 ->
-                                DialogUtils.showDefaultDialog(
-                                    requireContext(), "提醒", it1, null, "好的", null
-                                )
+                                    5 -> {
+                                        // 超过48小时未实名认证
+                                        DialogUtils.show48HDialog(
+                                            requireActivity(),
+                                            true,
+                                            it.getMsg()
+                                        )
+                                    }
+
+                                    else -> {
+                                        it.getMsg()?.let { it1 -> ToastUtils.show(it1) }
+                                    }
+                                }
+                            } else {
+                                ToastUtils.show(resources.getString(R.string.network_fail_to_responseDate))
                             }
-                        }
-
-                        4 -> {
-                            //首次白嫖
-                            tempId = id
-                            tempPosition = position
-                            tempItemData = itemData
-                            tempItemView = itemView
-                            val intent = Intent(
-                                requireContext(),
-                                VerificationCodeActivity::class.java
+                        }, {
+                            DialogUtils.dismissLoading()
+                            LogUtils.d("${javaClass.simpleName}=fail=>${it.message.toString()}")
+                            ToastUtils.show(
+                                HttpExceptionUtils.getExceptionMsg(
+                                    requireContext(),
+                                    it
+                                )
                             )
-                            val bundle = Bundle()
-                            bundle.putSerializable(
-                                VerificationCodeActivity.TYPE,
-                                VerificationCodeActivity.TITLE.FIRST_WHITE_PIAO
-                            )
-                            intent.putExtras(bundle)
-                            requireActivity().startActivityForResult(intent, 10102)
-                        }
-
-                        5 -> {
-                            // 超过48小时未实名认证
-                            DialogUtils.show48HDialog(requireActivity(), true, it.getMsg())
-                        }
-
-                        else -> {
-                            it.getMsg()?.let { it1 -> ToastUtils.show(it1) }
-                        }
-                    }
-                } else {
-                    ToastUtils.show(resources.getString(R.string.network_fail_to_responseDate))
+                        })
                 }
-            }, {
-                DialogUtils.dismissLoading()
-                LogUtils.d("${javaClass.simpleName}=fail=>${it.message.toString()}")
-                ToastUtils.show(
-                    HttpExceptionUtils.getExceptionMsg(
-                        requireContext(),
-                        it
-                    )
-                )
+
+                override fun fail(code: Int, errorMessage: String) {
+                    DialogUtils.dismissLoading()
+                    LogUtils.d("============code = $code, errorMessage = $errorMessage")
+                    ToastUtils.show("账号存在异常风险-$code, 无法白嫖!")
+                }
             })
     }
 

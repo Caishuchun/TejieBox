@@ -119,6 +119,7 @@ class AccountBindActivity : BaseActivity() {
                                     tv.setTextColor(resources.getColor(R.color.red_F03D3D))
                                 }
                             }
+
                             !checkAccountIsOk(et.text.toString()) -> {
                                 tv_accountBind_account_tips?.let { tv ->
                                     tv.visibility = View.VISIBLE
@@ -126,9 +127,11 @@ class AccountBindActivity : BaseActivity() {
                                     tv.setTextColor(resources.getColor(R.color.red_F03D3D))
                                 }
                             }
+
                             checkAccountIsOk(et.text.toString()) -> {
                                 toCheckAccountCanBind(et.text.toString())
                             }
+
                             et.text.length > 16 -> {
                                 tv_accountBind_account_tips?.let { tv ->
                                     tv.visibility = View.VISIBLE
@@ -155,6 +158,7 @@ class AccountBindActivity : BaseActivity() {
                                     tv.setTextColor(resources.getColor(R.color.green_2EC8AC))
                                 }
                             }
+
                             it.length > 16 -> {
                                 tv_accountBind_pass_tips?.let { tv ->
                                     tv.visibility = View.VISIBLE
@@ -162,6 +166,7 @@ class AccountBindActivity : BaseActivity() {
                                     tv.setTextColor(resources.getColor(R.color.red_F03D3D))
                                 }
                             }
+
                             else -> {
                                 tv_accountBind_pass_tips?.visibility = View.INVISIBLE
                             }
@@ -178,6 +183,7 @@ class AccountBindActivity : BaseActivity() {
                                         tv.setTextColor(resources.getColor(R.color.red_F03D3D))
                                     }
                                 }
+
                                 et.text.length > 16 -> {
                                     tv_accountBind_pass_tips?.let { tv ->
                                         tv.visibility = View.VISIBLE
@@ -185,6 +191,7 @@ class AccountBindActivity : BaseActivity() {
                                         tv.setTextColor(resources.getColor(R.color.red_F03D3D))
                                     }
                                 }
+
                                 else -> {
                                     tv_accountBind_pass_tips?.let { tv ->
                                         tv.visibility = View.VISIBLE
@@ -207,6 +214,7 @@ class AccountBindActivity : BaseActivity() {
                         it.length < 8 -> {
                             tv_accountBind_rePass_tips?.visibility = View.INVISIBLE
                         }
+
                         it.toString() == et_accountBind_pass?.text.toString() -> {
                             tv_accountBind_rePass_tips?.let { tv ->
                                 tv.visibility = View.VISIBLE
@@ -214,6 +222,7 @@ class AccountBindActivity : BaseActivity() {
                                 tv.setTextColor(resources.getColor(R.color.green_2EC8AC))
                             }
                         }
+
                         it.toString() != et_accountBind_pass?.text.toString() -> {
                             tv_accountBind_rePass_tips?.let { tv ->
                                 tv.visibility = View.VISIBLE
@@ -221,6 +230,7 @@ class AccountBindActivity : BaseActivity() {
                                 tv.setTextColor(resources.getColor(R.color.red_F03D3D))
                             }
                         }
+
                         it.length > 16 -> {
                             tv_accountBind_rePass_tips?.let { tv ->
                                 tv.visibility = View.VISIBLE
@@ -311,6 +321,7 @@ class AccountBindActivity : BaseActivity() {
                             tv.setTextColor(resources.getColor(R.color.green_2EC8AC))
                         }
                     }
+
                     2 -> {
                         tv_accountBind_account_tips?.let { tv ->
                             tv.visibility = View.VISIBLE
@@ -318,6 +329,7 @@ class AccountBindActivity : BaseActivity() {
                             tv.setTextColor(resources.getColor(R.color.red_F03D3D))
                         }
                     }
+
                     else -> {
 
                     }
@@ -429,10 +441,12 @@ class AccountBindActivity : BaseActivity() {
                         ToastUtils.show("绑定账号成功")
                         finish()
                     }
+
                     -1 -> {
                         ToastUtils.show(it.msg)
                         ActivityManager.toSplashActivity(this)
                     }
+
                     else -> {
                         ToastUtils.show(it.msg)
                     }

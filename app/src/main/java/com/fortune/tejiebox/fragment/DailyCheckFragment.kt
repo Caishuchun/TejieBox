@@ -29,6 +29,7 @@ import com.fortune.tejiebox.myapp.MyApp
 import com.fortune.tejiebox.utils.ActivityManager
 import com.fortune.tejiebox.utils.DialogUtils
 import com.fortune.tejiebox.utils.HttpExceptionUtils
+import com.fortune.tejiebox.utils.IPMacAndLocationUtils
 import com.fortune.tejiebox.utils.IsMultipleOpenAppUtils
 import com.fortune.tejiebox.utils.LogUtils
 import com.fortune.tejiebox.utils.PhoneInfoUtils
@@ -72,6 +73,14 @@ class DailyCheckFragment : Fragment() {
         initView()
         getData()
         return mView
+    }
+
+    override fun onHiddenChanged(hidden: Boolean) {
+        super.onHiddenChanged(hidden)
+        LogUtils.d("+++++++++++++++DailyCheckFragment_onHiddenChanged:$hidden")
+        if(!hidden){
+            getData()
+        }
     }
 
     /**
@@ -287,10 +296,10 @@ class DailyCheckFragment : Fragment() {
             val code = data?.getIntExtra("code", -1)
             LogUtils.d("${javaClass.simpleName}=code=>$code")
             if (code == 1) {
-                if (tempNum != null && tempItmeView != null) {
-                    toAddExperienceAndIntegral(tempNum!!, tempItmeView!!)
+                if (tempNum != null && tempItemView != null) {
+                    toAddExperienceAndIntegral(tempNum!!, tempItemView!!)
                     tempNum = null
-                    tempItmeView = null
+                    tempItemView = null
                 }
             }
         }
@@ -298,7 +307,7 @@ class DailyCheckFragment : Fragment() {
 
     //临时记录的变量
     private var tempNum: Int? = null
-    private var tempItmeView: View? = null
+    private var tempItemView: View? = null
 
     /**
      * 签到获取经验或者积分
@@ -326,101 +335,134 @@ class DailyCheckFragment : Fragment() {
             }
         }
         DialogUtils.showBeautifulDialog(requireContext())
-        val dailyCheck = RetrofitUtils.builder().dailyCheck()
-        dailyCheckObservable =
-            dailyCheck.subscribeOn(Schedulers.io()).observeOn(AndroidSchedulers.mainThread())
-                .subscribe({
-                    DialogUtils.dismissLoading()
-                    LogUtils.d("${javaClass.simpleName}=success=>${Gson().toJson(it)}")
-                    if (it != null) {
-                        when (it.getCode()) {
-                            1 -> {
-                                itemView.iv_item_dailyCheck_type.clearAnimation()
-                                itemView.setBackgroundResource(R.drawable.bg_daily_checked)
-                                itemView.tv_item_dailyCheck_title.text =
-                                    if (BaseAppUpdateSetting.isToAuditVersion) "今日已领取"
-                                    else "今日已白嫖"
-                                itemView.tv_item_dailyCheck_num.setTextColor(resources.getColor(R.color.gray_C4C4C4))
-                                itemView.iv_item_dailyCheck_type.setImageResource(R.mipmap.money_ed)
+        IPMacAndLocationUtils.getResult(requireActivity(),
+            object : IPMacAndLocationUtils.OnIpMacAndLocationListener {
+                override fun success() {
+                    val dailyCheck = RetrofitUtils.builder().dailyCheck()
+                    dailyCheckObservable =
+                        dailyCheck.subscribeOn(Schedulers.io())
+                            .observeOn(AndroidSchedulers.mainThread())
+                            .subscribe({
+                                DialogUtils.dismissLoading()
+                                LogUtils.d("${javaClass.simpleName}=success=>${Gson().toJson(it)}")
+                                if (it != null) {
+                                    when (it.getCode()) {
+                                        1 -> {
+                                            itemView.iv_item_dailyCheck_type.clearAnimation()
+                                            itemView.setBackgroundResource(R.drawable.bg_daily_checked)
+                                            itemView.tv_item_dailyCheck_title.text =
+                                                if (BaseAppUpdateSetting.isToAuditVersion) "今日已领取"
+                                                else "今日已白嫖"
+                                            itemView.tv_item_dailyCheck_num.setTextColor(
+                                                resources.getColor(
+                                                    R.color.gray_C4C4C4
+                                                )
+                                            )
+                                            itemView.iv_item_dailyCheck_type.setImageResource(R.mipmap.money_ed)
 
-                                //当签到成功时候,需要把小红点去掉
-                                if (RedPointBean.getData() != null) {
-                                    val data = RedPointBean.getData()!!
-                                    data.daily_clock_in = 0
-                                    RedPointBean.setData(data)
-                                    EventBus.getDefault().postSticky(data)
-                                }
-                                EventBus.getDefault().postSticky(
-                                    GiftShowPoint(
-                                        GiftShowState.UN_SHOW,
-                                        GiftShowState.USELESS,
-                                        GiftShowState.USELESS
-                                    )
-                                )
-
-                                (activity as GiftActivity).isFirstCreate = false
-                                SPUtils.putValue(SPArgument.INTEGRAL, it.getData()?.user_integral)
-                                DialogActivity.showGetIntegral(requireActivity(),
-                                    num,
-                                    true,
-                                    object : DialogActivity.OnCallback {
-                                        override fun cancel() {
+                                            //当签到成功时候,需要把小红点去掉
+                                            if (RedPointBean.getData() != null) {
+                                                val data = RedPointBean.getData()!!
+                                                data.daily_clock_in = 0
+                                                RedPointBean.setData(data)
+                                                EventBus.getDefault().postSticky(data)
+                                            }
                                             EventBus.getDefault().postSticky(
-                                                IntegralChange(it.getData()?.user_integral!!)
+                                                GiftShowPoint(
+                                                    GiftShowState.UN_SHOW,
+                                                    GiftShowState.USELESS,
+                                                    GiftShowState.USELESS
+                                                )
+                                            )
+
+                                            (activity as GiftActivity).isFirstCreate = false
+                                            SPUtils.putValue(
+                                                SPArgument.INTEGRAL,
+                                                it.getData()?.user_integral
+                                            )
+                                            DialogActivity.showGetIntegral(requireActivity(),
+                                                num,
+                                                true,
+                                                object : DialogActivity.OnCallback {
+                                                    override fun cancel() {
+                                                        EventBus.getDefault().postSticky(
+                                                            IntegralChange(it.getData()?.user_integral!!)
+                                                        )
+                                                    }
+                                                })
+                                        }
+
+                                        -1 -> {
+                                            it.getMsg()?.let { it1 -> ToastUtils.show(it1) }
+                                            ActivityManager.toSplashActivity(requireActivity())
+                                        }
+
+                                        3 -> {
+                                            //不可签到
+                                            it.getMsg()?.let { it1 ->
+                                                DialogUtils.showDefaultDialog(
+                                                    requireContext(),
+                                                    "提醒",
+                                                    it1,
+                                                    null,
+                                                    "好的",
+                                                    null
+                                                )
+                                            }
+                                        }
+
+                                        4 -> {
+                                            //首次签到
+                                            tempNum = num
+                                            tempItemView = itemView
+                                            val intent = Intent(
+                                                requireContext(),
+                                                VerificationCodeActivity::class.java
+                                            )
+                                            val bundle = Bundle()
+                                            bundle.putSerializable(
+                                                VerificationCodeActivity.TYPE,
+                                                VerificationCodeActivity.TITLE.FIRST_SIGN_IN
+                                            )
+                                            intent.putExtras(bundle)
+                                            requireActivity().startActivityForResult(intent, 10101)
+                                        }
+
+                                        5 -> {
+                                            // 超过48小时未实名认证
+                                            DialogUtils.show48HDialog(
+                                                requireActivity(),
+                                                true,
+                                                it.getMsg()
                                             )
                                         }
-                                    })
-                            }
 
-                            -1 -> {
-                                it.getMsg()?.let { it1 -> ToastUtils.show(it1) }
-                                ActivityManager.toSplashActivity(requireActivity())
-                            }
-
-                            3 -> {
-                                //不可签到
-                                it.getMsg()?.let { it1 ->
-                                    DialogUtils.showDefaultDialog(
-                                        requireContext(), "提醒", it1, null, "好的", null
-                                    )
+                                        else -> {
+                                            it.getMsg()?.let { it1 -> ToastUtils.show(it1) }
+                                        }
+                                    }
+                                } else {
+                                    ToastUtils.show(getString(R.string.network_fail_to_responseDate))
                                 }
-                            }
-
-                            4 -> {
-                                //首次签到
-                                tempNum = num
-                                tempItmeView = itemView
-                                val intent = Intent(
-                                    requireContext(),
-                                    VerificationCodeActivity::class.java
+                            }, {
+                                DialogUtils.dismissLoading()
+                                (requireActivity()).finish()
+                                LogUtils.d("${javaClass.simpleName}=fail=>${it.message.toString()}")
+                                ToastUtils.show(
+                                    HttpExceptionUtils.getExceptionMsg(
+                                        requireContext(),
+                                        it
+                                    )
                                 )
-                                val bundle = Bundle()
-                                bundle.putSerializable(
-                                    VerificationCodeActivity.TYPE,
-                                    VerificationCodeActivity.TITLE.FIRST_SIGN_IN
-                                )
-                                intent.putExtras(bundle)
-                                requireActivity().startActivityForResult(intent, 10101)
-                            }
+                            })
+                }
 
-                            5 -> {
-                                // 超过48小时未实名认证
-                                DialogUtils.show48HDialog(requireActivity(), true, it.getMsg())
-                            }
-
-                            else -> {
-                                it.getMsg()?.let { it1 -> ToastUtils.show(it1) }
-                            }
-                        }
-                    } else {
-                        ToastUtils.show(getString(R.string.network_fail_to_responseDate))
-                    }
-                }, {
+                override fun fail(code: Int, errorMessage: String) {
                     DialogUtils.dismissLoading()
-                    (requireActivity()).finish()
-                    LogUtils.d("${javaClass.simpleName}=fail=>${it.message.toString()}")
-                    ToastUtils.show(HttpExceptionUtils.getExceptionMsg(requireContext(), it))
-                })
+                    LogUtils.d("============code = $code, errorMessage = $errorMessage")
+                    ToastUtils.show("账号存在异常风险-$code, 无法白嫖!")
+                }
+            })
     }
 
     @Subscribe

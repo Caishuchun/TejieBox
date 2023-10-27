@@ -24,7 +24,7 @@ object RetrofitUtils {
 
     private var retrofit: Retrofit? = null
     private var locale: String? = null
-    var baseUrl = if (BaseAppUpdateSetting.appType) HttpUrls.REAL_URL else HttpUrls.TEST_URL
+    private var baseUrl = if (BaseAppUpdateSetting.appType) HttpUrls.REAL_URL else HttpUrls.TEST_URL
     private var client: OkHttpClient? = null
 
     init {
@@ -97,7 +97,9 @@ object RetrofitUtils {
             @Field("game_channel", encoded = true) game_channel: String? = null,
             @Field("game_id", encoded = true) game_id: Int? = null,
             @Field("game_version", encoded = true) game_version: String? = null,
-            @Field("i", encoded = true) i: String? = null
+            @Field("i", encoded = true) i: String? = null,
+            @Field("latitude ", encoded = true) latitude: Double? = null,
+            @Field("longitude ", encoded = true) longitude: Double? = null
         ): Flowable<LoginBean>
 
         /**
@@ -122,7 +124,9 @@ object RetrofitUtils {
             @Field("game_channel", encoded = true) game_channel: String? = null,
             @Field("game_id", encoded = true) game_id: Int? = null,
             @Field("game_version", encoded = true) game_version: String? = null,
-            @Field("i", encoded = true) i: String? = null
+            @Field("i", encoded = true) i: String? = null,
+            @Field("latitude ", encoded = true) latitude: Double? = null,
+            @Field("longitude ", encoded = true) longitude: Double? = null
         ): Flowable<LoginBean>
 
         /**
@@ -278,11 +282,7 @@ object RetrofitUtils {
          */
         @FormUrlEncoded
         @POST(HttpUrls.DAILY_CHECK)
-        fun dailyCheck(
-            @Field(
-                "nothing",
-                encoded = true
-            ) nothing: String = ""
+        fun dailyCheck(@Field("nothing", encoded = true) nothing: String = ""
         ): Flowable<DailyCheckBean>
 
         /**
@@ -405,7 +405,9 @@ object RetrofitUtils {
         @POST(HttpUrls.ACCOUNT_LOGIN)
         fun accountLogin(
             @Field("account", encoded = true) account: String,
-            @Field("password", encoded = true) password: String
+            @Field("password", encoded = true) password: String,
+            @Field("latitude ", encoded = true) latitude : Double? = null,
+            @Field("longitude ", encoded = true) longitude: Double? = null
         ): Flowable<LoginBean>
 
         /**
@@ -622,6 +624,19 @@ object RetrofitUtils {
          */
         @GET(HttpUrls.CHECK_IS_NEW_USER)
         fun checkIsNewUser(): Flowable<CheckIsNewUserBean>
+
+        /**
+         * 发送注销短信验证码
+         */
+        @GET(HttpUrls.SEND_DELETE_CODE)
+        fun sendDeleteCode(): Flowable<BaseBean>
+
+        /**
+         * 用户注销
+         */
+        @FormUrlEncoded
+        @POST(HttpUrls.DELETE_USER)
+        fun deleteUser(@Field("captcha", encoded = true) captcha: String?): Flowable<BaseBean>
 
     }
 }

@@ -7,6 +7,7 @@ data class GameListInfoBean(
 ) {
     data class Data(
         val list: List<BaseGameListInfoBean>,
+        val recommended_games:List<BaseGameListInfoBean>,
         val paging: Paging
     ) {
         data class Paging(

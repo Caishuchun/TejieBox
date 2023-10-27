@@ -194,4 +194,11 @@ object HttpUrls {
 
     //检查是否是新用户
     const val CHECK_IS_NEW_USER = "/android/device/info"
+
+    //发送注销短信验证码
+    const val SEND_DELETE_CODE = "android/v2.user/sendDeleteCode"
+
+    //用户注销
+    const val DELETE_USER = "android/v2.user/delete"
+
 }

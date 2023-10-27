@@ -13,6 +13,7 @@ import com.fortune.tejiebox.utils.ActivityManager
 import com.fortune.tejiebox.utils.DialogUtils
 import com.fortune.tejiebox.utils.GetDeviceId
 import com.fortune.tejiebox.utils.HttpExceptionUtils
+import com.fortune.tejiebox.utils.IPMacAndLocationUtils
 import com.fortune.tejiebox.utils.LogUtils
 import com.fortune.tejiebox.utils.PromoteUtils
 import com.fortune.tejiebox.utils.SPUtils
@@ -193,7 +194,9 @@ class VerificationCodeActivity : BaseActivity() {
             game_channel = gameChannel,
             game_id = gameId,
             game_version = gameVersion,
-            i = inviteInfo
+            i = inviteInfo,
+            latitude = IPMacAndLocationUtils.getLatitude(this),
+            longitude = IPMacAndLocationUtils.getLongitude(this)
         )
         SPUtils.putValue(SPArgument.LOGIN_TOKEN, null)
         SPUtils.putValue(SPArgument.PHONE_NUMBER, null)

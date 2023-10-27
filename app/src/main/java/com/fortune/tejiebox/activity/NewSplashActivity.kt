@@ -15,6 +15,7 @@ import androidx.core.content.FileProvider
 import com.arialyy.aria.core.Aria
 import com.arialyy.aria.core.task.DownloadTask
 import com.bumptech.glide.Glide
+import com.fortune.tejiebox.BuildConfig
 import com.fortune.tejiebox.R
 import com.fortune.tejiebox.base.BaseActivity
 import com.fortune.tejiebox.base.BaseAppUpdateSetting
@@ -35,13 +36,7 @@ import kotlinx.android.synthetic.main.fragment_account_login.view.*
 import me.weyye.hipermission.HiPermission
 import me.weyye.hipermission.PermissionCallback
 import me.weyye.hipermission.PermissionItem
-import okhttp3.Call
-import okhttp3.Callback
-import okhttp3.OkHttpClient
-import okhttp3.Request
-import okhttp3.Response
 import java.io.File
-import java.io.IOException
 import java.util.concurrent.TimeUnit
 import kotlin.system.exitProcess
 
@@ -163,6 +158,11 @@ class NewSplashActivity : BaseActivity() {
                 R.drawable.permission_ic_phone
             ),
             PermissionItem(
+                Manifest.permission.ACCESS_FINE_LOCATION,
+                "位置信息",
+                R.drawable.permission_ic_location
+            ),
+            PermissionItem(
                 Manifest.permission.WRITE_EXTERNAL_STORAGE,
                 "文件管理",
                 R.drawable.permission_ic_storage
@@ -176,19 +176,21 @@ class NewSplashActivity : BaseActivity() {
             .checkMutiPermission(object : PermissionCallback {
                 override fun onClose() {
                     LogUtils.d("HiPermission=>onClose()")
-//                    if (count == 0) {
-//                        getPermission(1)
-//                    } else {
-//                        finish()
-//                    }
-
-                    IsMultipleOpenAppUtils.initMultipleOpenApps()
-                    toGetShelfData()
+                    if (count == 0) {
+                        getPermission(1)
+                    } else {
+                        finish()
+                    }
                 }
 
                 override fun onFinish() {
                     LogUtils.d("HiPermission=>onFinish()")
                     IsMultipleOpenAppUtils.initMultipleOpenApps()
+                    if(!MyApp.getInstance().isHaveToken()){
+                        IPMacAndLocationUtils.initLocation(this@NewSplashActivity,null)
+                    }else{
+                        IPMacAndLocationUtils.clearListener()
+                    }
                     toGetShelfData()
                 }
 
@@ -206,38 +208,14 @@ class NewSplashActivity : BaseActivity() {
      * 获取服务器上的.JSON文件
      */
     private fun toGetShelfData() {
-        val shelfDataRequest = Request.Builder()
-            .url("https://cdn.tjbox.lelehuyu.com/apk/setting/shelf_setting.json")
-            .build()
-        val okHttpClient = OkHttpClient.Builder()
-            .connectTimeout(3, TimeUnit.SECONDS)
-            .readTimeout(3, TimeUnit.SECONDS)
-            .build()
-        val shelfDataCall = okHttpClient.newCall(shelfDataRequest)
-        shelfDataCall.enqueue(object : Callback {
-            override fun onFailure(call: Call, e: IOException) {
-                LogUtils.d("getShelfData=>onFailure(e:$e)")
+        ShelfDataUtils.getShelfData4Service(object : ShelfDataUtils.OnGetShelfDataCallback {
+            override fun fail(msg: String) {
+                LogUtils.d("+++++++++++++$msg")
                 toMain4CheckVersion()
             }
 
-            override fun onResponse(call: Call, response: Response) {
-                val responseStr = response.body()?.string()
-                if (responseStr == null) {
-                    LogUtils.d("getShelfData=>onResponse: responseStr is null")
-                    toMain4CheckVersion()
-                    return
-                }
-                try {
-                    val shelfDataBean = Gson().fromJson(responseStr, ShelfDataBean::class.java)
-                    if (shelfDataBean != null) {
-                        LogUtils.d("getShelfData=>onResponse: $shelfDataBean")
-                        getDateFromShelfDate(shelfDataBean)
-                    } else {
-                        LogUtils.d("getShelfData=>onResponse: shelfDataBean is null")
-                    }
-                } catch (e: Exception) {
-                    e.printStackTrace()
-                }
+            override fun success(shelfDataBean: ShelfDataBean) {
+                getDateFromShelfDate(shelfDataBean)
             }
         })
     }
@@ -248,13 +226,11 @@ class NewSplashActivity : BaseActivity() {
             return
         }
 
-        ShelfDataBean.setData(shelfDataBean)
-
-        //marketChannel 0:默认 1:应用宝 2:华为 3:小米 4:vivo 5:oppo 6:360 7:百度 8:91
-        when (BaseAppUpdateSetting.marketChannel) {
+        //marketChannel 0:默认 1:应用宝 2:华为 3:小米 4:vivo 5:oppo 6:360 7:百度 8:91 9:三星
+        when (BuildConfig.CHANNEL.toInt()) {
             1 -> {
                 toMain4CheckVersion(
-                    isShowStartGameBtn = 0,
+                    isShowStartGameBtn = shelfDataBean.tencet_market,
                     isCanUseShare = shelfDataBean.isCanUseShare,
                     isDirectToJump = shelfDataBean.tencet_market == 0
                 )
@@ -262,7 +238,7 @@ class NewSplashActivity : BaseActivity() {
 
             2 -> {
                 toMain4CheckVersion(
-                    isShowStartGameBtn = 0,
+                    isShowStartGameBtn = shelfDataBean.huawei_market,
                     isCanUseShare = shelfDataBean.isCanUseShare,
                     isDirectToJump = shelfDataBean.huawei_market == 0
                 )
@@ -270,7 +246,7 @@ class NewSplashActivity : BaseActivity() {
 
             3 -> {
                 toMain4CheckVersion(
-                    isShowStartGameBtn = 0,
+                    isShowStartGameBtn = shelfDataBean.xiaomi_market,
                     isCanUseShare = shelfDataBean.isCanUseShare,
                     isDirectToJump = shelfDataBean.xiaomi_market == 0
                 )
@@ -278,7 +254,7 @@ class NewSplashActivity : BaseActivity() {
 
             4 -> {
                 toMain4CheckVersion(
-                    isShowStartGameBtn = 0,
+                    isShowStartGameBtn = shelfDataBean.vivo_market,
                     isCanUseShare = shelfDataBean.isCanUseShare,
                     isDirectToJump = shelfDataBean.vivo_market == 0
                 )
@@ -286,7 +262,7 @@ class NewSplashActivity : BaseActivity() {
 
             5 -> {
                 toMain4CheckVersion(
-                    isShowStartGameBtn = 0,
+                    isShowStartGameBtn = shelfDataBean.oppo_market,
                     isCanUseShare = shelfDataBean.isCanUseShare,
                     isDirectToJump = shelfDataBean.oppo_market == 0
                 )
@@ -294,7 +270,7 @@ class NewSplashActivity : BaseActivity() {
 
             6 -> {
                 toMain4CheckVersion(
-                    isShowStartGameBtn = 0,
+                    isShowStartGameBtn = shelfDataBean.s360_market,
                     isCanUseShare = shelfDataBean.isCanUseShare,
                     isDirectToJump = shelfDataBean.s360_market == 0
                 )
@@ -302,7 +278,7 @@ class NewSplashActivity : BaseActivity() {
 
             7 -> {
                 toMain4CheckVersion(
-                    isShowStartGameBtn = 0,
+                    isShowStartGameBtn = shelfDataBean.baidu_market,
                     isCanUseShare = shelfDataBean.isCanUseShare,
                     isDirectToJump = shelfDataBean.baidu_market == 0
                 )
@@ -310,7 +286,7 @@ class NewSplashActivity : BaseActivity() {
 
             8 -> {
                 toMain4CheckVersion(
-                    isShowStartGameBtn = 0,
+                    isShowStartGameBtn = shelfDataBean.s91_market,
                     isCanUseShare = shelfDataBean.isCanUseShare,
                     isDirectToJump = shelfDataBean.s91_market == 0
                 )
@@ -318,14 +294,18 @@ class NewSplashActivity : BaseActivity() {
 
             9 -> {
                 toMain4CheckVersion(
-                    isShowStartGameBtn = 0,
+                    isShowStartGameBtn = shelfDataBean.samsung_market,
                     isCanUseShare = shelfDataBean.isCanUseShare,
                     isDirectToJump = shelfDataBean.samsung_market == 0
                 )
             }
 
             else -> {
-                toMain4CheckVersion()
+                toMain4CheckVersion(
+                    isShowStartGameBtn = 1,
+                    isCanUseShare = shelfDataBean.isCanUseShare,
+                    false
+                )
             }
         }
     }

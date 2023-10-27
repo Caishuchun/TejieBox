@@ -51,4 +51,5 @@ object SPArgument {
     const val IS_NEED_SHOW_INSTALL_GIFT = "isNeedShowInstallGift" //是否需要显示安装礼包
 
     const val TODAY_DATE = "today_date" //今日日期
+    const val GET_CUSTOMER_SERVICE_INFO_TIME = "getCustomerServiceInfoTime" //获取客服信息的时间
 }

@@ -68,6 +68,7 @@ class GameDetailActivity : BaseActivity() {
     private var updateGameTimeInfoObservable: Disposable? = null
 
     private var isIntegral = 0
+    private var isShowIntegralBtn = true
 
     companion object {
         @SuppressLint("StaticFieldLeak")
@@ -77,6 +78,7 @@ class GameDetailActivity : BaseActivity() {
         const val GAME_ID = "game_id"
         const val GAME_IS_INTEGRAL = "game_is_integral" //游戏是否是置顶游戏
         const val GAME_CHANNEL_ID = "game_channel_id"
+        const val IS_SHOW_INTEGRAL_BTN = "isShowIntegralBtn"
     }
 
     override fun getLayoutId() = R.layout.activity_game_detail
@@ -87,6 +89,7 @@ class GameDetailActivity : BaseActivity() {
         gameId = intent.getIntExtra(GAME_ID, -1)
         gameChannelId = intent.getStringExtra(GAME_CHANNEL_ID)
         isIntegral = intent.getIntExtra(GAME_IS_INTEGRAL, 0)
+        isShowIntegralBtn = intent.getBooleanExtra(IS_SHOW_INTEGRAL_BTN,true)
         initView()
         getInfo()
     }
@@ -588,7 +591,7 @@ class GameDetailActivity : BaseActivity() {
 
         //是否显示<免费充值>
         if (info.is_open_free == 1) {
-            ll_detail_integral.visibility = View.VISIBLE
+            ll_detail_integral.visibility = if(isShowIntegralBtn) View.VISIBLE else View.GONE
             space_detail_button.visibility = View.VISIBLE
 
             ll_detail_bottom_tab.visibility = View.VISIBLE

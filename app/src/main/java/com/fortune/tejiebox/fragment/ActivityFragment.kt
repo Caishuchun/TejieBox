@@ -1,81 +1,189 @@
-package com.fortune.tejiebox.activity
+package com.fortune.tejiebox.fragment
 
 import android.animation.ValueAnimator
 import android.annotation.SuppressLint
-import android.content.Intent
 import android.graphics.Color
 import android.os.Bundle
 import android.view.Gravity
-import android.view.KeyEvent
+import android.view.LayoutInflater
+import android.view.View
+import android.view.ViewGroup
 import android.view.animation.LinearInterpolator
 import android.widget.TextView
 import androidx.fragment.app.Fragment
 import com.fortune.tejiebox.R
-import com.fortune.tejiebox.base.BaseActivity
+import com.fortune.tejiebox.activity.MainActivity
 import com.fortune.tejiebox.base.BaseAppUpdateSetting
 import com.fortune.tejiebox.constants.SPArgument
 import com.fortune.tejiebox.event.GiftShowPoint
 import com.fortune.tejiebox.event.GiftShowState
 import com.fortune.tejiebox.event.IntegralChange
 import com.fortune.tejiebox.event.RedPointChange
-import com.fortune.tejiebox.fragment.DailyCheckFragment
-import com.fortune.tejiebox.fragment.InviteGiftFragment
-import com.fortune.tejiebox.fragment.WhitePiaoFragment
 import com.fortune.tejiebox.http.RetrofitUtils
 import com.fortune.tejiebox.listener.OnBottomBarItemSelectListener
-import com.fortune.tejiebox.utils.*
+import com.fortune.tejiebox.utils.ActivityManager
+import com.fortune.tejiebox.utils.DialogUtils
+import com.fortune.tejiebox.utils.GuideUtils
+import com.fortune.tejiebox.utils.HttpExceptionUtils
+import com.fortune.tejiebox.utils.LogUtils
+import com.fortune.tejiebox.utils.SPUtils
+import com.fortune.tejiebox.utils.ToastUtils
 import com.fortune.tejiebox.widget.GuideItem
 import com.jakewharton.rxbinding2.view.RxView
-import com.umeng.analytics.MobclickAgent
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.Disposable
 import io.reactivex.schedulers.Schedulers
-import kotlinx.android.synthetic.main.activity_gift.*
+import kotlinx.android.synthetic.main.fragment_activity.view.*
 import org.greenrobot.eventbus.EventBus
 import org.greenrobot.eventbus.Subscribe
 import org.greenrobot.eventbus.ThreadMode
 import java.util.concurrent.TimeUnit
 
-class GiftActivity : BaseActivity() {
+/**
+ * 活动页面
+ */
 
-    private var currentFragment: Fragment? = null
+private const val IS_NEED_SHOW_GUIDE = "isNeedShowGuide"
+
+class ActivityFragment : Fragment() {
+
+    private var isNeedShowGuide = false
+    private var mView: View? = null
     private var dailyCheckFragment: DailyCheckFragment? = null
     private var whitePiaoFragment: WhitePiaoFragment? = null
     private var inviteGiftFragment: InviteGiftFragment? = null
+    private var currentFragment: Fragment? = null
+
     private var getIntegralObservable: Disposable? = null
     private var canGetIntegralObservable: Disposable? = null
-    var isFirstCreate = false
 
     companion object {
-        @SuppressLint("StaticFieldLeak")
-        private lateinit var instance: GiftActivity
-        private fun isInstance() = this::instance.isInitialized
-        fun getInstance() = if (isInstance()) instance else null
-
-        const val NEED_SHOW_GUIDE = "need_show_guide"
+        @JvmStatic
+        fun newInstance(isNeedShowGuide: Boolean) = ActivityFragment().apply {
+            arguments = Bundle().apply {
+                putBoolean(IS_NEED_SHOW_GUIDE, isNeedShowGuide)
+            }
+        }
     }
 
-    private var needShowGuide = false
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        arguments?.let {
+            isNeedShowGuide = it.getBoolean(IS_NEED_SHOW_GUIDE)
+        }
+    }
 
-    override fun getLayoutId() = R.layout.activity_gift
-
-    override fun doSomething() {
-        instance = this
-        isFirstCreate = true
-        StatusBarUtils.setTextDark(this, true)
+    override fun onCreateView(
+        inflater: LayoutInflater, container: ViewGroup?,
+        savedInstanceState: Bundle?
+    ): View? {
         EventBus.getDefault().register(this)
-        dailyCheckFragment = DailyCheckFragment.newInstance()
-
-        needShowGuide = intent.getBooleanExtra(NEED_SHOW_GUIDE, false)
+        mView = inflater.inflate(R.layout.fragment_activity, container, false)
+        isNeedShowGuide = SPUtils.getBoolean(SPArgument.IS_NEED_SHOW_GUIDE)
+        if (isNeedShowGuide) {
+            SPUtils.putValue(SPArgument.IS_NEED_SHOW_GUIDE, false)
+        }
         initView()
         getIntegral()
         toCheckCanGetIntegral()
+        return mView
     }
 
-    //为了不保存Fragment,直接清掉
-    @SuppressLint("MissingSuperCall")
-    override fun onSaveInstanceState(outState: Bundle) {
-//        super.onSaveInstanceState(outState)
+    override fun onHiddenChanged(hidden: Boolean) {
+        super.onHiddenChanged(hidden)
+        LogUtils.d("+++++++++++++++ActivityFragment_onHiddenChanged:$hidden")
+        if(!hidden){
+            getIntegral()
+            toCheckCanGetIntegral()
+        }
+    }
+
+    @SuppressLint("CheckResult", "SetTextI18n")
+    private fun initView() {
+        dailyCheckFragment = DailyCheckFragment.newInstance()
+
+        if (BaseAppUpdateSetting.isToAuditVersion) {
+            mView?.tv_activity_title?.text = "特戒积分"
+            mView?.tv_activity_integralTitle?.text = "我的积分:"
+        }
+
+        childFragmentManager.beginTransaction()
+            .add(R.id.fl_activity, dailyCheckFragment!!)
+            .commit()
+
+        mView?.tt_activity?.setCurrentItem(0)
+        toChangeFragment(0)
+        mView?.tt_activity?.setOnItemListener(object : OnBottomBarItemSelectListener {
+            override fun setOnItemSelectListener(index: Int) {
+                toChangeFragment(index)
+            }
+        })
+
+        mView?.tv_activity_tips?.text =
+            "进入任一游戏详情页 --> 点击\"免费充值\" --> 选择区服角色 --> 选择充值额度 --> 点击\"确认充值\" --> 充值成功"
+
+        RxView.clicks(mView?.tv_activity_tip2!!)
+            .throttleFirst(200, TimeUnit.MILLISECONDS)
+            .subscribe {
+                DialogUtils.showDefaultDialog(
+                    requireContext(), "规则说明",
+                    """
+                        1. 余额有效期30天，领取后超过30天不使用就会自动作废清除；使用余额时会优先使用最早领取的余额。
+                        2. 同一个手机多个账号，每天只有一个账号可以白嫖。
+                        3. 邀请好友时，多个账号同个手机只算邀请成功一次。
+                        4. 被邀请的好友，每玩1个小时的游戏，可以获得2元，最多10元。
+                    """.trimIndent(),
+                    null, "确定", null, Gravity.START
+                )
+            }
+    }
+
+    private fun toChangeFragment(index: Int) {
+        hideAll()
+        when (index) {
+            0 -> {
+                currentFragment = dailyCheckFragment
+                childFragmentManager.beginTransaction()
+                    .show(currentFragment!!)
+                    .commit()
+            }
+
+            1 -> {
+                if (whitePiaoFragment == null) {
+                    whitePiaoFragment = WhitePiaoFragment.newInstance()
+                    childFragmentManager.beginTransaction()
+                        .add(R.id.fl_activity, whitePiaoFragment!!)
+                        .commit()
+                } else {
+                    childFragmentManager.beginTransaction()
+                        .show(whitePiaoFragment!!)
+                        .commit()
+                }
+                currentFragment = whitePiaoFragment
+            }
+
+            2 -> {
+                if (inviteGiftFragment == null) {
+                    inviteGiftFragment = InviteGiftFragment.newInstance()
+                    childFragmentManager.beginTransaction()
+                        .add(R.id.fl_activity, inviteGiftFragment!!)
+                        .commit()
+                } else {
+                    childFragmentManager.beginTransaction()
+                        .show(inviteGiftFragment!!)
+                        .commit()
+                }
+                currentFragment = inviteGiftFragment
+            }
+        }
+    }
+
+    private fun hideAll() {
+        childFragmentManager.beginTransaction()
+            .hide(dailyCheckFragment!!)
+            .hide(whitePiaoFragment ?: dailyCheckFragment!!)
+            .hide(inviteGiftFragment ?: dailyCheckFragment!!)
+            .commit()
     }
 
     /**
@@ -93,16 +201,16 @@ class GiftActivity : BaseActivity() {
                     1 -> {
                         SPUtils.putValue(SPArgument.INTEGRAL, it.data.integral)
                         if (BaseAppUpdateSetting.isToAuditVersion) {
-                            tv_gift_integral.text = it.data.integral.toString()
+                            mView?.tv_activity_integral?.text = it.data.integral.toString()
                         } else {
-                            tv_gift_integral.text = "${it.data.integral / 10}元"
+                            mView?.tv_activity_integral?.text = "${it.data.integral / 10}元"
                         }
                         EventBus.getDefault().postSticky(IntegralChange(it.data.integral))
                     }
 
                     -1 -> {
                         ToastUtils.show(it.msg)
-                        ActivityManager.toSplashActivity(this)
+                        ActivityManager.toSplashActivity(requireActivity())
                     }
 
                     else -> {
@@ -112,188 +220,8 @@ class GiftActivity : BaseActivity() {
             }, {
 //                DialogUtils.dismissLoading()
                 LogUtils.d("${javaClass.simpleName}=fail=>${it.message.toString()}")
-                ToastUtils.show(HttpExceptionUtils.getExceptionMsg(this, it))
+                ToastUtils.show(HttpExceptionUtils.getExceptionMsg(requireContext(), it))
             })
-    }
-
-    @SuppressLint("CheckResult", "SetTextI18n")
-    private fun initView() {
-        if (BaseAppUpdateSetting.isToAuditVersion) {
-            tv_gift_title.text = "特戒积分"
-            tv_gift_integralTitle.text = "我的积分:"
-        }
-
-        supportFragmentManager.beginTransaction()
-            .add(R.id.fl_gift, dailyCheckFragment!!)
-            .commit()
-
-        RxView.clicks(iv_gift_back)
-            .throttleFirst(200, TimeUnit.MILLISECONDS)
-            .subscribe {
-                finish()
-            }
-
-        tt_gift.setCurrentItem(0)
-        toChangeFragment(0)
-        tt_gift.setOnItemListener(object : OnBottomBarItemSelectListener {
-            override fun setOnItemSelectListener(index: Int) {
-                toChangeFragment(index)
-            }
-        })
-
-        tv_gift_tips.text =
-            "进入任一游戏详情页 --> 点击\"免费充值\" --> 选择区服角色 --> 选择充值额度 --> 点击\"确认充值\" --> 充值成功"
-
-        RxView.clicks(tv_gift_tip2)
-            .throttleFirst(200, TimeUnit.MILLISECONDS)
-            .subscribe {
-                DialogUtils.showDefaultDialog(
-                    this, "规则说明",
-                    """
-                        1. 余额有效期30天，领取后超过30天不使用就会自动作废清除；使用余额时会优先使用最早领取的余额。
-                        2. 同一个手机多个账号，每天只有一个账号可以白嫖。
-                        3. 邀请好友时，多个账号同个手机只算邀请成功一次。
-                        4. 被邀请的好友，每玩1个小时的游戏，可以获得2元，最多10元。
-                    """.trimIndent(),
-                    null, "确定", null, Gravity.START
-                )
-            }
-
-        IPMacAndLocationUtils.initLocation(this,
-            object : IPMacAndLocationUtils.OnIpMacAndLocationListener {
-                override fun success() {
-                    LogUtils.d("==============initLocation=>success")
-                }
-
-                override fun fail(code: Int, errorMessage: String) {
-                    LogUtils.d("==============initLocation=>fail, code:$code, errorMessage:$errorMessage")
-                    DialogUtils.showDefaultDialog(
-                        this@GiftActivity,
-                        "权限申请",
-                        "使用签到白嫖功能需要获取位置权限",
-                        "取消",
-                        "获取权限",
-                        object : DialogUtils.OnDialogListener {
-                            override fun next() {
-                                IPMacAndLocationUtils.openLocationService(this@GiftActivity)
-                            }
-                        })
-                }
-            })
-    }
-
-    private fun toChangeFragment(index: Int) {
-        hideAll()
-        when (index) {
-            0 -> {
-                currentFragment = dailyCheckFragment
-                supportFragmentManager.beginTransaction()
-                    .show(currentFragment!!)
-                    .commit()
-            }
-
-            1 -> {
-                if (whitePiaoFragment == null) {
-                    whitePiaoFragment = WhitePiaoFragment.newInstance()
-                    supportFragmentManager.beginTransaction()
-                        .add(R.id.fl_gift, whitePiaoFragment!!)
-                        .commit()
-                } else {
-                    supportFragmentManager.beginTransaction()
-                        .show(whitePiaoFragment!!)
-                        .commit()
-                }
-                currentFragment = whitePiaoFragment
-            }
-
-            2 -> {
-                if (inviteGiftFragment == null) {
-                    inviteGiftFragment = InviteGiftFragment.newInstance()
-                    supportFragmentManager.beginTransaction()
-                        .add(R.id.fl_gift, inviteGiftFragment!!)
-                        .commit()
-                } else {
-                    supportFragmentManager.beginTransaction()
-                        .show(inviteGiftFragment!!)
-                        .commit()
-                }
-                currentFragment = inviteGiftFragment
-            }
-        }
-    }
-
-    private fun hideAll() {
-        supportFragmentManager.beginTransaction()
-            .hide(dailyCheckFragment!!)
-            .hide(whitePiaoFragment ?: dailyCheckFragment!!)
-            .hide(inviteGiftFragment ?: dailyCheckFragment!!)
-            .commit()
-    }
-
-    /**
-     * 积分增加动画
-     */
-    @SuppressLint("SetTextI18n")
-    @Subscribe(sticky = true, threadMode = ThreadMode.MAIN)
-    fun changeIntegral(integralChange: IntegralChange) {
-        if (integralChange == null) {
-            return
-        }
-        if (isFirstCreate) {
-            isFirstCreate = false
-            return
-        }
-        if (integralChange.integral > 0) {
-            val oldIntegral = if (BaseAppUpdateSetting.isToAuditVersion) {
-                tv_gift_integral.text.toString().trim().toInt()
-            } else {
-                tv_gift_integral.text.toString().trim().replace("元", "").toInt() * 10
-            }
-            val newIntegral = integralChange.integral
-            SPUtils.putValue(SPArgument.INTEGRAL, newIntegral)
-            if (oldIntegral == newIntegral) {
-                return
-            }
-            val animator = ValueAnimator.ofInt(oldIntegral, newIntegral)
-            animator.duration = 500
-            animator.interpolator = LinearInterpolator()
-            animator.addUpdateListener {
-                if (BaseAppUpdateSetting.isToAuditVersion) {
-                    tv_gift_integral.text = "${animator.animatedValue.toString().toInt()}"
-                } else {
-                    tv_gift_integral.text = "${animator.animatedValue.toString().toInt() / 10}元"
-                }
-            }
-            animator.start()
-        }
-    }
-
-    @Subscribe(sticky = true)
-    fun showPoint(giftShowPoint: GiftShowPoint) {
-        if (giftShowPoint == null) {
-            return
-        }
-        when (giftShowPoint.isShowDailyCheck) {
-            GiftShowState.SHOW -> tt_gift.setDailyCheckPoint(true)
-            GiftShowState.UN_SHOW -> tt_gift.setDailyCheckPoint(false)
-            GiftShowState.USELESS -> {
-                //啥也不干就可以
-            }
-        }
-        when (giftShowPoint.isShowWhitePiao) {
-            GiftShowState.SHOW -> tt_gift.setWhitePiaoPoint(true)
-            GiftShowState.UN_SHOW -> tt_gift.setWhitePiaoPoint(false)
-            GiftShowState.USELESS -> {
-                //啥也不干就可以
-            }
-        }
-        when (giftShowPoint.isShowInviteGift) {
-            GiftShowState.SHOW -> tt_gift.setInviteGiftPoint(true)
-            GiftShowState.UN_SHOW -> tt_gift.setInviteGiftPoint(false)
-            GiftShowState.USELESS -> {
-                //啥也不干就可以
-            }
-        }
     }
 
     /**
@@ -327,12 +255,12 @@ class GiftActivity : BaseActivity() {
 
                         -1 -> {
                             ToastUtils.show(it.msg)
-                            ActivityManager.toSplashActivity(this)
+                            ActivityManager.toSplashActivity(requireActivity())
                         }
 
                         else -> {
                             ToastUtils.show(it.msg)
-                            finish()
+                            MainActivity.getInstance()?.toMainFragment()
                         }
                     }
                 } else {
@@ -340,32 +268,18 @@ class GiftActivity : BaseActivity() {
                 }
             }, {
                 LogUtils.d("fail=>${it.message.toString()}")
-                ToastUtils.show(HttpExceptionUtils.getExceptionMsg(this, it))
+                ToastUtils.show(HttpExceptionUtils.getExceptionMsg(requireContext(), it))
                 toShowTitleGuide(0)
             })
     }
-
-    override fun onKeyDown(keyCode: Int, event: KeyEvent?): Boolean {
-        if (!canBack) {
-            return true
-        }
-        return super.onKeyDown(keyCode, event)
-    }
-
-    private var canBack = true
 
     /**
      * 显示遮罩引导层
      */
     private fun toShowTitleGuide(index: Int) {
-        if (!needShowGuide) {
+        if (!isNeedShowGuide) {
             return
         }
-        if (index >= 3) {
-            canBack = true
-            return
-        }
-        canBack = false
 
         val layout = when (index) {
             0 -> R.layout.layout_guide_left_top
@@ -380,9 +294,9 @@ class GiftActivity : BaseActivity() {
         }
 
         GuideUtils.showGuide(
-            activity = this,
+            activity = requireActivity(),
             backgroundColor = Color.parseColor("#88000000"),
-            highLightView = tt_gift.getCurrentItem(index),
+            highLightView = mView?.tt_activity?.getCurrentItem(index)!!,
             highLightShape = GuideItem.SHAPE_RECT,
             guideLayout = layout,
             guideLayoutGravity = Gravity.BOTTOM,
@@ -423,11 +337,6 @@ class GiftActivity : BaseActivity() {
      * 显示遮罩引导层
      */
     private fun toShowItemGuide(index: Int) {
-        if (index >= 3) {
-            canBack = true
-            return
-        }
-
         val layout = when (index) {
             0 -> R.layout.layout_guide_left_top
             1 -> R.layout.layout_guide_center_bottom
@@ -453,7 +362,7 @@ class GiftActivity : BaseActivity() {
         }
 
         GuideUtils.showGuide(
-            activity = this,
+            activity = requireActivity(),
             backgroundColor = Color.parseColor("#88000000"),
             highLightView = highLightView,
             highLightShape = GuideItem.SHAPE_RECT,
@@ -479,15 +388,14 @@ class GiftActivity : BaseActivity() {
                 view.setOnClickListener {
                     controller.dismiss()
                     if (index < 2) {
-                        tt_gift.setCurrentItem(index + 1)
+                        mView?.tt_activity?.setCurrentItem(index + 1)
                         toShowTitleGuide(index + 1)
                     } else {
                         GuideUtils.showGuideOverDialog(
-                            this,
+                            requireContext(),
                             object : GuideUtils.OnGuideOverCallback {
                                 override fun over() {
-                                    canBack = true
-                                    tt_gift.setCurrentItem(0)
+                                    mView?.tt_activity?.setCurrentItem(0)
                                 }
                             })
                     }
@@ -496,15 +404,16 @@ class GiftActivity : BaseActivity() {
             highLightClickListener = { controller ->
                 controller.dismiss()
                 if (index < 2) {
-                    tt_gift.setCurrentItem(index + 1)
+                    mView?.tt_activity?.setCurrentItem(index + 1)
                     toShowTitleGuide(index + 1)
                 } else {
-                    GuideUtils.showGuideOverDialog(this, object : GuideUtils.OnGuideOverCallback {
-                        override fun over() {
-                            canBack = true
-                            tt_gift.setCurrentItem(0)
-                        }
-                    })
+                    GuideUtils.showGuideOverDialog(
+                        requireContext(),
+                        object : GuideUtils.OnGuideOverCallback {
+                            override fun over() {
+                                mView?.tt_activity?.setCurrentItem(0)
+                            }
+                        })
                 }
             },
             guideShowListener = { isShowing -> },
@@ -515,32 +424,78 @@ class GiftActivity : BaseActivity() {
     }
 
 
-    override fun destroy() {
+    /**
+     * 积分增加动画
+     */
+    @SuppressLint("SetTextI18n")
+    @Subscribe(sticky = true, threadMode = ThreadMode.MAIN)
+    fun changeIntegral(integralChange: IntegralChange) {
+        if (integralChange == null) {
+            return
+        }
+        if (integralChange.integral > 0) {
+            val oldIntegral = if (BaseAppUpdateSetting.isToAuditVersion) {
+                mView?.tv_activity_integral?.text.toString().trim().toInt()
+            } else {
+                mView?.tv_activity_integral?.text.toString().trim().replace("元", "").toInt() * 10
+            }
+            val newIntegral = integralChange.integral
+            SPUtils.putValue(SPArgument.INTEGRAL, newIntegral)
+            if (oldIntegral == newIntegral) {
+                return
+            }
+            val animator = ValueAnimator.ofInt(oldIntegral, newIntegral)
+            animator.duration = 500
+            animator.interpolator = LinearInterpolator()
+            animator.addUpdateListener {
+                if (BaseAppUpdateSetting.isToAuditVersion) {
+                    mView?.tv_activity_integral?.text =
+                        "${animator.animatedValue.toString().toInt()}"
+                } else {
+                    mView?.tv_activity_integral?.text =
+                        "${animator.animatedValue.toString().toInt() / 10}元"
+                }
+            }
+            animator.start()
+        }
+    }
+
+    @Subscribe(sticky = true)
+    fun showPoint(giftShowPoint: GiftShowPoint) {
+        if (giftShowPoint == null) {
+            return
+        }
+        when (giftShowPoint.isShowDailyCheck) {
+            GiftShowState.SHOW -> mView?.tt_activity?.setDailyCheckPoint(true)
+            GiftShowState.UN_SHOW -> mView?.tt_activity?.setDailyCheckPoint(false)
+            GiftShowState.USELESS -> {
+                //啥也不干就可以
+            }
+        }
+        when (giftShowPoint.isShowWhitePiao) {
+            GiftShowState.SHOW -> mView?.tt_activity?.setWhitePiaoPoint(true)
+            GiftShowState.UN_SHOW -> mView?.tt_activity?.setWhitePiaoPoint(false)
+            GiftShowState.USELESS -> {
+                //啥也不干就可以
+            }
+        }
+        when (giftShowPoint.isShowInviteGift) {
+            GiftShowState.SHOW -> mView?.tt_activity?.setInviteGiftPoint(true)
+            GiftShowState.UN_SHOW -> mView?.tt_activity?.setInviteGiftPoint(false)
+            GiftShowState.USELESS -> {
+                //啥也不干就可以
+            }
+        }
+    }
+
+    override fun onDestroy() {
         EventBus.getDefault().unregister(this)
+
         getIntegralObservable?.dispose()
         getIntegralObservable = null
 
         canGetIntegralObservable?.dispose()
         canGetIntegralObservable = null
-    }
-
-    override fun onResume() {
-        super.onResume()
-        MobclickAgent.onResume(this)
-    }
-
-    override fun onPause() {
-        super.onPause()
-        MobclickAgent.onPause(this)
-    }
-
-    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
-        super.onActivityResult(requestCode, resultCode, data)
-        val fragments = supportFragmentManager.fragments
-        if (fragments.size > 0) {
-            for (fragment in fragments) {
-                fragment.onActivityResult(requestCode, resultCode, data)
-            }
-        }
+        super.onDestroy()
     }
 }

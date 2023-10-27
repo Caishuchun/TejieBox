@@ -71,8 +71,7 @@ class InviteGiftFragment : Fragment() {
     }
 
     override fun onCreateView(
-        inflater: LayoutInflater, container: ViewGroup?,
-        savedInstanceState: Bundle?
+        inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?
     ): View? {
         mView = inflater.inflate(R.layout.fragment_invite_gift, container, false)
         initView()
@@ -103,188 +102,182 @@ class InviteGiftFragment : Fragment() {
         canGet = 0
         DialogUtils.showBeautifulDialog(requireContext())
         val getShareList = RetrofitUtils.builder().getShareList()
-        getShareListObservable = getShareList.subscribeOn(Schedulers.io())
-            .observeOn(AndroidSchedulers.mainThread())
-            .subscribe({
-                DialogUtils.dismissLoading()
-                LogUtils.d("${javaClass.simpleName}=success=>${Gson().toJson(it)}")
-                if (it != null) {
-                    when (it.getCode()) {
-                        1 -> {
-                            if (it.getData() != null) {
-                                shareReward = it.getData()?.share_reward!!
-                                inviteReward = it.getData()?.invite_reward!!
-                                mView?.tv_inviteGift_inviteMoney?.text =
-                                    if (BaseAppUpdateSetting.isToAuditVersion) "+$inviteReward"
-                                    else "+${inviteReward / 10}元"
-                                if (it.getData()?.list != null) {
-                                    mData.clear()
-                                    for (data in it.getData()!!.list!!) {
-                                        mData.add(data)
-                                        if (data.receive == 0) {
-                                            //可领取
+        getShareListObservable =
+            getShareList.subscribeOn(Schedulers.io()).observeOn(AndroidSchedulers.mainThread())
+                .subscribe({
+                    DialogUtils.dismissLoading()
+                    LogUtils.d("${javaClass.simpleName}=success=>${Gson().toJson(it)}")
+                    if (it != null) {
+                        when (it.getCode()) {
+                            1 -> {
+                                if (it.getData() != null) {
+                                    shareReward = it.getData()?.share_reward!!
+                                    inviteReward = it.getData()?.invite_reward!!
+                                    mView?.tv_inviteGift_inviteMoney?.text =
+                                        if (BaseAppUpdateSetting.isToAuditVersion) "+$inviteReward"
+                                        else "+${inviteReward / 10}元"
+                                    if (it.getData()?.list != null) {
+                                        mData.clear()
+                                        for (data in it.getData()!!.list!!) {
+                                            mData.add(data)
+                                            if (data.receive == 0) {
+                                                //可领取
+                                                canGet++
+                                            }
+                                        }
+                                        formatInfo()
+                                        mAdapter?.notifyDataSetChanged()
+                                    }
+                                    if (canGet == 0) {
+                                        if (RedPointBean.getData() != null) {
+                                            val data = RedPointBean.getData()!!
+                                            data.invite = 0
+                                            RedPointBean.setData(data)
+                                            EventBus.getDefault().postSticky(data)
+                                        }
+                                        //都没有可领取的话,没有小红点
+                                        EventBus.getDefault().postSticky(
+                                            GiftShowPoint(
+                                                GiftShowState.USELESS,
+                                                GiftShowState.USELESS,
+                                                GiftShowState.UN_SHOW
+                                            )
+                                        )
+                                    } else {
+                                        EventBus.getDefault().postSticky(
+                                            GiftShowPoint(
+                                                GiftShowState.USELESS,
+                                                GiftShowState.USELESS,
+                                                GiftShowState.SHOW
+                                            )
+                                        )
+                                    }
+                                }
+                            }
+
+                            -1 -> {
+                                it.getMsg()?.let { it1 -> ToastUtils.show(it1) }
+                                ActivityManager.toSplashActivity(requireActivity())
+                            }
+
+                            else -> {
+                                it.getMsg()?.let { it1 -> ToastUtils.show(it1) }
+                            }
+                        }
+                    } else {
+                        ToastUtils.show(getString(R.string.network_fail_to_responseDate))
+                    }
+                }, {
+                    DialogUtils.dismissLoading()
+                    LogUtils.d("${javaClass.simpleName}=fail=>${it.message.toString()}")
+                    ToastUtils.show(HttpExceptionUtils.getExceptionMsg(requireContext(), it))
+                })
+
+        val inviteList = RetrofitUtils.builder().inviteList()
+        getInviteListObservable =
+            inviteList.subscribeOn(Schedulers.io()).observeOn(AndroidSchedulers.mainThread())
+                .subscribe({
+                    mData4New.clear()
+                    DialogUtils.dismissLoading()
+                    LogUtils.d("${javaClass.simpleName}=success=>${Gson().toJson(it)}")
+                    if (it != null) {
+                        when (it.code) {
+                            1 -> {
+                                if (it.data != null) {
+                                    for (info in it.data) {
+                                        if (info.h1 == 1) {
+                                            canGet++
+                                        }
+                                        if (info.h2 == 1) {
+                                            canGet++
+                                        }
+                                        if (info.h3 == 1) {
+                                            canGet++
+                                        }
+                                        if (info.h4 == 1) {
+                                            canGet++
+                                        }
+                                        if (info.h5 == 1) {
                                             canGet++
                                         }
                                     }
-                                    formatInfo()
-                                    mAdapter?.notifyDataSetChanged()
-                                }
-                                if (canGet == 0) {
-                                    if (RedPointBean.getData() != null) {
-                                        val data = RedPointBean.getData()!!
-                                        data.invite = 0
-                                        RedPointBean.setData(data)
-                                        EventBus.getDefault().postSticky(data)
-                                    }
-                                    //都没有可领取的话,没有小红点
-                                    EventBus.getDefault().postSticky(
-                                        GiftShowPoint(
-                                            GiftShowState.USELESS,
-                                            GiftShowState.USELESS,
-                                            GiftShowState.UN_SHOW
+                                    mData4New.addAll(it.data)
+                                    mAdapter4New?.notifyDataSetChanged()
+                                    if (canGet == 0) {
+                                        if (RedPointBean.getData() != null) {
+                                            val data = RedPointBean.getData()!!
+                                            data.invite = 0
+                                            RedPointBean.setData(data)
+                                            EventBus.getDefault().postSticky(data)
+                                        }
+                                        //都没有可领取的话,没有小红点
+                                        EventBus.getDefault().postSticky(
+                                            GiftShowPoint(
+                                                GiftShowState.USELESS,
+                                                GiftShowState.USELESS,
+                                                GiftShowState.UN_SHOW
+                                            )
                                         )
-                                    )
-                                } else {
-                                    EventBus.getDefault().postSticky(
-                                        GiftShowPoint(
-                                            GiftShowState.USELESS,
-                                            GiftShowState.USELESS,
-                                            GiftShowState.SHOW
+                                    } else {
+                                        EventBus.getDefault().postSticky(
+                                            GiftShowPoint(
+                                                GiftShowState.USELESS,
+                                                GiftShowState.USELESS,
+                                                GiftShowState.SHOW
+                                            )
                                         )
-                                    )
-                                }
-                            }
-                        }
-
-                        -1 -> {
-                            it.getMsg()?.let { it1 -> ToastUtils.show(it1) }
-                            ActivityManager.toSplashActivity(requireActivity())
-                        }
-
-                        else -> {
-                            it.getMsg()?.let { it1 -> ToastUtils.show(it1) }
-                        }
-                    }
-                } else {
-                    ToastUtils.show(getString(R.string.network_fail_to_responseDate))
-                }
-            }, {
-                DialogUtils.dismissLoading()
-                LogUtils.d("${javaClass.simpleName}=fail=>${it.message.toString()}")
-                ToastUtils.show(HttpExceptionUtils.getExceptionMsg(requireContext(), it))
-            })
-
-        val inviteList = RetrofitUtils.builder().inviteList()
-        getInviteListObservable = inviteList.subscribeOn(Schedulers.io())
-            .observeOn(AndroidSchedulers.mainThread())
-            .subscribe({
-                mData4New.clear()
-                DialogUtils.dismissLoading()
-                LogUtils.d("${javaClass.simpleName}=success=>${Gson().toJson(it)}")
-                if (it != null) {
-                    when (it.code) {
-                        1 -> {
-                            if (it.data != null) {
-                                for (info in it.data) {
-                                    if (info.h1 == 1) {
-                                        canGet++
                                     }
-                                    if (info.h2 == 1) {
-                                        canGet++
-                                    }
-                                    if (info.h3 == 1) {
-                                        canGet++
-                                    }
-                                    if (info.h4 == 1) {
-                                        canGet++
-                                    }
-                                    if (info.h5 == 1) {
-                                        canGet++
-                                    }
-                                }
-                                mData4New.addAll(it.data)
-                                mAdapter4New?.notifyDataSetChanged()
-                                if (canGet == 0) {
-                                    if (RedPointBean.getData() != null) {
-                                        val data = RedPointBean.getData()!!
-                                        data.invite = 0
-                                        RedPointBean.setData(data)
-                                        EventBus.getDefault().postSticky(data)
-                                    }
-                                    //都没有可领取的话,没有小红点
-                                    EventBus.getDefault().postSticky(
-                                        GiftShowPoint(
-                                            GiftShowState.USELESS,
-                                            GiftShowState.USELESS,
-                                            GiftShowState.UN_SHOW
-                                        )
-                                    )
-                                } else {
-                                    EventBus.getDefault().postSticky(
-                                        GiftShowPoint(
-                                            GiftShowState.USELESS,
-                                            GiftShowState.USELESS,
-                                            GiftShowState.SHOW
-                                        )
-                                    )
                                 }
                             }
-                        }
 
-                        -1 -> {
-                            ToastUtils.show(it.msg)
-                            ActivityManager.toSplashActivity(requireActivity())
-                        }
+                            -1 -> {
+                                ToastUtils.show(it.msg)
+                                ActivityManager.toSplashActivity(requireActivity())
+                            }
 
-                        else -> {
-                            ToastUtils.show(it.msg)
+                            else -> {
+                                ToastUtils.show(it.msg)
+                            }
                         }
+                    } else {
+                        ToastUtils.show(getString(R.string.network_fail_to_responseDate))
                     }
-                } else {
-                    ToastUtils.show(getString(R.string.network_fail_to_responseDate))
-                }
-            }, {
-                DialogUtils.dismissLoading()
-                LogUtils.d("${javaClass.simpleName}=fail=>${it.message.toString()}")
-                ToastUtils.show(HttpExceptionUtils.getExceptionMsg(requireContext(), it))
-            })
+                }, {
+                    DialogUtils.dismissLoading()
+                    LogUtils.d("${javaClass.simpleName}=fail=>${it.message.toString()}")
+                    ToastUtils.show(HttpExceptionUtils.getExceptionMsg(requireContext(), it))
+                })
     }
 
     @SuppressLint("CheckResult", "SetTextI18n")
     private fun initView() {
         mView?.tv_inviteGift_share?.let {
-            RxView.clicks(it)
-                .throttleFirst(200, TimeUnit.MILLISECONDS)
-                .subscribe {
-                    val phone = SPUtils.getString(SPArgument.PHONE_NUMBER, null)
-                    if (phone.isNullOrBlank() && !wantToShare) {
-                        DialogUtils.showDefaultDialog(
-                            requireContext(),
-                            "未绑定手机号",
-                            "需要绑定手机号后邀请用户才能领取邀请大礼",
-                            "不绑定,要分享",
-                            "立即绑定",
-                            object : DialogUtils.OnDialogListener {
-                                override fun next() {
-                                    startActivity(
-                                        Intent(
-                                            requireContext(),
-                                            AccountSafeActivity::class.java
-                                        )
+            RxView.clicks(it).throttleFirst(200, TimeUnit.MILLISECONDS).subscribe {
+                val phone = SPUtils.getString(SPArgument.PHONE_NUMBER, null)
+                if (phone.isNullOrBlank() && !wantToShare) {
+                    DialogUtils.showDefaultDialog(requireContext(),
+                        "未绑定手机号",
+                        "需要绑定手机号后邀请用户才能领取邀请大礼",
+                        "不绑定,要分享",
+                        "立即绑定",
+                        object : DialogUtils.OnDialogListener {
+                            override fun next() {
+                                startActivity(
+                                    Intent(
+                                        requireContext(), AccountSafeActivity::class.java
                                     )
-                                }
+                                )
                             }
-                        )
-                        wantToShare = true
-                    } else {
-                        toGetShareUrl()
-                    }
+                        })
+                    wantToShare = true
+                } else {
+                    toGetShareUrl()
                 }
+            }
         }
 
         mAdapter = BaseAdapterWithPosition.Builder<GetShareListBean.DataBean.ListBean>()
-            .setLayoutId(R.layout.item_invite_gift)
-            .setData(mData)
+            .setLayoutId(R.layout.item_invite_gift).setData(mData)
             .addBindView { itemView, itemData, position ->
                 itemView.iv_item_gift_from.setImageResource(
                     when (itemData.channel) {
@@ -314,8 +307,7 @@ class InviteGiftFragment : Fragment() {
                     }
                 }
 
-                RxView.clicks(itemView.tv_item_gift_get)
-                    .throttleFirst(200, TimeUnit.MILLISECONDS)
+                RxView.clicks(itemView.tv_item_gift_get).throttleFirst(200, TimeUnit.MILLISECONDS)
                     .subscribe {
                         if (itemData.receive == 0) {
                             toGetInviteGift(itemData.id, itemView)
@@ -351,17 +343,13 @@ class InviteGiftFragment : Fragment() {
         mView?.rv_inviteGift?.adapter = mAdapter
         mView?.rv_inviteGift?.layoutManager = SafeLinearLayoutManager(requireContext())
 
-        mAdapter4New = BaseAdapterWithPosition.Builder<InviteListNewBean.Data>()
-            .setData(mData4New)
-            .setLayoutId(R.layout.item_invite_time)
-            .addBindView { itemView, itemData, position ->
-                itemView.tv_invite_user_phoneEnding.text =
-                    Html.fromHtml(
-                        "成功邀请尾号<b>XXXX</b>的用户".replace(
-                            "XXXX",
-                            itemData.phone_ending
-                        )
+        mAdapter4New = BaseAdapterWithPosition.Builder<InviteListNewBean.Data>().setData(mData4New)
+            .setLayoutId(R.layout.item_invite_time).addBindView { itemView, itemData, position ->
+                itemView.tv_invite_user_phoneEnding.text = Html.fromHtml(
+                    "成功邀请尾号<b>XXXX</b>的用户".replace(
+                        "XXXX", itemData.phone_ending
                     )
+                )
                 itemView.pb_invite_user_progress.setProgress(itemData.total_duration)
 
                 setInviteHourImg(itemView.iv_invite_user_h1, itemData.h1)
@@ -371,39 +359,19 @@ class InviteGiftFragment : Fragment() {
                 setInviteHourImg(itemView.iv_invite_user_h5, itemData.h5)
 
                 setInviteBtnState(
-                    itemView.tv_invite_user_h1,
-                    itemData.h1,
-                    position,
-                    itemData.share_id,
-                    1
+                    itemView.tv_invite_user_h1, itemData.h1, position, itemData.share_id, 1
                 )
                 setInviteBtnState(
-                    itemView.tv_invite_user_h2,
-                    itemData.h2,
-                    position,
-                    itemData.share_id,
-                    2
+                    itemView.tv_invite_user_h2, itemData.h2, position, itemData.share_id, 2
                 )
                 setInviteBtnState(
-                    itemView.tv_invite_user_h3,
-                    itemData.h3,
-                    position,
-                    itemData.share_id,
-                    3
+                    itemView.tv_invite_user_h3, itemData.h3, position, itemData.share_id, 3
                 )
                 setInviteBtnState(
-                    itemView.tv_invite_user_h4,
-                    itemData.h4,
-                    position,
-                    itemData.share_id,
-                    4
+                    itemView.tv_invite_user_h4, itemData.h4, position, itemData.share_id, 4
                 )
                 setInviteBtnState(
-                    itemView.tv_invite_user_h5,
-                    itemData.h5,
-                    position,
-                    itemData.share_id,
-                    5
+                    itemView.tv_invite_user_h5, itemData.h5, position, itemData.share_id, 5
                 )
             }.create()
 
@@ -423,11 +391,7 @@ class InviteGiftFragment : Fragment() {
      */
     @SuppressLint("CheckResult")
     private fun setInviteBtnState(
-        view: TextView,
-        state: Int,
-        position: Int,
-        shareId: Int,
-        h_id: Int
+        view: TextView, state: Int, position: Int, shareId: Int, h_id: Int
     ) {
         view.text = if (state == 2) "已领" else "领取"
         when (state) {
@@ -447,13 +411,11 @@ class InviteGiftFragment : Fragment() {
             }
         }
 //        view.setBackgroundResource(if (state == 1) R.mipmap.bg_invite_btn_can else R.mipmap.bg_invite_btn_cannot)
-        RxView.clicks(view)
-            .throttleFirst(200, TimeUnit.MILLISECONDS)
-            .subscribe {
-                if (state == 1) {
-                    toGetInviteRecharge(position, shareId, h_id)
-                }
+        RxView.clicks(view).throttleFirst(200, TimeUnit.MILLISECONDS).subscribe {
+            if (state == 1) {
+                toGetInviteRecharge(position, shareId, h_id)
             }
+        }
     }
 
     /**
@@ -482,89 +444,107 @@ class InviteGiftFragment : Fragment() {
             }
         }
         DialogUtils.showBeautifulDialog(requireContext())
-        val inviteListGetRecharge = RetrofitUtils.builder().inviteListGetRecharge(shareId, h_id)
-        getInviteRechargeObservable = inviteListGetRecharge.subscribeOn(Schedulers.io())
-            .observeOn(AndroidSchedulers.mainThread())
-            .subscribe({
-                DialogUtils.dismissLoading()
-                LogUtils.d("${javaClass.simpleName}=success=>${Gson().toJson(it)}")
-                if (it != null) {
-                    when (it.getCode()) {
-                        1 -> {
-                            //领取成功之后的变形
-                            when (h_id) {
-                                1 -> mData4New[position].h1 = 2
-                                2 -> mData4New[position].h2 = 2
-                                3 -> mData4New[position].h3 = 2
-                                4 -> mData4New[position].h4 = 2
-                                5 -> mData4New[position].h5 = 2
-                                else -> mData4New[position].h1 = 2
-                            }
-                            mAdapter4New?.notifyItemChanged(position)
+        IPMacAndLocationUtils.getResult(
+            requireActivity(),
+            object : IPMacAndLocationUtils.OnIpMacAndLocationListener {
+                override fun success() {
+                    val inviteListGetRecharge =
+                        RetrofitUtils.builder().inviteListGetRecharge(shareId, h_id)
+                    getInviteRechargeObservable = inviteListGetRecharge.subscribeOn(Schedulers.io())
+                        .observeOn(AndroidSchedulers.mainThread()).subscribe({
+                            DialogUtils.dismissLoading()
+                            LogUtils.d("${javaClass.simpleName}=success=>${Gson().toJson(it)}")
+                            if (it != null) {
+                                when (it.getCode()) {
+                                    1 -> {
+                                        //领取成功之后的变形
+                                        when (h_id) {
+                                            1 -> mData4New[position].h1 = 2
+                                            2 -> mData4New[position].h2 = 2
+                                            3 -> mData4New[position].h3 = 2
+                                            4 -> mData4New[position].h4 = 2
+                                            5 -> mData4New[position].h5 = 2
+                                            else -> mData4New[position].h1 = 2
+                                        }
+                                        mAdapter4New?.notifyItemChanged(position)
 
-                            canGet--
-                            if (canGet == 0) {
-                                if (RedPointBean.getData() != null) {
-                                    val data = RedPointBean.getData()!!
-                                    data.invite = 0
-                                    RedPointBean.setData(data)
-                                    EventBus.getDefault().postSticky(data)
-                                }
-                                //都没有可领取的话,没有小红点
-                                EventBus.getDefault().postSticky(
-                                    GiftShowPoint(
-                                        GiftShowState.USELESS,
-                                        GiftShowState.USELESS,
-                                        GiftShowState.UN_SHOW
-                                    )
-                                )
-                            } else {
-                                EventBus.getDefault().postSticky(
-                                    GiftShowPoint(
-                                        GiftShowState.USELESS,
-                                        GiftShowState.USELESS,
-                                        GiftShowState.SHOW
-                                    )
-                                )
-                            }
+                                        canGet--
+                                        if (canGet == 0) {
+                                            if (RedPointBean.getData() != null) {
+                                                val data = RedPointBean.getData()!!
+                                                data.invite = 0
+                                                RedPointBean.setData(data)
+                                                EventBus.getDefault().postSticky(data)
+                                            }
+                                            //都没有可领取的话,没有小红点
+                                            EventBus.getDefault().postSticky(
+                                                GiftShowPoint(
+                                                    GiftShowState.USELESS,
+                                                    GiftShowState.USELESS,
+                                                    GiftShowState.UN_SHOW
+                                                )
+                                            )
+                                        } else {
+                                            EventBus.getDefault().postSticky(
+                                                GiftShowPoint(
+                                                    GiftShowState.USELESS,
+                                                    GiftShowState.USELESS,
+                                                    GiftShowState.SHOW
+                                                )
+                                            )
+                                        }
 
-                            (activity as GiftActivity).isFirstCreate = false
-                            SPUtils.putValue(SPArgument.INTEGRAL, it.getData()?.user_integral)
-                            DialogActivity.showGetIntegral(
-                                requireActivity(),
-                                20,
-                                true,
-                                object : DialogActivity.OnCallback {
-                                    override fun cancel() {
-                                        EventBus.getDefault().postSticky(
-                                            IntegralChange(it.getData()?.user_integral!!)
+                                        (activity as GiftActivity).isFirstCreate = false
+                                        SPUtils.putValue(
+                                            SPArgument.INTEGRAL, it.getData()?.user_integral
+                                        )
+                                        DialogActivity.showGetIntegral(requireActivity(),
+                                            20,
+                                            true,
+                                            object : DialogActivity.OnCallback {
+                                                override fun cancel() {
+                                                    EventBus.getDefault().postSticky(
+                                                        IntegralChange(it.getData()?.user_integral!!)
+                                                    )
+                                                }
+                                            })
+                                    }
+
+                                    -1 -> {
+                                        ToastUtils.show(it.getMsg())
+                                        ActivityManager.toSplashActivity(requireActivity())
+                                    }
+
+                                    5 -> {
+                                        // 超过48小时未实名认证
+                                        DialogUtils.show48HDialog(
+                                            requireActivity(), true, it.getMsg()
                                         )
                                     }
+
+                                    else -> {
+                                        ToastUtils.show(it.getMsg())
+                                    }
                                 }
+                            } else {
+                                ToastUtils.show(getString(R.string.network_fail_to_responseDate))
+                            }
+                        }, {
+                            DialogUtils.dismissLoading()
+                            LogUtils.d("${javaClass.simpleName}=fail=>${it.message.toString()}")
+                            ToastUtils.show(
+                                HttpExceptionUtils.getExceptionMsg(
+                                    requireContext(), it
+                                )
                             )
-                        }
-
-                        -1 -> {
-                            ToastUtils.show(it.getMsg())
-                            ActivityManager.toSplashActivity(requireActivity())
-                        }
-
-                        5 -> {
-                            // 超过48小时未实名认证
-                            DialogUtils.show48HDialog(requireActivity(), true, it.getMsg())
-                        }
-
-                        else -> {
-                            ToastUtils.show(it.getMsg())
-                        }
-                    }
-                } else {
-                    ToastUtils.show(getString(R.string.network_fail_to_responseDate))
+                        })
                 }
-            }, {
-                DialogUtils.dismissLoading()
-                LogUtils.d("${javaClass.simpleName}=fail=>${it.message.toString()}")
-                ToastUtils.show(HttpExceptionUtils.getExceptionMsg(requireContext(), it))
+
+                override fun fail(code: Int, errorMessage: String) {
+                    DialogUtils.dismissLoading()
+                    LogUtils.d("============code = $code, errorMessage = $errorMessage")
+                    ToastUtils.show("账号存在异常风险-$code, 无法白嫖!")
+                }
             })
     }
 
@@ -616,60 +596,81 @@ class InviteGiftFragment : Fragment() {
             }
         }
         DialogUtils.showBeautifulDialog(requireContext())
-        val getInviteGift = RetrofitUtils.builder().getInviteGift(id!!)
-        getInviteGiftObservable = getInviteGift.subscribeOn(Schedulers.io())
-            .observeOn(AndroidSchedulers.mainThread())
-            .subscribe({
-                DialogUtils.dismissLoading()
-                LogUtils.d("${javaClass.simpleName}=success=>${Gson().toJson(it)}")
-                if (it != null) {
-                    when (it.getCode()) {
-                        1 -> {
-                            if (it.getData() != null) {
-                                //领取成功之后的变形
-                                itemView.tv_item_gift_get.text = "已领取"
-                                itemView.tv_item_gift_get.setTextColor(resources.getColor(R.color.green_63C5AD))
-                                itemView.tv_item_gift_get.setBackgroundResource(R.drawable.transparent)
-
-                                (activity as GiftActivity).isFirstCreate = false
-                                SPUtils.putValue(SPArgument.INTEGRAL, it.getData()?.user_integral)
-                                DialogActivity.showGetIntegral(
-                                    requireActivity(),
-                                    inviteReward,
-                                    true,
-                                    object : DialogActivity.OnCallback {
-                                        override fun cancel() {
-                                            EventBus.getDefault().postSticky(
-                                                IntegralChange(it.getData()?.user_integral!!)
+        IPMacAndLocationUtils.getResult(
+            requireActivity(),
+            object : IPMacAndLocationUtils.OnIpMacAndLocationListener {
+                override fun success() {
+                    val getInviteGift = RetrofitUtils.builder().getInviteGift(id!!)
+                    getInviteGiftObservable = getInviteGift.subscribeOn(Schedulers.io())
+                        .observeOn(AndroidSchedulers.mainThread()).subscribe({
+                            DialogUtils.dismissLoading()
+                            LogUtils.d("${javaClass.simpleName}=success=>${Gson().toJson(it)}")
+                            if (it != null) {
+                                when (it.getCode()) {
+                                    1 -> {
+                                        if (it.getData() != null) {
+                                            //领取成功之后的变形
+                                            itemView.tv_item_gift_get.text = "已领取"
+                                            itemView.tv_item_gift_get.setTextColor(
+                                                resources.getColor(
+                                                    R.color.green_63C5AD
+                                                )
                                             )
+                                            itemView.tv_item_gift_get.setBackgroundResource(R.drawable.transparent)
+
+                                            (activity as GiftActivity).isFirstCreate = false
+                                            SPUtils.putValue(
+                                                SPArgument.INTEGRAL, it.getData()?.user_integral
+                                            )
+                                            DialogActivity.showGetIntegral(requireActivity(),
+                                                inviteReward,
+                                                true,
+                                                object : DialogActivity.OnCallback {
+                                                    override fun cancel() {
+                                                        EventBus.getDefault().postSticky(
+                                                            IntegralChange(it.getData()?.user_integral!!)
+                                                        )
+                                                    }
+                                                })
+
                                         }
                                     }
-                                )
 
+                                    -1 -> {
+                                        it.getMsg()?.let { it1 -> ToastUtils.show(it1) }
+                                        ActivityManager.toSplashActivity(requireActivity())
+                                    }
+
+                                    5 -> {
+                                        // 超过48小时未实名认证
+                                        DialogUtils.show48HDialog(
+                                            requireActivity(), true, it.getMsg()
+                                        )
+                                    }
+
+                                    else -> {
+                                        it.getMsg()?.let { it1 -> ToastUtils.show(it1) }
+                                    }
+                                }
+                            } else {
+                                ToastUtils.show(getString(R.string.network_fail_to_responseDate))
                             }
-                        }
-
-                        -1 -> {
-                            it.getMsg()?.let { it1 -> ToastUtils.show(it1) }
-                            ActivityManager.toSplashActivity(requireActivity())
-                        }
-
-                        5 -> {
-                            // 超过48小时未实名认证
-                            DialogUtils.show48HDialog(requireActivity(), true, it.getMsg())
-                        }
-
-                        else -> {
-                            it.getMsg()?.let { it1 -> ToastUtils.show(it1) }
-                        }
-                    }
-                } else {
-                    ToastUtils.show(getString(R.string.network_fail_to_responseDate))
+                        }, {
+                            DialogUtils.dismissLoading()
+                            LogUtils.d("${javaClass.simpleName}=fail=>${it.message.toString()}")
+                            ToastUtils.show(
+                                HttpExceptionUtils.getExceptionMsg(
+                                    requireContext(), it
+                                )
+                            )
+                        })
                 }
-            }, {
-                DialogUtils.dismissLoading()
-                LogUtils.d("${javaClass.simpleName}=fail=>${it.message.toString()}")
-                ToastUtils.show(HttpExceptionUtils.getExceptionMsg(requireContext(), it))
+
+                override fun fail(code: Int, errorMessage: String) {
+                    DialogUtils.dismissLoading()
+                    LogUtils.d("============code = $code, errorMessage = $errorMessage")
+                    ToastUtils.show("账号存在异常风险-$code, 无法白嫖!")
+                }
             })
     }
 
@@ -682,43 +683,43 @@ class InviteGiftFragment : Fragment() {
             if (BaseAppUpdateSetting.isToPromoteVersion) 1
             else null
         )
-        getShareUrlObservable = getShareUrl.subscribeOn(Schedulers.io())
-            .observeOn(AndroidSchedulers.mainThread())
-            .subscribe({
-                DialogUtils.dismissLoading()
-                LogUtils.d("${javaClass.simpleName}=success=>${Gson().toJson(it)}")
-                if (it != null) {
-                    when (it.getCode()) {
-                        1 -> {
-                            if (it.getData() != null && it.getData()?.url != null) {
-                                ShareJumpUtils.showDefaultDialog(
-                                    requireActivity(),
-                                    message = "免费充值天天送，好玩的服处处有 点击下载${
-                                        resources.getString(
-                                            R.string.app_name
-                                        )
-                                    }: ${it.getData()?.url!!}",
-                                )
+        getShareUrlObservable =
+            getShareUrl.subscribeOn(Schedulers.io()).observeOn(AndroidSchedulers.mainThread())
+                .subscribe({
+                    DialogUtils.dismissLoading()
+                    LogUtils.d("${javaClass.simpleName}=success=>${Gson().toJson(it)}")
+                    if (it != null) {
+                        when (it.getCode()) {
+                            1 -> {
+                                if (it.getData() != null && it.getData()?.url != null) {
+                                    ShareJumpUtils.showDefaultDialog(
+                                        requireActivity(),
+                                        message = "免费充值天天送，好玩的服处处有 点击下载${
+                                            resources.getString(
+                                                R.string.app_name
+                                            )
+                                        }: ${it.getData()?.url!!}",
+                                    )
+                                }
+                            }
+
+                            -1 -> {
+                                it.getMsg()?.let { it1 -> ToastUtils.show(it1) }
+                                ActivityManager.toSplashActivity(requireActivity())
+                            }
+
+                            else -> {
+                                it.getMsg()?.let { it1 -> ToastUtils.show(it1) }
                             }
                         }
-
-                        -1 -> {
-                            it.getMsg()?.let { it1 -> ToastUtils.show(it1) }
-                            ActivityManager.toSplashActivity(requireActivity())
-                        }
-
-                        else -> {
-                            it.getMsg()?.let { it1 -> ToastUtils.show(it1) }
-                        }
+                    } else {
+                        ToastUtils.show(getString(R.string.network_fail_to_responseDate))
                     }
-                } else {
-                    ToastUtils.show(getString(R.string.network_fail_to_responseDate))
-                }
-            }, {
-                DialogUtils.dismissLoading()
-                LogUtils.d("${javaClass.simpleName}=fail=>${it.message.toString()}")
-                ToastUtils.show(HttpExceptionUtils.getExceptionMsg(requireContext(), it))
-            })
+                }, {
+                    DialogUtils.dismissLoading()
+                    LogUtils.d("${javaClass.simpleName}=fail=>${it.message.toString()}")
+                    ToastUtils.show(HttpExceptionUtils.getExceptionMsg(requireContext(), it))
+                })
     }
 
     @Subscribe

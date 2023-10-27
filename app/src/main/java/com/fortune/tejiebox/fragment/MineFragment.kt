@@ -9,6 +9,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
+import com.fortune.tejiebox.BuildConfig
 import com.fortune.tejiebox.R
 import com.fortune.tejiebox.activity.*
 import com.fortune.tejiebox.base.BaseAppUpdateSetting
@@ -35,6 +36,8 @@ class MineFragment : Fragment() {
 
     private var mView: View? = null
     private var getShareUrlObservable: Disposable? = null
+    private var sendDeleteCodeObservable: Disposable? = null
+    private var deleteUserObservable: Disposable? = null
 
     companion object {
         @JvmStatic
@@ -59,7 +62,8 @@ class MineFragment : Fragment() {
     private fun initView() {
 
         mView?.ll_mineFragment_privacy?.let {
-            if (BaseAppUpdateSetting.marketChannel == 0) {
+//            if (BaseAppUpdateSetting.marketChannel == 0) {
+            if (BuildConfig.CHANNEL.toInt() == 0) {
                 it.visibility = View.GONE
             } else {
                 it.visibility = View.VISIBLE
@@ -248,24 +252,115 @@ class MineFragment : Fragment() {
         }
 
         mView?.ll_mineFragment_logOff?.let {
-            val message = """
-                 <b>账号注销, 将清空删除所有盒子内数据(包括用户信息和游戏数据), 且之后注册时也不视作新用户, 无法获得新用户注册奖励, 请谨慎操作!<br><br>
-                 自主注销:</b> 该功能已处开发阶段, 待更新上线后, 可自行通过发送短信验证码进行验证, 验证通过后注销账号<br><br>
-                 <b>客服注销:</b> 如需立即注销, 请联系QQ客服<b>3111423308</b>, 并提供必要的相关账号信息, 待审核通过后注销账号
-            """.trimIndent()
-
             RxView.clicks(it)
                 .throttleFirst(200, TimeUnit.MILLISECONDS)
                 .subscribe {
-                    DialogUtils.showOnlySureDialog(
+                    DialogUtils.showDefaultDialog(
                         requireContext(),
                         "账号注销",
-                        Html.fromHtml(message),
-                        "确定",
-                        false, null
+                        "账号注销, 将清空删除所有盒子内数据(包括用户信息和游戏数据), 且之后注册时也不视作新用户, 无法获得新用户注册奖励, 请谨慎操作!",
+                        "暂不注销","立即注销",
+                        object : DialogUtils.OnDialogListener {
+                            override fun next() {
+                                if (MyApp.getInstance().isHaveToken()) {
+                                    val phone = SPUtils.getString(SPArgument.PHONE_NUMBER, null)
+                                    if(phone == null){
+                                        toDeleteUser(null)
+                                    }else{
+                                        toGetVerificationCode()
+                                    }
+                                }
+                            }
+                        }
                     )
                 }
         }
+    }
+
+    /**
+     * 获取短信验证码
+     */
+    private fun toGetVerificationCode() {
+        DialogUtils.showBeautifulDialog(requireContext())
+        val sendDeleteCode = RetrofitUtils.builder().sendDeleteCode()
+        deleteUserObservable = sendDeleteCode.subscribeOn(Schedulers.io())
+            .observeOn(AndroidSchedulers.mainThread())
+            .subscribe({
+                DialogUtils.dismissLoading()
+                LogUtils.d("${javaClass.simpleName}=success=>${Gson().toJson(it)}")
+                if (it != null) {
+                    when (it.code) {
+                        1 -> {
+                            toEnterVerificationCode()
+                        }
+
+                        -1 -> {
+                            ToastUtils.show(it.msg)
+                            ActivityManager.toSplashActivity(requireActivity())
+                        }
+
+                        else -> {
+                            ToastUtils.show(it.msg)
+                        }
+                    }
+                } else {
+                    ToastUtils.show(getString(R.string.network_fail_to_responseDate))
+                }
+            }, {
+                DialogUtils.dismissLoading()
+                LogUtils.d("${javaClass.simpleName}=fail=>${it.message.toString()}")
+                ToastUtils.show(HttpExceptionUtils.getExceptionMsg(requireContext(), it))
+            })
+    }
+
+    /**
+     * 输入短信验证码
+     */
+    private fun toEnterVerificationCode() {
+        DialogUtils.showSmsCodeDialog(requireContext(),
+            object : DialogUtils.OnDialogListener4ShowSmsCode {
+                override fun onSure(code: String) {
+                    toDeleteUser(code)
+                }
+            })
+    }
+
+    /**
+     * 用户注销
+     */
+    private fun toDeleteUser(code: String?) {
+        val deleteUser = RetrofitUtils.builder().deleteUser(code)
+        deleteUserObservable = deleteUser.subscribeOn(Schedulers.io())
+            .observeOn(AndroidSchedulers.mainThread())
+            .subscribe({
+                DialogUtils.dismissLoading()
+                LogUtils.d("${javaClass.simpleName}=success=>${Gson().toJson(it)}")
+                if (it != null) {
+                    when (it.code) {
+                        1 -> {
+                            ActivityManager.toSplashActivity(requireActivity())
+                        }
+
+                        -1 -> {
+                            ToastUtils.show(it.msg)
+                            ActivityManager.toSplashActivity(requireActivity())
+                        }
+
+                        else -> {
+                            ToastUtils.show(it.msg)
+                            toEnterVerificationCode()
+                        }
+                    }
+                } else {
+                    ToastUtils.show(getString(R.string.network_fail_to_responseDate))
+                    toEnterVerificationCode()
+                }
+            }, {
+                DialogUtils.dismissLoading()
+                LogUtils.d("${javaClass.simpleName}=fail=>${it.message.toString()}")
+                ToastUtils.show(HttpExceptionUtils.getExceptionMsg(requireContext(), it))
+                toEnterVerificationCode()
+            })
     }
 
     /**
@@ -489,5 +584,11 @@ class MineFragment : Fragment() {
 
         getShareUrlObservable?.dispose()
         getShareUrlObservable = null
+
+        sendDeleteCodeObservable?.dispose()
+        sendDeleteCodeObservable = null
+
+        deleteUserObservable?.dispose()
+        deleteUserObservable = null
     }
 }

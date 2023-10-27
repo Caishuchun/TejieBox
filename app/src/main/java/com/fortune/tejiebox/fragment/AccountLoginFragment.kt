@@ -9,7 +9,6 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import com.fortune.tejiebox.R
-import com.fortune.tejiebox.activity.DialogActivity
 import com.fortune.tejiebox.activity.Login4AccountActivity
 import com.fortune.tejiebox.activity.LoginActivity
 import com.fortune.tejiebox.activity.VerificationCodeActivity
@@ -20,6 +19,7 @@ import com.fortune.tejiebox.event.LoginStatusChange
 import com.fortune.tejiebox.http.RetrofitUtils
 import com.fortune.tejiebox.utils.DialogUtils
 import com.fortune.tejiebox.utils.HttpExceptionUtils
+import com.fortune.tejiebox.utils.IPMacAndLocationUtils
 import com.fortune.tejiebox.utils.LogUtils
 import com.fortune.tejiebox.utils.PromoteUtils
 import com.fortune.tejiebox.utils.SPUtils
@@ -216,7 +216,11 @@ class AccountLoginFragment : Fragment() {
         SPUtils.putValue(SPArgument.ID_NAME, null)
         SPUtils.putValue(SPArgument.ID_NUM, null)
         DialogUtils.showBeautifulDialog(requireContext())
-        val accountLogin = RetrofitUtils.builder().accountLogin(account, pass)
+        val accountLogin = RetrofitUtils.builder().accountLogin(
+            account, pass,
+            IPMacAndLocationUtils.getLatitude(requireActivity()),
+            IPMacAndLocationUtils.getLongitude(requireActivity())
+        )
         accountLoginObservable = accountLogin.subscribeOn(Schedulers.io())
             .observeOn(AndroidSchedulers.mainThread())
             .subscribe({

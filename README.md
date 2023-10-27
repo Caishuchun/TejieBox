@@ -5,6 +5,9 @@
 2. git config --global http.proxy 127.0.0.1:7890
 3. git config --global https.proxy 127.0.0.1:7890
 
+### 3.3.3
+大图标, 注销以及一些小优化bug
+
 ### 3.3.2
 最主要的三证合一
 

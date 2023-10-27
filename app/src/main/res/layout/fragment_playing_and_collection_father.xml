@@ -5,6 +5,7 @@
     android:layout_height="match_parent"
     android:orientation="vertical"
     android:paddingTop="@dimen/dp_30"
+    android:background="@mipmap/bg_all"
     tools:context=".fragment.PlayingAndCollectionFatherFragment">
 
     <LinearLayout
@@ -12,7 +13,6 @@
         android:layout_width="match_parent"
         android:layout_height="@dimen/dp_48"
         android:layout_gravity="center_horizontal"
-        android:background="@drawable/bg_btn_exit"
         android:orientation="horizontal">
 
         <View
@@ -20,27 +20,59 @@
             android:layout_height="0dp"
             android:layout_weight="1" />
 
-        <TextView
-            android:id="@+id/tv_fragment_playingAndCollection_playing"
+        <RelativeLayout
             android:layout_width="0dp"
             android:layout_height="match_parent"
             android:layout_weight="1"
-            android:gravity="center"
-            android:text="在玩列表"
-            android:textColor="@color/gray_C4C4C4"
-            android:textSize="@dimen/sp_16"
-            android:textStyle="bold" />
+            android:orientation="vertical">
 
-        <TextView
-            android:id="@+id/tv_fragment_playingAndCollection_collection"
+            <TextView
+                android:id="@+id/tv_fragment_playingAndCollection_playing"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_centerInParent="true"
+                android:text="在玩列表"
+                android:textColor="#8e8e8e"
+                android:textSize="@dimen/sp_16" />
+
+            <View
+                android:id="@+id/view_fragment_playingAndCollection_playing"
+                android:layout_width="@dimen/dp_50"
+                android:layout_height="@dimen/dp_2"
+                android:layout_alignParentBottom="true"
+                android:layout_centerHorizontal="true"
+                android:layout_marginTop="@dimen/dp_2"
+                android:layout_marginBottom="@dimen/dp_8"
+                android:background="#287df1" />
+        </RelativeLayout>
+
+        <RelativeLayout
             android:layout_width="0dp"
             android:layout_height="match_parent"
             android:layout_weight="1"
-            android:gravity="center"
-            android:text="收藏列表"
-            android:textColor="@color/gray_C4C4C4"
-            android:textSize="@dimen/sp_16"
-            android:textStyle="bold" />
+            android:orientation="vertical">
+
+            <TextView
+                android:id="@+id/tv_fragment_playingAndCollection_collection"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_centerInParent="true"
+                android:gravity="center"
+                android:text="收藏列表"
+                android:textColor="#8e8e8e"
+                android:textSize="@dimen/sp_16" />
+
+            <View
+                android:id="@+id/view_fragment_playingAndCollection_collection"
+                android:layout_width="@dimen/dp_50"
+                android:layout_height="@dimen/dp_2"
+                android:layout_alignParentBottom="true"
+                android:layout_centerHorizontal="true"
+                android:visibility="gone"
+                android:layout_marginTop="@dimen/dp_2"
+                android:layout_marginBottom="@dimen/dp_8"
+                android:background="#287df1" />
+        </RelativeLayout>
 
         <View
             android:layout_width="0dp"
@@ -56,6 +88,7 @@
         android:gravity="center"
         android:text="收藏列表"
         android:textColor="#0A0422"
+        android:visibility="gone"
         android:textSize="@dimen/sp_18"
         android:textStyle="bold" />
 

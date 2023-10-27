@@ -1,6 +1,7 @@
 package com.fortune.tejiebox.bean
 
 data class ShelfDataBean(
+    val update_time: Long,
     val huawei_market: Int,
     val isCanUseShare: Int,
     val oppo_market: Int,
@@ -11,16 +12,7 @@ data class ShelfDataBean(
     val baidu_market: Int,
     val s91_market: Int,
     val samsung_market: Int,
-    val multipleOpenAppType: Int
-) {
-    companion object {
-        private var shelfDataBean: ShelfDataBean? = null
-
-        fun setData(shelfDataBean: ShelfDataBean) {
-            this.shelfDataBean = shelfDataBean
-        }
-
-        fun getData(): ShelfDataBean? = shelfDataBean
-    }
-
-}
+    val multipleOpenAppType: Int,//多开应用软件样式
+    val ipInfo: Int,//ip信息管理
+    val isShowIntegralBtn:Int,//大图标是否展示免费充值
+)

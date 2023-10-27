@@ -165,7 +165,9 @@ class LoginSecondFragment() : Fragment() {
             game_channel = gameChannel,
             game_id = gameId,
             game_version = gameVersion,
-            i = inviteInfo
+            i = inviteInfo,
+            latitude = IPMacAndLocationUtils.getLatitude(requireActivity()),
+            longitude = IPMacAndLocationUtils.getLongitude(requireActivity())
         )
         SPUtils.putValue(SPArgument.LOGIN_TOKEN, null)
         SPUtils.putValue(SPArgument.PHONE_NUMBER, null)

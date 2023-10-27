@@ -8,10 +8,10 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
+import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.OrientationHelper
 import androidx.recyclerview.widget.RecyclerView
 import androidx.recyclerview.widget.SimpleItemAnimator
-import androidx.recyclerview.widget.StaggeredGridLayoutManager
 import com.bumptech.glide.Glide
 import com.bumptech.glide.load.DataSource
 import com.bumptech.glide.load.engine.DiskCacheStrategy
@@ -25,8 +25,15 @@ import com.fortune.tejiebox.adapter.BaseAdapterWithPosition
 import com.fortune.tejiebox.bean.BaseGameListInfoBean
 import com.fortune.tejiebox.constants.SPArgument
 import com.fortune.tejiebox.http.RetrofitUtils
-import com.fortune.tejiebox.utils.*
-import com.fortune.tejiebox.widget.SafeStaggeredGridLayoutManager
+import com.fortune.tejiebox.utils.ActivityManager
+import com.fortune.tejiebox.utils.DialogUtils
+import com.fortune.tejiebox.utils.HttpExceptionUtils
+import com.fortune.tejiebox.utils.LogUtils
+import com.fortune.tejiebox.utils.PhoneInfoUtils
+import com.fortune.tejiebox.utils.SPUtils
+import com.fortune.tejiebox.utils.ShelfDataUtils
+import com.fortune.tejiebox.utils.ToastUtils
+import com.fortune.tejiebox.widget.SafeGridLayoutManager
 import com.google.gson.Gson
 import com.jakewharton.rxbinding2.view.RxView
 import com.scwang.smart.refresh.footer.ClassicsFooter
@@ -36,8 +43,18 @@ import com.scwang.smart.refresh.layout.listener.OnRefreshLoadMoreListener
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.Disposable
 import io.reactivex.schedulers.Schedulers
-import kotlinx.android.synthetic.main.fragment_game.view.*
-import kotlinx.android.synthetic.main.item_game_fragment_game.view.*
+import kotlinx.android.synthetic.main.fragment_game.view.ll_gameFragment_search
+import kotlinx.android.synthetic.main.fragment_game.view.refresh_gameFragment_game
+import kotlinx.android.synthetic.main.fragment_game.view.rl_gameFragment_title
+import kotlinx.android.synthetic.main.fragment_game.view.rv_gameFragment_game
+import kotlinx.android.synthetic.main.fragment_game.view.tv_gameFragment_nothing
+import kotlinx.android.synthetic.main.item_game_fragment_game.view.iv_item_gameFragment_icon
+import kotlinx.android.synthetic.main.item_game_fragment_game.view.iv_item_gameFragment_type
+import kotlinx.android.synthetic.main.item_game_fragment_game.view.ll_item_gameFragment_root
+import kotlinx.android.synthetic.main.item_game_fragment_game.view.rl_item_gameFragment
+import kotlinx.android.synthetic.main.item_game_fragment_game.view.runView_item_gameFragment
+import kotlinx.android.synthetic.main.item_game_fragment_game.view.tv_item_gameFragment_des
+import kotlinx.android.synthetic.main.item_game_fragment_game.view.tv_item_gameFragment_name
 import java.util.concurrent.TimeUnit
 
 class GameFragment : Fragment() {
@@ -51,6 +68,7 @@ class GameFragment : Fragment() {
     private var currentPage = 1
     private var countPage = 1
     private var currentRandom = 0
+    private var maxBigNum = 0
 
     companion object {
         @JvmStatic
@@ -95,10 +113,13 @@ class GameFragment : Fragment() {
                 }
         }
 
+        val width = PhoneInfoUtils.getWidth(requireActivity())
         mAdapter = BaseAdapterWithPosition.Builder<BaseGameListInfoBean>()
             .setData(mData)
             .setLayoutId(R.layout.item_game_fragment_game)
             .addBindView { itemView, itemData, position ->
+
+                itemView.rl_item_gameFragment.visibility = View.VISIBLE
 
                 itemView.runView_item_gameFragment.visibility = View.GONE
                 itemView.iv_item_gameFragment_type.visibility = View.GONE
@@ -106,8 +127,26 @@ class GameFragment : Fragment() {
                 //Tag是为了防止图片重复
                 itemView.iv_item_gameFragment_icon.setTag(R.id.image, position)
                 itemView.iv_item_gameFragment_icon.setImageResource(R.mipmap.bg_gray_6)
+
+                val layoutParams4Icon = itemView.rl_item_gameFragment.layoutParams
+                val layoutParams4Root = itemView.ll_item_gameFragment_root.layoutParams
+                if (position < maxBigNum) {
+                    layoutParams4Icon.width = ((60.0 + 15 - 3) * 2 / 360 * width).toInt()
+                    layoutParams4Icon.height = ((60.0 + 15 + 13) / 360 * width).toInt()
+
+                    itemView.tv_item_gameFragment_name.visibility = View.GONE
+                    itemView.tv_item_gameFragment_des.visibility = View.GONE
+                } else {
+                    layoutParams4Icon.width = (60.0 / 360 * width).toInt()
+                    layoutParams4Icon.height = (60.0 / 360 * width).toInt()
+
+                    itemView.tv_item_gameFragment_name.visibility = View.VISIBLE
+                    itemView.tv_item_gameFragment_des.visibility = View.VISIBLE
+                }
+
+                val imageUrl = if (position < maxBigNum) itemData.image_url else itemData.game_cover
                 Glide.with(this)
-                    .load(itemData.game_cover)
+                    .load(imageUrl)
                     .placeholder(R.mipmap.bg_gray_6)
                     .skipMemoryCache(false)
                     .listener(object : RequestListener<Drawable> {
@@ -127,19 +166,23 @@ class GameFragment : Fragment() {
                             dataSource: DataSource?,
                             isFirstResource: Boolean
                         ): Boolean {
-                            itemView.runView_item_gameFragment.visibility =
-                                if (itemData.game_top == 1) View.VISIBLE else View.GONE
-                            when (itemData.icon_type) {
-                                1 -> {
-                                    itemView.iv_item_gameFragment_type.visibility = View.VISIBLE
-                                    itemView.iv_item_gameFragment_type.setImageResource(R.mipmap.icon_new)
-                                }
-                                2 -> {
-                                    itemView.iv_item_gameFragment_type.visibility = View.VISIBLE
-                                    itemView.iv_item_gameFragment_type.setImageResource(R.mipmap.icon_hot)
-                                }
-                                else -> {
-                                    itemView.iv_item_gameFragment_type.visibility = View.GONE
+                            if (position >= maxBigNum) {
+                                itemView.runView_item_gameFragment.visibility =
+                                    if (itemData.game_top == 1) View.VISIBLE else View.GONE
+                                when (itemData.icon_type) {
+                                    1 -> {
+                                        itemView.iv_item_gameFragment_type.visibility = View.VISIBLE
+                                        itemView.iv_item_gameFragment_type.setImageResource(R.mipmap.icon_new)
+                                    }
+
+                                    2 -> {
+                                        itemView.iv_item_gameFragment_type.visibility = View.VISIBLE
+                                        itemView.iv_item_gameFragment_type.setImageResource(R.mipmap.icon_hot)
+                                    }
+
+                                    else -> {
+                                        itemView.iv_item_gameFragment_type.visibility = View.GONE
+                                    }
                                 }
                             }
                             return false
@@ -157,6 +200,12 @@ class GameFragment : Fragment() {
                         val intent = Intent(requireActivity(), GameDetailActivity::class.java)
                         intent.putExtra(GameDetailActivity.GAME_ID, itemData.game_id)
                         intent.putExtra(GameDetailActivity.GAME_IS_INTEGRAL, itemData.is_integral)
+                        if (position < maxBigNum) {
+                            intent.putExtra(
+                                GameDetailActivity.IS_SHOW_INTEGRAL_BTN,
+                                ShelfDataUtils.getShelfData4Local()?.isShowIntegralBtn == 1
+                            )
+                        }
                         requireActivity().startActivity(intent)
                     }
             }
@@ -165,25 +214,33 @@ class GameFragment : Fragment() {
         mView?.rv_gameFragment_game?.let {
             //取消默认动画
             (it.itemAnimator as SimpleItemAnimator).supportsChangeAnimations = false
+            it.itemAnimator = null
 
             it.setHasFixedSize(true)
             it.setItemViewCacheSize(20)
             it.isDrawingCacheEnabled = true
             it.drawingCacheQuality = View.DRAWING_CACHE_QUALITY_HIGH
             it.adapter = mAdapter
-            it.layoutManager = SafeStaggeredGridLayoutManager(4, OrientationHelper.VERTICAL)
+
+            val layoutManager = SafeGridLayoutManager(requireContext(), OrientationHelper.VERTICAL)
+            layoutManager.spanCount = 4
+            layoutManager.spanSizeLookup = object : GridLayoutManager.SpanSizeLookup() {
+                override fun getSpanSize(position: Int): Int {
+                    return if (position < maxBigNum) 2 else 1
+                }
+            }
+
+            it.layoutManager = layoutManager
         }
 
         mView?.rv_gameFragment_game?.addOnScrollListener(object :
             RecyclerView.OnScrollListener() {
             override fun onScrolled(recyclerView: RecyclerView, dx: Int, dy: Int) {
                 super.onScrolled(recyclerView, dx, dy)
-                val mFirstVisibleItems: IntArray? = null
                 val position =
-                    (mView?.rv_gameFragment_game?.layoutManager as StaggeredGridLayoutManager)
-                        .findFirstVisibleItemPositions(mFirstVisibleItems)
-                if (currentPage >= 2 && position[0] >= (currentPage - 2) * 32) {
-//                if (mData.size < position[0] + 10) {
+                    (mView?.rv_gameFragment_game?.layoutManager as SafeGridLayoutManager).findFirstVisibleItemPosition()
+
+                if (currentPage >= 2 && position >= (currentPage - 2) * 32) {
                     if (currentPage < countPage) {
                         currentPage++
                         getGameList(needLoading = false)
@@ -273,8 +330,15 @@ class GameFragment : Fragment() {
                         when (it.code) {
                             1 -> {
                                 if (currentPage == 1) {
+                                    maxBigNum = 0
                                     mData.clear()
                                     mAdapter?.notifyDataSetChanged()
+                                    if (it.data.recommended_games.isNotEmpty()) {
+                                        maxBigNum = it.data.recommended_games.size
+                                        for (game in it.data.recommended_games) {
+                                            mData.add(game)
+                                        }
+                                    }
                                 }
                                 if (it.data.list.isNotEmpty()) {
                                     val count = it.data.paging.count
@@ -282,9 +346,7 @@ class GameFragment : Fragment() {
                                     countPage = count / limit + if (count % limit == 0) 0 else 1
                                     val oldSize = mData.size
                                     for (list in it.data.list) {
-                                        if (!mData.contains(list)) {
-                                            mData.add(list)
-                                        }
+                                        mData.add(list)
                                     }
                                     if (currentPage == 1) {
                                         mAdapter?.notifyItemRangeChanged(0, mData.size)
@@ -323,10 +385,12 @@ class GameFragment : Fragment() {
                                     getGameList(needLoading = false)
                                 }
                             }
+
                             -1 -> {
                                 ToastUtils.show(it.msg)
                                 ActivityManager.toSplashActivity(requireActivity())
                             }
+
                             else -> {
                                 ToastUtils.show(it.msg)
                             }

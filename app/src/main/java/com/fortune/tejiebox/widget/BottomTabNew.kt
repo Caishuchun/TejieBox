@@ -2,14 +2,12 @@ package com.fortune.tejiebox.widget
 
 import android.annotation.SuppressLint
 import android.content.Context
-import android.content.Intent
 import android.graphics.Color
 import android.util.AttributeSet
 import android.view.LayoutInflater
 import android.view.View
 import android.widget.LinearLayout
 import com.fortune.tejiebox.R
-import com.fortune.tejiebox.activity.GiftActivity
 import com.fortune.tejiebox.activity.MainActivity
 import com.fortune.tejiebox.base.BaseAppUpdateSetting
 import com.fortune.tejiebox.bean.VersionBean
@@ -156,9 +154,11 @@ class BottomTabNew(context: Context, attrs: AttributeSet) : LinearLayout(context
         RxView.clicks(mView.iv_bottomTab_whitePiao)
             .throttleFirst(20, TimeUnit.MILLISECONDS)
             .subscribe {
+                MainActivity.mainPage = MainActivity.MainPage.ACTIVITY
                 if (MyApp.getInstance().isHaveToken()) {
-                    MainActivity.getInstance()?.let {
-                        it.startActivity(Intent(it, GiftActivity::class.java))
+                 if (currentPos != 4) {
+                        currentPos = 4
+                        changeItemStyle(4)
                     }
                 } else {
                     MainActivity.getInstance()?.let {

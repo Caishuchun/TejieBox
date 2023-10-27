@@ -15,6 +15,7 @@ import android.view.animation.*
 import android.widget.TextView
 import androidx.fragment.app.Fragment
 import com.arialyy.aria.core.Aria
+import com.fortune.tejiebox.BuildConfig
 import com.fortune.tejiebox.R
 import com.fortune.tejiebox.base.BaseActivity
 import com.fortune.tejiebox.base.BaseAppUpdateSetting
@@ -56,6 +57,7 @@ class MainActivity : BaseActivity() {
     private var moreGameFragment: MoreGameFragment? = null
     private var playingFragment: PlayingAndCollectionFatherFragment? = null
     private var mineFragment: MineFragment? = null
+    private var activityFragment: ActivityFragment? = null
 
     private var canQuit = false
     var currentFragment: Fragment? = null
@@ -127,7 +129,7 @@ class MainActivity : BaseActivity() {
     }
 
     enum class MainPage {
-        MAIN, PLAYING, ALL, ME
+        MAIN, PLAYING, ALL, ME, ACTIVITY
     }
 
     override fun getLayoutId() = R.layout.activity_main
@@ -240,8 +242,10 @@ class MainActivity : BaseActivity() {
             playingFragment = fragment
         } else if (moreGameFragment == null && fragment is MoreGameFragment && mainPage == MainPage.ALL) {
             moreGameFragment = fragment
-        } else if (mineFragment == null && fragment is MineFragment) {
+        } else if (mineFragment == null && fragment is MineFragment && mainPage == MainPage.ME) {
             mineFragment = fragment
+        } else if (activityFragment == null && fragment is ActivityFragment && mainPage == MainPage.ACTIVITY) {
+            activityFragment = fragment
         }
     }
 
@@ -278,7 +282,7 @@ class MainActivity : BaseActivity() {
             }
         }
 
-        tab_main.isShowGiftIcon(BaseAppUpdateSetting.marketChannel == 0)
+        tab_main.isShowGiftIcon(BuildConfig.CHANNEL.toInt() == 0)
 
         RxView.clicks(iv_white_piao).throttleFirst(200, TimeUnit.MILLISECONDS).subscribe {
             rl_main_shade.visibility = View.GONE
@@ -509,12 +513,14 @@ class MainActivity : BaseActivity() {
             toGetCustomerServiceInfo()
             InstallGiftDialog.dismissLoading()
             toCheckIsNeedOpenGame(true)
+            IPMacAndLocationUtils.clearListener()
         } else {
             tab_main.showMsgNum(0)
             EventBus.getDefault().post(LikeDataChange(""))
             EventBus.getDefault().post(PlayingDataChange(""))
             tab_main.setCurrentItem(0)
             toChangeFragment(0)
+            IPMacAndLocationUtils.initLocation(this, null)
         }
     }
 
@@ -557,7 +563,7 @@ class MainActivity : BaseActivity() {
      */
     @SuppressLint("CheckResult")
     private fun toShowGuide() {
-        SPUtils.putValue(SPArgument.IS_NEED_SHOW_GUIDE, false)
+//        SPUtils.putValue(SPArgument.IS_NEED_SHOW_GUIDE, false)
         GuideUtils.showGuide(
             activity = this,
             backgroundColor = Color.parseColor("#88000000"),
@@ -573,17 +579,15 @@ class MainActivity : BaseActivity() {
                 view.setOnClickListener {
                     controller.dismiss()
                     ActivityManager.toMainActivity()
-                    val intent = Intent(this, GiftActivity::class.java)
-                    intent.putExtra(GiftActivity.NEED_SHOW_GUIDE, true)
-                    startActivity(intent)
+                    tab_main.setCurrentItem(4)
+                    toChangeFragment(4, true)
                 }
             },
             highLightClickListener = { controller ->
                 controller.dismiss()
                 ActivityManager.toMainActivity()
-                val intent = Intent(this, GiftActivity::class.java)
-                intent.putExtra(GiftActivity.NEED_SHOW_GUIDE, true)
-                startActivity(intent)
+                tab_main.setCurrentItem(4)
+                toChangeFragment(4, true)
             },
             guideShowListener = { isShowing -> },
         )
@@ -830,8 +834,9 @@ class MainActivity : BaseActivity() {
                                         )
                                     }
                                 }
-                            }else{
-                                val isNeedShowGuide = SPUtils.getBoolean(SPArgument.IS_NEED_SHOW_GUIDE)
+                            } else {
+                                val isNeedShowGuide =
+                                    SPUtils.getBoolean(SPArgument.IS_NEED_SHOW_GUIDE)
                                 if (isNeedShowGuide) {
                                     toShowGuide()
                                 }
@@ -888,8 +893,15 @@ class MainActivity : BaseActivity() {
     /**
      * 获取客服回复信息
      * 仅请求的时候获取当前和上次请求之间的数据
+     * 最多五分钟刷新一次, 没必要频繁刷新, 毕竟回消息也不是秒回的
      */
     private fun toGetCustomerServiceInfo() {
+        val lastTime = SPUtils.getLong(SPArgument.GET_CUSTOMER_SERVICE_INFO_TIME)
+        val currentTime = System.currentTimeMillis()
+        if (currentTime - lastTime < 1000 * 60 * 5) {
+            return
+        }
+        SPUtils.putValue(SPArgument.GET_CUSTOMER_SERVICE_INFO_TIME, currentTime)
         val getMsg = RetrofitUtils.builder().getMsg()
         getReCustomerInfoObservable =
             getMsg.subscribeOn(Schedulers.io()).observeOn(AndroidSchedulers.mainThread())
@@ -951,7 +963,7 @@ class MainActivity : BaseActivity() {
     /**
      * 更新fragment
      */
-    private fun toChangeFragment(index: Int) {
+    private fun toChangeFragment(index: Int, isShowGuide: Boolean = false) {
         when (index) {
             0 -> {
                 mainPage = MainPage.MAIN
@@ -1008,6 +1020,22 @@ class MainActivity : BaseActivity() {
                         .commitAllowingStateLoss()
                 }
             }
+
+            4 -> {
+                mainPage = MainPage.ACTIVITY
+                hideAll()
+                if (null == activityFragment) {
+                    activityFragment = ActivityFragment.newInstance(isShowGuide)
+                    currentFragment = activityFragment
+                    supportFragmentManager.beginTransaction()
+                        .add(R.id.fl_main, currentFragment!!)
+                        .commitAllowingStateLoss()
+                } else {
+                    currentFragment = activityFragment
+                    supportFragmentManager.beginTransaction().show(activityFragment!!)
+                        .commitAllowingStateLoss()
+                }
+            }
         }
     }
 
@@ -1015,9 +1043,13 @@ class MainActivity : BaseActivity() {
      * 隐藏掉所有东西
      */
     private fun hideAll() {
-        supportFragmentManager.beginTransaction().hide(mainFragment!!)
-            .hide(playingFragment ?: mainFragment!!).hide(moreGameFragment ?: mainFragment!!)
-            .hide(mineFragment ?: mainFragment!!).commitAllowingStateLoss()
+        supportFragmentManager.beginTransaction()
+            .hide(mainFragment!!)
+            .hide(playingFragment ?: mainFragment!!)
+            .hide(moreGameFragment ?: mainFragment!!)
+            .hide(mineFragment ?: mainFragment!!)
+            .hide(activityFragment ?: mainFragment!!)
+            .commitAllowingStateLoss()
     }
 
     override fun destroy() {
